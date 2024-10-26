@@ -20,6 +20,15 @@ dependencies:
   provider:
   fl_chart:
   table_calendar:
+  firebase_database:
+  firebase_core:
+  board_datetime_picker:
+  animated_custom_dropdown:
+  modal_bottom_sheet:
+  drop_down_list: ^0.0.8
+  dropdown_flutter: 1.0.1
+  toastification:
+  colour:
 
 dev_dependencies:
   flutter_test:

@@ -1,0 +1,11 @@
+update shift adding UI
+Implement Shift Adding Function and implement toastification.
+Income screen (Setting a budget, total amount earned, total amount  to be earned, total expected gross,
+Overview (Bar Chart , total shifts done in the month, total shifts allocated, total shifts remaining to target
+Shift editing
+Shift Cancellation with who cancelled (drop down "me", "1625")
+
+connect app too db
+create login and sign up Using google auth
+Adding Shift to Database
+Editing shifts on Database
