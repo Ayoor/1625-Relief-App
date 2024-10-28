@@ -25,6 +25,9 @@ class _NewShiftState extends State<NewShift> {
   }
 
   TextEditingController locationController = TextEditingController();
+  late int hrs;
+  late double rate;
+
   String selectedLocation = "Charles England House";
   final List<String> locations = [
     "Charles England House",
@@ -263,8 +266,8 @@ class _NewShiftState extends State<NewShift> {
                             //     context);
                             if (startTime != null && endTime != null) {
                               provider.addShift(
-                                  dateFormater(startTime),
-                                  dateFormater(endTime),
+                                  startTime!,
+                                  endTime!,
                                   selectedLocation,
                                   context);
                             } else {
@@ -319,7 +322,7 @@ class _NewShiftState extends State<NewShift> {
                                     MainAxisAlignment.spaceBetween,
                                 children: [
                                   Text(
-                                    provider.getShiftType(shift.startTime),
+                                    shift.shiftType,
                                     style: TextStyle(
                                         color: Colors.grey, fontSize: 13),
                                   ),
@@ -368,7 +371,30 @@ class _NewShiftState extends State<NewShift> {
                                           style: TextStyle(
                                               fontWeight: FontWeight.bold)),
                                       Text(
-                                        " $selectedLocation",
+                                        " ${shift.location}",
+                                      ),
+                                    ],
+                                  ),
+                                  SizedBox(height: 5,),
+                                  Row(
+                                    children: [
+                                      Text("Hrs: ",
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.bold)),
+                                      Text(shift.duration
+                                      ),
+                                    ],
+                                  ),
+                                  SizedBox(
+                                    height: 5,
+                                  ),
+                                  Row(
+                                    children: [
+                                      Text("Rate: ",
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.bold)),
+                                      Text(
+                                        "${shift.rate}",
                                       ),
                                     ],
                                   ),

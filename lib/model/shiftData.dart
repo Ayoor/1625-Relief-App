@@ -1,5 +1,5 @@
-class ShiftData{
-List scheduledShift = [1];
+class ShiftsData{
+List scheduledShift = [];
 DateTime today = DateTime.now();
 
 }
