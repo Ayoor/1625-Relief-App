@@ -20,27 +20,21 @@ class AppProvider extends ChangeNotifier {
   final List _scheduledShifts = ShiftsData().scheduledShift;
 
   List get scheduledShifts => _scheduledShifts;
+  void removeShift(int index){
+shifts.removeAt(index);
+notifyListeners();
+  }
 
-  void addShift(
-      DateTime start, DateTime end, String location, BuildContext context) {
-    shifts.add(Shifts(
-        startTime: start,
-        endTime: start,
-        location: location,
-        shiftType: getShiftTypeAndRate(start, location).item1,
-        rate:getShiftTypeAndRate(start, location).item2,
-        duration: duration(start, end)));
-    notifyListeners();
+  void showWarning(BuildContext context, String message) {
     toastification.show(
       context: context,
-      // optional if you use ToastificationWrapper
-      title: Text('New Shift Added.'),
+      title: Text(message),
       alignment: Alignment.bottomCenter,
-      type: ToastificationType.success,
-      backgroundColor: Colors.blue,
+      type: ToastificationType.warning,
+      backgroundColor: Colors.orange,
       foregroundColor: Colors.white,
       icon: Icon(
-        Icons.check,
+        Icons.warning,
         color: Colors.white,
       ),
       style: ToastificationStyle.flatColored,
@@ -48,6 +42,45 @@ class AppProvider extends ChangeNotifier {
       showProgressBar: false,
       dragToClose: true,
     );
+  }
+
+  void addShift(
+      DateTime start, DateTime end, String location, BuildContext context) {
+    // Check if there's already a shift with the same start time
+    bool isDuplicate = shifts.any((shift) => shift.startTime == start);
+
+    if (isDuplicate) {
+      // If duplicate, show a toast notification
+      showWarning(context, "Shift already exists for this date");
+    } else {
+      // If not a duplicate, add the shift
+      shifts.add(Shifts(
+        startTime: start,
+        endTime: end,
+        location: location,
+        shiftType: getShiftTypeAndRate(start, location).item1,
+        rate: getShiftTypeAndRate(start, location).item2,
+        duration: duration(context,start, end),
+      ));
+      notifyListeners();
+
+      toastification.show(
+        context: context,
+        title: Text('New Shift Added.'),
+        alignment: Alignment.bottomCenter,
+        type: ToastificationType.success,
+        backgroundColor: Colors.blue,
+        foregroundColor: Colors.white,
+        icon: Icon(
+          Icons.check,
+          color: Colors.white,
+        ),
+        style: ToastificationStyle.flatColored,
+        autoCloseDuration: const Duration(seconds: 3),
+        showProgressBar: false,
+        dragToClose: true,
+      );
+    }
   }
 
   void loadShifts() {}
@@ -101,22 +134,27 @@ class AppProvider extends ChangeNotifier {
     }).catchError((error) {});
   }
 
- Tuple2 <String, double> getShiftTypeAndRate(DateTime startTime, String location) {
+  Tuple2<String, double> getShiftTypeAndRate(
+      DateTime startTime, String location) {
     // DateTime startTime = DateTime.parse(start);
     if (startTime.hour < 12) {
       return Tuple2("Early Shift", 12);
     } else if (startTime.hour < 21) {
-      return Tuple2("Late Shift",12);
+      return Tuple2("Late Shift", 12);
     } else {
       if (location == "Charles England House") {
         return Tuple2("Sleep in Shift", 12);
       }
-      return Tuple2("Wake in Shift",12.3);
+      return Tuple2("Wake in Shift", 12.3);
     }
   }
 
-  String duration(DateTime start, DateTime end) {
+  duration(BuildContext context, DateTime start, DateTime end) {
     Duration duration = end.difference(start);
+    if((duration.inHours > 16)){
+      showWarning(context, "Shift duration cannot exceed 16hrs in a day");
+      return;
+    }
     if (duration.inMinutes.remainder(60) == 0) {
       return "${duration.inHours} hours";
     }

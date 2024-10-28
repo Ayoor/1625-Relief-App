@@ -83,20 +83,19 @@ class _ScheduleState extends State<Schedule>
                     padding: const EdgeInsets.all(15.0),
                     child: Column(
                       children: [
-                        Container(
-                            child: TableCalendar(
-                                headerStyle: HeaderStyle(
-                                    formatButtonVisible: false,
-                                    titleCentered: true),
-                                focusedDay: provider.today,
-                                selectedDayPredicate: (day) =>
-                                    isSameDay(day, provider.today),
-                                onDaySelected: provider.onDaySelect,
-                                availableGestures: AvailableGestures.all,
-                                firstDay:
-                                    provider.today.subtract(Duration(days: 60)),
-                                lastDay:
-                                    provider.today.add(Duration(days: 50)))),
+                        TableCalendar(
+                            headerStyle: HeaderStyle(
+                                formatButtonVisible: false,
+                                titleCentered: true),
+                            focusedDay: provider.today,
+                            selectedDayPredicate: (day) =>
+                                isSameDay(day, provider.today),
+                            onDaySelected: provider.onDaySelect,
+                            availableGestures: AvailableGestures.all,
+                            firstDay:
+                                provider.today.subtract(Duration(days: 60)),
+                            lastDay:
+                                provider.today.add(Duration(days: 50))),
                       ],
                     ),
                   );
