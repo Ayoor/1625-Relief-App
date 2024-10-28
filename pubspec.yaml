@@ -29,6 +29,8 @@ dependencies:
   dropdown_flutter: 1.0.1
   toastification:
   colour:
+  intl:
+  fluttertoast:
 
 dev_dependencies:
   flutter_test:
