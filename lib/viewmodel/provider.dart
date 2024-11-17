@@ -10,31 +10,39 @@ import '../model/shifts.dart';
 class AppProvider extends ChangeNotifier {
   DateTime _today = DateTime.now();
   Map<String, Shifts> newShift = {};
-  final DatabaseReference _dbRef =
-      FirebaseDatabase.instance.ref().child('Shifts');
 
   // List<Shifts> _addedShifts = [];
   List<Shifts> shifts = [];
 
   DateTime get today => _today;
-  final List _scheduledShifts = ShiftsData().scheduledShift;
+  final List <Shifts>_scheduledShifts = ShiftsData().scheduledShift;
+  final String _status = "Scheduled";
+
+  String get status => _status;
 
   List get scheduledShifts => _scheduledShifts;
-  void removeShift(int index){
-shifts.removeAt(index);
-notifyListeners();
+
+  void removeShift(int index, BuildContext context) {
+    shifts.removeAt(index);
+    showMessage(context: context , message: "Shift Removed", type: ToastificationType.info, bgColor: Colors.blue, icon: Icons.info);
+    notifyListeners();
   }
 
-  void showWarning(BuildContext context, String message) {
+  void showMessage(
+      {required BuildContext context,
+      required String message,
+      required ToastificationType type,
+      required Color bgColor,
+      required IconData icon}) {
     toastification.show(
       context: context,
       title: Text(message),
       alignment: Alignment.bottomCenter,
-      type: ToastificationType.warning,
-      backgroundColor: Colors.orange,
+      type: type,
+      backgroundColor: bgColor,
       foregroundColor: Colors.white,
       icon: Icon(
-        Icons.warning,
+        icon,
         color: Colors.white,
       ),
       style: ToastificationStyle.flatColored,
@@ -51,39 +59,99 @@ notifyListeners();
 
     if (isDuplicate) {
       // If duplicate, show a toast notification
-      showWarning(context, "Shift already exists for this date");
+      showMessage(
+          context: context,
+          message: "Shift already exists for this date",
+          type: ToastificationType.warning,
+          bgColor: Colors.orange,
+          icon: Icons.warning);
     } else {
       // If not a duplicate, add the shift
       shifts.add(Shifts(
-        startTime: start,
-        endTime: end,
-        location: location,
-        shiftType: getShiftTypeAndRate(start, location).item1,
-        rate: getShiftTypeAndRate(start, location).item2,
-        duration: duration(context,start, end),
-      ));
+          startTime: start,
+          endTime: end,
+          location: location,
+          shiftType: getShiftTypeAndRate(start, location).item1,
+          rate: getShiftTypeAndRate(start, location).item2,
+          duration: duration(context, start, end),
+          status: status));
       notifyListeners();
 
-      toastification.show(
-        context: context,
-        title: Text('New Shift Added.'),
-        alignment: Alignment.bottomCenter,
-        type: ToastificationType.success,
-        backgroundColor: Colors.blue,
-        foregroundColor: Colors.white,
-        icon: Icon(
-          Icons.check,
-          color: Colors.white,
-        ),
-        style: ToastificationStyle.flatColored,
-        autoCloseDuration: const Duration(seconds: 3),
-        showProgressBar: false,
-        dragToClose: true,
-      );
+      showMessage(
+          context: context,
+          message: "New shift added",
+          type: ToastificationType.info,
+          bgColor: Colors.blueAccent,
+          icon: Icons.info_outline);
     }
   }
 
-  void loadShifts() {}
+  Future<List<Shifts>> getScheduledShifts(BuildContext context) async {
+    _scheduledShifts.clear();
+    final DatabaseReference dbRef = FirebaseDatabase.instance.ref();
+
+    try {
+      final DataSnapshot snapshot = await dbRef.child('Shifts').get();
+
+      if (snapshot.exists) {
+
+
+        // Print snapshot for debugging
+
+
+        // Check if the value is a Map
+        if (snapshot.value is Map<dynamic, dynamic>) {
+          final Map<dynamic, dynamic> dateMap = snapshot.value as Map<dynamic, dynamic>;
+
+          dateMap.forEach((dateKey, shiftData) {
+            if (shiftData['status'] == 'Scheduled') {
+              try {
+                Shifts shift = Shifts(
+                  startTime: DateTime.parse(shiftData['startTime']),
+                  endTime: DateTime.parse(shiftData['endTime']),
+                  location: shiftData['location'],
+                  shiftType: shiftData['shiftType'],
+                  rate: shiftData['rate'].toDouble(),
+                  duration: shiftData['duration'],
+                  status: shiftData['status'],
+                );
+
+                _scheduledShifts.add(shift);
+
+              } catch (e) {
+                print("Error parsing shift data for date $dateKey: $e");
+              }
+            }
+          });
+          notifyListeners();
+        } else {
+          print("Data is not a Map. Unable to iterate.");
+        }
+
+        notifyListeners();
+        return _scheduledShifts;
+      } else {
+        print("No shifts data found.");
+        notifyListeners();
+        return [];
+      }
+    } catch (e) {
+      if (context.mounted) {
+        showMessage(
+          context: context,
+          message: "An error occurred retrieving shifts",
+          type: ToastificationType.error,
+          bgColor: Colors.red[400]!,
+          icon: Icons.clear,
+        );
+      }
+      print("Error retrieving shifts: $e");
+      notifyListeners();
+      return [];
+    }
+    print("You have ${ShiftsData().scheduledShift.length} scheduled shifts");
+
+  }
 
   DateTime convertToDateTime(String date) {
     DateFormat format = DateFormat("dd/MM/yyyy h:mm a");
@@ -95,43 +163,59 @@ notifyListeners();
     notifyListeners();
   }
 
-// Function to add new shift and save it to Firebase Realtime Database
-  void saveNewShifts(String shiftType, DateTime start, DateTime end,
-      String location, BuildContext context) {
-    // Shifts newShift = Shifts(startTime: start, endTime: end, location: location);
+// Function to add new shift and save it to Firebase Realtime Database// For date formatting
 
-    // Save the shift in Firebase Realtime Database
-    _dbRef.push().set({
-      'shiftType': shiftType,
-      'startTime': start.toIso8601String(),
-      'endTime': end.toIso8601String(),
-      'location': location,
-      'status': "Open",
-    }).then((_) {
-      // Notify listeners once data is successfully saved
+  Future<void> saveNewShifts(
+      BuildContext context,
+      List<Shifts> shifts,
+      ) async {
+    if (shifts.isEmpty) {
+      showMessage(
+        context: context,
+        message: "You need to add new shifts first",
+        type: ToastificationType.warning,
+        bgColor: Colors.red,
+        icon: Icons.cancel,
+      );
+      return;
+    }
+
+    try {
+      for (var shift in shifts) {
+        // Format the startTime to a date string (e.g., "dd-MM-yyyy")
+        final String dateKey = DateFormat('dd-MM-yyyy').format(shift.startTime);
+
+        final DatabaseReference dbRef =
+        FirebaseDatabase.instance.ref().child("Shifts/$dateKey");
+
+        // Save each shift under the date key in "Shifts"
+        await dbRef.set(shift.toJson());
+      }
+
+      shifts.clear();
       notifyListeners();
 
       if (context.mounted) {
-        // because we are using context in an async function
-        toastification.show(
+        showMessage(
           context: context,
-          // optional if you use ToastificationWrapper
-          title: Text('New Shift Added.'),
-          alignment: Alignment.bottomCenter,
+          message: "Your shifts have been successfully saved.",
           type: ToastificationType.success,
-          backgroundColor: Colors.blue,
-          foregroundColor: Colors.white,
-          icon: Icon(
-            Icons.check,
-            color: Colors.white,
-          ),
-          style: ToastificationStyle.flatColored,
-          autoCloseDuration: const Duration(seconds: 3),
-          showProgressBar: false,
-          dragToClose: true,
+          bgColor: Colors.lightGreen,
+          icon: Icons.check,
         );
       }
-    }).catchError((error) {});
+    } catch (e) {
+      // Show error notification if saving shifts fails
+      if (context.mounted) {
+        showMessage(
+          context: context,
+          message: "Action failed. Check internet or retry later",
+          type: ToastificationType.error,
+          bgColor: Colors.red[400]!,
+          icon: Icons.clear,
+        );
+      }
+    }
   }
 
   Tuple2<String, double> getShiftTypeAndRate(
@@ -149,10 +233,25 @@ notifyListeners();
     }
   }
 
+  String dateFormater(DateTime? datetime) {
+    if (datetime != null) {
+      // Define the date format
+      String formattedDate = DateFormat('dd/MM/yyyy hh:mm a').format(datetime);
+      return formattedDate;
+    } else {
+      return "Choose";
+    }
+  }
+
   duration(BuildContext context, DateTime start, DateTime end) {
     Duration duration = end.difference(start);
-    if((duration.inHours > 16)){
-      showWarning(context, "Shift duration cannot exceed 16hrs in a day");
+    if ((duration.inHours > 16)) {
+      showMessage(
+          context: context,
+          message: "Shift cannot be more than 16 hrs in a day",
+          type: ToastificationType.warning,
+          bgColor: Colors.orange,
+          icon: Icons.cancel);
       return;
     }
     if (duration.inMinutes.remainder(60) == 0) {

@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:relief_app/model/shifts.dart';
-import 'package:relief_app/view/widgets/adding_new_shift.dart';
-import 'package:table_calendar/table_calendar.dart';
-
+import 'package:relief_app/view/adding_new_shift.dart';
 import '../viewmodel/provider.dart';
 
 class Schedule extends StatefulWidget {
@@ -13,17 +11,18 @@ class Schedule extends StatefulWidget {
   State<Schedule> createState() => _ScheduleState();
 }
 
-class _ScheduleState extends State<Schedule>
-    with SingleTickerProviderStateMixin {
+class _ScheduleState extends State<Schedule> with SingleTickerProviderStateMixin {
   late TabController _tabController;
-  Map<DateTime, List<Shifts>> shifts = {};
-
+  bool _isChecked = false;
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 3, vsync: this);
-    // Provider.of<AppProvider>(context, listen: false)
-    //     .loadDrinkHistory();
+
+    // Fetch scheduled shifts when the widget is first created.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Provider.of<AppProvider>(context, listen: false).getScheduledShifts(context);
+    });
   }
 
   @override
@@ -33,12 +32,11 @@ class _ScheduleState extends State<Schedule>
         floatingActionButton: SizedBox(
           width: 150,
           child: FloatingActionButton(
-            onPressed: () {
-              Navigator.push(
-                  context, MaterialPageRoute(builder: (context) => NewShift()));
+            onPressed: () async {
+              Navigator.push(context, MaterialPageRoute(builder: (context) => const NewShift()));
             },
             backgroundColor: Colors.orange,
-            child: Text(
+            child: const Text(
               "New Shift",
               style: TextStyle(color: Colors.white),
             ),
@@ -52,71 +50,138 @@ class _ScheduleState extends State<Schedule>
           ),
           bottom: TabBar(
             indicatorColor: Colors.orange,
-            indicatorSize: TabBarIndicatorSize.tab,
             controller: _tabController,
             tabs: const [
-              Tab(
-                child: Text("Scheduled", style: TextStyle(color: Colors.white)),
+              Tab(child: Text("Scheduled", style: TextStyle(color: Colors.white))),
+              Tab(child: Text("Completed", style: TextStyle(color: Colors.white))),
+              Tab(child: Text("Cancelled", style: TextStyle(color: Colors.white))),
+            ],
+          ),
+        ),
+        body: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: TabBarView(
+            controller: _tabController,
+            children: [
+              // Tab 1 - Scheduled Shifts
+              provider.scheduledShifts.isEmpty
+                  ? const Center(child: Text("No shift Scheduled yet"))
+                  : ListView.builder(
+                physics: const ClampingScrollPhysics(),
+                itemCount: provider.scheduledShifts.length,
+                itemBuilder: (context, index) {
+                  final shift = provider.scheduledShifts[index];
+
+                  return Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: ListTile(
+                      leading: Image.asset(
+                        "lib/assets/1625_logo.png",
+                        width: 50,
+                      ),
+                      title: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            shift.shiftType,
+                            style: const TextStyle(color: Colors.grey, fontSize: 13),
+                          ),
+                          Column(
+                            children: [
+                              IconButton(
+                                icon: Icon(Icons.close, color: Colors.red[300]),
+                                onPressed: () {
+                                  provider.removeShift(index, context);
+                                },
+                              ),
+                              Text("Cancel Shift", style: TextStyle(color: Colors.grey, fontSize: 12),)
+                            ],
+                          ),
+                        ],
+                      ),
+                      subtitle: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              const Text("Start time:", style: TextStyle(fontWeight: FontWeight.bold)),
+                              Text(" ${provider.dateFormater(shift.startTime)}"),
+                            ],
+                          ),
+                          const SizedBox(height: 5),
+                          Row(
+                            children: [
+                              const Text("End time:", style: TextStyle(fontWeight: FontWeight.bold)),
+                              Text(" ${provider.dateFormater(shift.endTime)}"),
+                            ],
+                          ),
+                          const SizedBox(height: 5),
+                          Row(
+                            children: [
+                              const Text("Location:", style: TextStyle(fontWeight: FontWeight.bold)),
+                              Text(" ${shift.location}"),
+                            ],
+                          ),
+                          const SizedBox(height: 5),
+                          Row(
+                            children: [
+                              const Text("Hrs:", style: TextStyle(fontWeight: FontWeight.bold)),
+                              Text(shift.duration),
+                            ],
+                          ),
+                          const SizedBox(height: 5),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Row(
+                                children: [
+                                  const Text("Rate:", style: TextStyle(fontWeight: FontWeight.bold)),
+                                  Text("${shift.rate}"),
+                                ],
+                              ),
+                              Column(
+                                children: [
+                                  Checkbox(value: _isChecked, onChanged: (value){
+                                    setState(() {
+                                      _isChecked = value ?? false;
+                                    });
+                                  }),
+                                Text("Mark Completed", style: TextStyle(color: Colors.grey, fontSize: 12),)],
+                              )
+                            ],
+                          ),
+                        ],
+                      ),
+                      contentPadding: const EdgeInsets.all(10),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      tileColor: Colors.white,
+                      selectedTileColor: Colors.grey[100],
+                    ),
+                  );
+                },
               ),
-              Tab(
-                child: Text("Completed", style: TextStyle(color: Colors.white)),
+
+              // Tab 2 - Completed Shifts
+              const Center(
+                child: Text("Completed"),
               ),
-              Tab(
-                child: Text("Cancelled", style: TextStyle(color: Colors.white)),
+
+              // Tab 3 - Cancelled Shifts
+              const Center(
+                child: Text("Cancelled"),
               ),
             ],
           ),
         ),
-        body: TabBarView(
-          controller: _tabController,
-          children: [
-            // Tab 1 - Today
-            Consumer<AppProvider>(
-              builder: (context, provider, child) {
-                provider.loadShifts();
-                if (provider.scheduledShifts.isEmpty) {
-                  return const Center(
-                    child: Text("You don't have any shift scheduled"),
-                  );
-                } else {
-                  return Padding(
-                    padding: const EdgeInsets.all(15.0),
-                    child: Column(
-                      children: [
-                        TableCalendar(
-                            headerStyle: HeaderStyle(
-                                formatButtonVisible: false,
-                                titleCentered: true),
-                            focusedDay: provider.today,
-                            selectedDayPredicate: (day) =>
-                                isSameDay(day, provider.today),
-                            onDaySelected: provider.onDaySelect,
-                            availableGestures: AvailableGestures.all,
-                            firstDay:
-                                provider.today.subtract(Duration(days: 60)),
-                            lastDay:
-                                provider.today.add(Duration(days: 50))),
-                      ],
-                    ),
-                  );
-                }
-              },
-            ),
-
-            // Tab 2 - Past Week
-            const Center(
-              child: Text("Completed"),
-            ),
-
-            // Tab 3 - Past Month
-            const Center(
-              child: Text(
-                "Cancelled",
-              ),
-            ),
-          ],
-        ),
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
   }
 }

@@ -62,15 +62,19 @@ class _NewShiftState extends State<NewShift> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       IconButton(
+                        enableFeedback: false,
                           onPressed: () {
                             reset(context, provider.shifts);
                           },
                           icon:
                           Icon(Icons.close, size: 30, color: Colors.red[400])),
-                      Icon(
-                        Icons.check,
-                        size: 30,
-                        color: Colors.blue,
+                      IconButton(
+                        enableFeedback: false,
+                        icon: Icon(
+                          Icons.check,
+                          size: 30,
+                          color: Colors.blue,
+                        ), onPressed: () { provider.saveNewShifts(context, provider.shifts); },
                       ),
                     ],
                   ),
@@ -349,7 +353,7 @@ class _NewShiftState extends State<NewShift> {
                                             color: Colors.red[300]),
                                         onPressed: () {
                                           setState(() {
-                                           provider.removeShift(index);
+                                            provider.removeShift(index, context);
                                           });
                                         },
                                       )

@@ -1,5 +1,7 @@
+import 'package:relief_app/model/shifts.dart';
+
 class ShiftsData{
-List scheduledShift = [1];
+  List<Shifts> scheduledShift = [];
 DateTime today = DateTime.now();
 
 }
