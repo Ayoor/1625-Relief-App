@@ -10,22 +10,78 @@ import '../model/shifts.dart';
 class AppProvider extends ChangeNotifier {
   DateTime _today = DateTime.now();
   Map<String, Shifts> newShift = {};
+  List <List<Shifts>> allShifts = [];
 
   // List<Shifts> _addedShifts = [];
   List<Shifts> shifts = [];
 
   DateTime get today => _today;
-  final List <Shifts>_scheduledShifts = ShiftsData().scheduledShift;
+  final List<Shifts> _scheduledShifts = ShiftsData().scheduledShifts;
+
+  final List<Shifts> _cancelledShifts = ShiftsData().cancelledShifts;
+
+  List<Shifts> get cancelledShifts => _cancelledShifts;
+
+  final List<Shifts> _completedShifts = ShiftsData().completedShifts;
+
+  List<Shifts> get completedShifts => _completedShifts;
+
   final String _status = "Scheduled";
 
   String get status => _status;
 
-  List get scheduledShifts => _scheduledShifts;
+  List<Shifts> get scheduledShifts => _scheduledShifts;
 
   void removeShift(int index, BuildContext context) {
     shifts.removeAt(index);
-    showMessage(context: context , message: "Shift Removed", type: ToastificationType.info, bgColor: Colors.blue, icon: Icons.info);
+    showMessage(
+        context: context,
+        message: "Shift Removed",
+        type: ToastificationType.info,
+        bgColor: Colors.blue,
+        icon: Icons.info);
     notifyListeners();
+  }
+
+  void updateShiftStatus(int index, String key, BuildContext context) async {
+    try {
+      // Update the status of the shift locally
+      // shifts[index].status = "Cancelled";
+
+      // Reference to the specific shift in the Firebase Database
+      final DatabaseReference dbRef =
+          FirebaseDatabase.instance.ref().child("Shifts/$key");
+
+      // Update only the status field in Firebase
+      await dbRef.update({"status": "Cancelled"});
+
+      // Notify listeners to update UI
+      notifyListeners();
+
+      // Show success message if the context is still mounted
+      if (context.mounted) {
+        showMessage(
+          context: context,
+          message: "Shift status updated successfully.",
+          type: ToastificationType.success,
+          bgColor: Colors.lightGreen,
+          icon: Icons.check,
+        );
+        fetchShifts(context);
+        notifyListeners();
+      }
+    } catch (e) {
+      // Show error message if the update fails
+      if (context.mounted) {
+        showMessage(
+          context: context,
+          message: "Action failed. Check internet or retry later.",
+          type: ToastificationType.error,
+          bgColor: Colors.red[400]!,
+          icon: Icons.clear,
+        );
+      }
+    }
   }
 
   void showMessage(
@@ -86,50 +142,90 @@ class AppProvider extends ChangeNotifier {
     }
   }
 
-  Future<List<Shifts>> getScheduledShifts(BuildContext context) async {
-    _scheduledShifts.clear();
+  Future  fetchShifts(
+      BuildContext context) async {
     final DatabaseReference dbRef = FirebaseDatabase.instance.ref();
 
     try {
       final DataSnapshot snapshot = await dbRef.child('Shifts').get();
 
       if (snapshot.exists) {
-
-
         // Print snapshot for debugging
-
 
         // Check if the value is a Map
         if (snapshot.value is Map<dynamic, dynamic>) {
-          final Map<dynamic, dynamic> dateMap = snapshot.value as Map<dynamic, dynamic>;
+          final Map<dynamic, dynamic> dateMap =
+              snapshot.value as Map<dynamic, dynamic>;
+          _completedShifts.clear();
+          _scheduledShifts.clear();
+          _cancelledShifts.clear();
 
           dateMap.forEach((dateKey, shiftData) {
-            if (shiftData['status'] == 'Scheduled') {
-              try {
-                Shifts shift = Shifts(
-                  startTime: DateTime.parse(shiftData['startTime']),
-                  endTime: DateTime.parse(shiftData['endTime']),
-                  location: shiftData['location'],
-                  shiftType: shiftData['shiftType'],
-                  rate: shiftData['rate'].toDouble(),
-                  duration: shiftData['duration'],
-                  status: shiftData['status'],
-                );
+              if (shiftData['status'] == 'Scheduled') {
+                try {
+                  Shifts shift = Shifts(
+                    startTime: DateTime.parse(shiftData['startTime']),
+                    endTime: DateTime.parse(shiftData['endTime']),
+                    location: shiftData['location'],
+                    shiftType: shiftData['shiftType'],
+                    rate: shiftData['rate'].toDouble(),
+                    duration: shiftData['duration'],
+                    status: shiftData['status'],
+                  );
 
-                _scheduledShifts.add(shift);
-
-              } catch (e) {
-                print("Error parsing shift data for date $dateKey: $e");
+                  _scheduledShifts.add(shift);
+                } catch (e) {
+                  print("Error parsing shift data for date $dateKey: $e");
+                }
               }
-            }
+
+              if (shiftData['status'] == 'Cancelled') {
+                try {
+                  Shifts shift = Shifts(
+                    startTime: DateTime.parse(shiftData['startTime']),
+                    endTime: DateTime.parse(shiftData['endTime']),
+                    location: shiftData['location'],
+                    shiftType: shiftData['shiftType'],
+                    rate: shiftData['rate'].toDouble(),
+                    duration: shiftData['duration'],
+                    status: shiftData['status'],
+                  );
+                  _cancelledShifts.add(shift);
+                } catch (e) {
+                  print("Error parsing shift data for date $dateKey: $e");
+                }
+              }
+
+              if (shiftData['status'] == 'Completed') {
+                try {
+                  Shifts shift = Shifts(
+                    startTime: DateTime.parse(shiftData['startTime']),
+                    endTime: DateTime.parse(shiftData['endTime']),
+                    location: shiftData['location'],
+                    shiftType: shiftData['shiftType'],
+                    rate: shiftData['rate'].toDouble(),
+                    duration: shiftData['duration'],
+                    status: shiftData['status'],
+                  );
+                  _completedShifts.add(shift);
+                }
+                catch (e) {
+                  print("Error parsing shift data for date $dateKey: $e");
+                }
+              }
+
           });
+
+          allShifts.add(_scheduledShifts);
+          allShifts.add(_completedShifts);
+          allShifts.add(_cancelledShifts);
+
           notifyListeners();
         } else {
           print("Data is not a Map. Unable to iterate.");
         }
 
         notifyListeners();
-        return _scheduledShifts;
       } else {
         print("No shifts data found.");
         notifyListeners();
@@ -149,8 +245,6 @@ class AppProvider extends ChangeNotifier {
       notifyListeners();
       return [];
     }
-    print("You have ${ShiftsData().scheduledShift.length} scheduled shifts");
-
   }
 
   DateTime convertToDateTime(String date) {
@@ -166,9 +260,9 @@ class AppProvider extends ChangeNotifier {
 // Function to add new shift and save it to Firebase Realtime Database// For date formatting
 
   Future<void> saveNewShifts(
-      BuildContext context,
-      List<Shifts> shifts,
-      ) async {
+    BuildContext context,
+    List<Shifts> shifts,
+  ) async {
     if (shifts.isEmpty) {
       showMessage(
         context: context,
@@ -186,7 +280,7 @@ class AppProvider extends ChangeNotifier {
         final String dateKey = DateFormat('dd-MM-yyyy').format(shift.startTime);
 
         final DatabaseReference dbRef =
-        FirebaseDatabase.instance.ref().child("Shifts/$dateKey");
+            FirebaseDatabase.instance.ref().child("Shifts/$dateKey");
 
         // Save each shift under the date key in "Shifts"
         await dbRef.set(shift.toJson());

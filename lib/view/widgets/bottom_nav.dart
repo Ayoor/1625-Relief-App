@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:persistent_bottom_nav_bar_v2/persistent_bottom_nav_bar_v2.dart';
-import 'package:relief_app/view/schedule.dart';
+import 'package:relief_app/view/all_shifts.dart';
 
 import '../income.dart';
 import '../overview.dart';
@@ -17,7 +17,7 @@ class BottomNavigation extends StatelessWidget {
     return PersistentTabView(
       tabs: [
         PersistentTabConfig(
-          screen: const Schedule(),
+          screen: const AllShifts(),
           item: ItemConfig(
             icon: const Icon(Icons.calendar_today_rounded, size: 18,),
             title: "Schedule",
