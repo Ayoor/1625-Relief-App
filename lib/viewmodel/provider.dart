@@ -43,7 +43,7 @@ class AppProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void updateShiftStatus(int index, String key, BuildContext context) async {
+  void updateShiftStatus(int index, String key, BuildContext context, {String shiftType = ""}) async {
     try {
       // Update the status of the shift locally
       // shifts[index].status = "Cancelled";
@@ -53,7 +53,12 @@ class AppProvider extends ChangeNotifier {
           FirebaseDatabase.instance.ref().child("Shifts/$key");
 
       // Update only the status field in Firebase
-      await dbRef.update({"status": "Cancelled"});
+      if(shiftType == "Completed") {
+        await dbRef.update({"status": "Completed"});
+      }
+      else {
+        await dbRef.update({"status": "Cancelled"});
+      }
 
       // Notify listeners to update UI
       notifyListeners();

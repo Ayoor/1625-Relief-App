@@ -20,21 +20,25 @@ class _ShiftTileState extends State<ShiftTile> {
 
     // The .filled() constructor creates a list with a specified length,
     // and every element in the list is initialized with the same value.
-    _isCheckedList = List<bool>.filled(widget.provider.scheduledShifts.length, false);
+    _isCheckedList =
+        List<bool>.filled(widget.provider.scheduledShifts.length, false);
   }
+
   String formatDate(String dateTimeString) {
     // Parse the input string to a DateTime object
     DateTime dateTime = DateTime.parse(dateTimeString);
 
     // Format the date as dd-MM-yyyy
-    String formattedDate = '${dateTime.day.toString().padLeft(2, '0')}-${dateTime.month.toString().padLeft(2, '0')}-${dateTime.year}';
+    String formattedDate =
+        '${dateTime.day.toString().padLeft(2, '0')}-${dateTime.month.toString().padLeft(2, '0')}-${dateTime.year}';
 
     return formattedDate;
   }
+
   @override
   Widget build(BuildContext context) {
     Widget shiftTile = Placeholder();
-    if(widget.shiftType == "Scheduled"){
+    if (widget.shiftType == "Scheduled") {
       shiftTile = ListView.builder(
         itemCount: widget.provider.scheduledShifts.length,
         itemBuilder: (context, index) {
@@ -71,10 +75,36 @@ class _ShiftTileState extends State<ShiftTile> {
                         IconButton(
                           icon: Icon(Icons.close, color: Colors.red[300]),
                           onPressed: () {
-                            widget.provider.updateShiftStatus(index, formatDate(shift.startTime.toString()), context);
+                            showDialog(
+                                context: context,
+                                builder: (context) => AlertDialog(
+                                      title: Text("Confirm Shift Cancel"),
+                                      content: Text(
+                                          "Are you sure you want to cancel this shift?"),
+                                      actions: [
+                                        InkWell(
+                                          onTap: () {
+                                            Navigator.pop(context);
+                                          },
+                                          enableFeedback: false,
+                                          child: SizedBox(
+                                            width: 50,
+                                              child: Center(child: Text("No", style: TextStyle(fontSize: 18),))),
+                                        ),
+                                        InkWell(
+                                          onTap: () {
+                                            widget.provider.updateShiftStatus(index, formatDate(shift.startTime.toString()), context);
+                                            Navigator.pop(context);
+                                          },
+                                          enableFeedback: false,
+                                          child: Text("Yes",style: TextStyle(fontSize: 18, color: Colors.pink)),
+                                        ),
+                                      ],
+                                    ));
                           },
                         ),
-                        const Text("Cancel Shift", style: TextStyle(color: Colors.grey, fontSize: 12)),
+                        const Text("Cancel Shift",
+                            style: TextStyle(color: Colors.grey, fontSize: 12)),
                       ],
                     ),
                   ],
@@ -84,28 +114,33 @@ class _ShiftTileState extends State<ShiftTile> {
                   children: [
                     Row(
                       children: [
-                        const Text("Start time:", style: TextStyle(fontWeight: FontWeight.bold)),
-                        Text(" ${widget.provider.dateFormater(shift.startTime)}"),
+                        const Text("Start time:",
+                            style: TextStyle(fontWeight: FontWeight.bold)),
+                        Text(
+                            " ${widget.provider.dateFormater(shift.startTime)}"),
                       ],
                     ),
                     const SizedBox(height: 5),
                     Row(
                       children: [
-                        const Text("End time:", style: TextStyle(fontWeight: FontWeight.bold)),
+                        const Text("End time:",
+                            style: TextStyle(fontWeight: FontWeight.bold)),
                         Text(" ${widget.provider.dateFormater(shift.endTime)}"),
                       ],
                     ),
                     const SizedBox(height: 5),
                     Row(
                       children: [
-                        const Text("Location:", style: TextStyle(fontWeight: FontWeight.bold)),
+                        const Text("Location:",
+                            style: TextStyle(fontWeight: FontWeight.bold)),
                         Text(" ${shift.location}"),
                       ],
                     ),
                     const SizedBox(height: 5),
                     Row(
                       children: [
-                        const Text("Hrs:", style: TextStyle(fontWeight: FontWeight.bold)),
+                        const Text("Hrs:",
+                            style: TextStyle(fontWeight: FontWeight.bold)),
                         Text(shift.duration),
                       ],
                     ),
@@ -115,7 +150,8 @@ class _ShiftTileState extends State<ShiftTile> {
                       children: [
                         Row(
                           children: [
-                            const Text("Rate:", style: TextStyle(fontWeight: FontWeight.bold)),
+                            const Text("Rate:",
+                                style: TextStyle(fontWeight: FontWeight.bold)),
                             Text("${shift.rate}"),
                           ],
                         ),
@@ -127,10 +163,13 @@ class _ShiftTileState extends State<ShiftTile> {
                               onChanged: (value) {
                                 setState(() {
                                   _isCheckedList[index] = value ?? false;
+                                  widget.provider.updateShiftStatus(index, formatDate(shift.startTime.toString()), context, shiftType: "Completed");
                                 });
                               },
                             ),
-                            const Text("Mark Completed", style: TextStyle(color: Colors.grey, fontSize: 12)),
+                            const Text("Mark Completed",
+                                style: TextStyle(
+                                    color: Colors.grey, fontSize: 12)),
                           ],
                         ),
                       ],
@@ -151,10 +190,9 @@ class _ShiftTileState extends State<ShiftTile> {
       );
     }
 
-
 //Cancelled
 
-    if(widget.shiftType == "Cancelled"){
+    if (widget.shiftType == "Cancelled") {
       shiftTile = ListView.builder(
         itemCount: widget.provider.cancelledShifts.length,
         itemBuilder: (context, index) {
@@ -181,36 +219,60 @@ class _ShiftTileState extends State<ShiftTile> {
                 ),
                 title: Text(
                   shift.shiftType,
-                  style: const TextStyle(color: Colors.grey, fontSize: 13, decoration: TextDecoration.lineThrough),
+                  style: const TextStyle(
+                      color: Colors.grey,
+                      fontSize: 13,
+                      decoration: TextDecoration.lineThrough),
                 ),
                 subtitle: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Row(
                       children: [
-                        const Text("Start time:", style: TextStyle(fontWeight: FontWeight.bold)),
-                        Text(" ${widget.provider.dateFormater(shift.startTime)},",style: TextStyle(color: Colors.grey, fontSize: 13, decoration: TextDecoration.lineThrough)),
+                        const Text("Start time:",
+                            style: TextStyle(fontWeight: FontWeight.bold)),
+                        Text(
+                            " ${widget.provider.dateFormater(shift.startTime)},",
+                            style: TextStyle(
+                                color: Colors.grey,
+                                fontSize: 13,
+                                decoration: TextDecoration.lineThrough)),
                       ],
                     ),
                     const SizedBox(height: 5),
                     Row(
                       children: [
-                        const Text("End time:", style: TextStyle(fontWeight: FontWeight.bold)),
-                        Text(" ${widget.provider.dateFormater(shift.endTime)}",style: TextStyle(color: Colors.grey, fontSize: 13, decoration: TextDecoration.lineThrough)),
+                        const Text("End time:",
+                            style: TextStyle(fontWeight: FontWeight.bold)),
+                        Text(" ${widget.provider.dateFormater(shift.endTime)}",
+                            style: TextStyle(
+                                color: Colors.grey,
+                                fontSize: 13,
+                                decoration: TextDecoration.lineThrough)),
                       ],
                     ),
                     const SizedBox(height: 5),
                     Row(
                       children: [
-                        const Text("Location:", style: TextStyle(fontWeight: FontWeight.bold)),
-                        Text(" ${shift.location}",style: TextStyle(color: Colors.grey, fontSize: 13, decoration: TextDecoration.lineThrough)),
+                        const Text("Location:",
+                            style: TextStyle(fontWeight: FontWeight.bold)),
+                        Text(" ${shift.location}",
+                            style: TextStyle(
+                                color: Colors.grey,
+                                fontSize: 13,
+                                decoration: TextDecoration.lineThrough)),
                       ],
                     ),
                     const SizedBox(height: 5),
                     Row(
                       children: [
-                        const Text("Hrs:", style: TextStyle(fontWeight: FontWeight.bold)),
-                        Text(shift.duration,style: TextStyle(color: Colors.grey, fontSize: 13, decoration: TextDecoration.lineThrough)),
+                        const Text("Hrs:",
+                            style: TextStyle(fontWeight: FontWeight.bold)),
+                        Text(shift.duration,
+                            style: TextStyle(
+                                color: Colors.grey,
+                                fontSize: 13,
+                                decoration: TextDecoration.lineThrough)),
                       ],
                     ),
                     const SizedBox(height: 5),
@@ -219,11 +281,17 @@ class _ShiftTileState extends State<ShiftTile> {
                       children: [
                         Row(
                           children: [
-                            const Text("Rate:", style: TextStyle(fontWeight: FontWeight.bold)),
-                            Text("${shift.rate}",style: TextStyle(color: Colors.grey, fontSize: 13, decoration: TextDecoration.lineThrough)),
+                            const Text("Rate:",
+                                style: TextStyle(fontWeight: FontWeight.bold)),
+                            Text("${shift.rate}",
+                                style: TextStyle(
+                                    color: Colors.grey,
+                                    fontSize: 13,
+                                    decoration: TextDecoration.lineThrough)),
                           ],
                         ),
-                        const Text("Cancelled",style: TextStyle(fontWeight: FontWeight.bold)),
+                        const Text("Cancelled",
+                            style: TextStyle(color: Colors.grey)),
                       ],
                     ),
                     const SizedBox(height: 30),
@@ -243,7 +311,7 @@ class _ShiftTileState extends State<ShiftTile> {
     }
 
 //Completed
-    if(widget.shiftType == "Completed"){
+    if (widget.shiftType == "Completed") {
       shiftTile = ListView.builder(
         itemCount: widget.provider.completedShifts.length,
         itemBuilder: (context, index) {
@@ -277,28 +345,33 @@ class _ShiftTileState extends State<ShiftTile> {
                   children: [
                     Row(
                       children: [
-                        const Text("Start time:", style: TextStyle(fontWeight: FontWeight.bold)),
-                        Text(" ${widget.provider.dateFormater(shift.startTime)}"),
+                        const Text("Start time:",
+                            style: TextStyle(fontWeight: FontWeight.bold)),
+                        Text(
+                            " ${widget.provider.dateFormater(shift.startTime)}"),
                       ],
                     ),
                     const SizedBox(height: 5),
                     Row(
                       children: [
-                        const Text("End time:", style: TextStyle(fontWeight: FontWeight.bold)),
+                        const Text("End time:",
+                            style: TextStyle(fontWeight: FontWeight.bold)),
                         Text(" ${widget.provider.dateFormater(shift.endTime)}"),
                       ],
                     ),
                     const SizedBox(height: 5),
                     Row(
                       children: [
-                        const Text("Location:", style: TextStyle(fontWeight: FontWeight.bold)),
+                        const Text("Location:",
+                            style: TextStyle(fontWeight: FontWeight.bold)),
                         Text(" ${shift.location}"),
                       ],
                     ),
                     const SizedBox(height: 5),
                     Row(
                       children: [
-                        const Text("Hrs:", style: TextStyle(fontWeight: FontWeight.bold)),
+                        const Text("Hrs:",
+                            style: TextStyle(fontWeight: FontWeight.bold)),
                         Text(shift.duration),
                       ],
                     ),
@@ -308,15 +381,21 @@ class _ShiftTileState extends State<ShiftTile> {
                       children: [
                         Row(
                           children: [
-                            const Text("Rate:", style: TextStyle(fontWeight: FontWeight.bold)),
+                            const Text("Rate:",
+                                style: TextStyle(fontWeight: FontWeight.bold)),
                             Text("${shift.rate}"),
                           ],
                         ),
                         Column(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            Icon(Icons.check, color: Colors.green,),
-                            const Text("Completed", style: TextStyle(color: Colors.grey, fontSize: 12)),
+                            Icon(
+                              Icons.check,
+                              color: Colors.green,
+                            ),
+                            const Text("Completed",
+                                style: TextStyle(
+                                    color: Colors.grey, fontSize: 12)),
                           ],
                         ),
                       ],
