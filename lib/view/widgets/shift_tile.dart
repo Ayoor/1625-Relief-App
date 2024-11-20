@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:relief_app/viewmodel/provider.dart';
 
 class ShiftTile extends StatefulWidget {
@@ -38,151 +40,279 @@ class _ShiftTileState extends State<ShiftTile> {
   @override
   Widget build(BuildContext context) {
     Widget shiftTile = Placeholder();
+
+    //Scheduled
     if (widget.shiftType == "Scheduled") {
       shiftTile = ListView.builder(
         itemCount: widget.provider.scheduledShifts.length,
         itemBuilder: (context, index) {
           final shift = widget.provider.scheduledShifts[index];
 
-          return Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Container(
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(8),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black12,
-                    blurRadius: 10,
-                    offset: Offset(0, 4),
-                  ),
-                ],
-              ),
-              child: ListTile(
-                leading: Image.asset(
-                  "lib/assets/1625_logo.png",
-                  width: 50,
+          return InkWell(
+            splashColor: Colors.transparent,
+            highlightColor: Colors.transparent,
+            onLongPress: () {
+              showMaterialModalBottomSheet(
+                backgroundColor: Colors.white,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20.0), // Adjust the radius for desired curvature
                 ),
-                title: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      shift.shiftType,
-                      style: const TextStyle(color: Colors.grey, fontSize: 13),
-                    ),
-                    Column(
-                      children: [
-                        IconButton(
-                          icon: Icon(Icons.close, color: Colors.red[300]),
-                          onPressed: () {
-                            showDialog(
-                                context: context,
-                                builder: (context) => AlertDialog(
-                                      title: Text("Confirm Shift Cancel"),
+                context: context,
+                builder: (bottomSheetContext) => Padding(
+                    padding: const EdgeInsets.all(10),
+                    child: SizedBox(
+                      height: MediaQuery.of(context).size.height / 6,
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Column(
+                          children: [
+                            //delete
+                            InkWell(
+                              splashColor: Colors.transparent,
+                              highlightColor: Colors.transparent,
+                              onTap: () {
+                                showDialog(
+                                    context: context,
+                                    builder: (context) => AlertDialog(
+                                      title: Text(
+                                          "Irreversible Action"),
                                       content: Text(
-                                          "Are you sure you want to cancel this shift?"),
+                                          "Are you sure you want to Delete this shift?"),
                                       actions: [
                                         InkWell(
                                           onTap: () {
+                                            Navigator.pop(bottomSheetContext);
                                             Navigator.pop(context);
                                           },
-                                          enableFeedback: false,
+                                          splashColor: Colors.transparent,
+                                          highlightColor: Colors.transparent,
                                           child: SizedBox(
-                                            width: 50,
-                                              child: Center(child: Text("No", style: TextStyle(fontSize: 18),))),
+                                              width: 50,
+                                              child: Center(
+                                                  child: Text(
+                                                    "No",
+                                                    style: TextStyle(
+                                                        fontSize: 18),
+                                                  ))),
                                         ),
                                         InkWell(
+                                          splashColor: Colors.transparent,
+                                          highlightColor: Colors.transparent,
                                           onTap: () {
-                                            widget.provider.updateShiftStatus(index, formatDate(shift.startTime.toString()), context);
+                                            Fluttertoast.showToast(msg: "Deleted");
+                                            Navigator.pop(bottomSheetContext);
                                             Navigator.pop(context);
                                           },
                                           enableFeedback: false,
-                                          child: Text("Yes",style: TextStyle(fontSize: 18, color: Colors.pink)),
+                                          child: Text("Yes",
+                                              style: TextStyle(
+                                                  fontSize: 18,
+                                                  color:
+                                                  Colors.pink)),
                                         ),
                                       ],
                                     ));
-                          },
-                        ),
-                        const Text("Cancel Shift",
-                            style: TextStyle(color: Colors.grey, fontSize: 12)),
-                      ],
-                    ),
-                  ],
-                ),
-                subtitle: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        const Text("Start time:",
-                            style: TextStyle(fontWeight: FontWeight.bold)),
-                        Text(
-                            " ${widget.provider.dateFormater(shift.startTime)}"),
-                      ],
-                    ),
-                    const SizedBox(height: 5),
-                    Row(
-                      children: [
-                        const Text("End time:",
-                            style: TextStyle(fontWeight: FontWeight.bold)),
-                        Text(" ${widget.provider.dateFormater(shift.endTime)}"),
-                      ],
-                    ),
-                    const SizedBox(height: 5),
-                    Row(
-                      children: [
-                        const Text("Location:",
-                            style: TextStyle(fontWeight: FontWeight.bold)),
-                        Text(" ${shift.location}"),
-                      ],
-                    ),
-                    const SizedBox(height: 5),
-                    Row(
-                      children: [
-                        const Text("Hrs:",
-                            style: TextStyle(fontWeight: FontWeight.bold)),
-                        Text(shift.duration),
-                      ],
-                    ),
-                    const SizedBox(height: 5),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Row(
-                          children: [
-                            const Text("Rate:",
-                                style: TextStyle(fontWeight: FontWeight.bold)),
-                            Text("${shift.rate}"),
-                          ],
-                        ),
-                        Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Checkbox(
-                              value: _isCheckedList[index],
-                              onChanged: (value) {
-                                setState(() {
-                                  _isCheckedList[index] = value ?? false;
-                                  widget.provider.updateShiftStatus(index, formatDate(shift.startTime.toString()), context, shiftType: "Completed");
-                                });
+
+
                               },
+                              child: Row(
+                                children: [
+                                  Icon(
+                                    Icons.delete,
+                                    color: Colors.pink,
+                                  ),
+                                  Padding(
+                                    padding:
+                                        const EdgeInsets.only(left: 8.0),
+                                    child: Text(
+                                      "Delete",
+                                      style: TextStyle(
+                                          fontSize: 18, color: Colors.pink),
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
-                            const Text("Mark Completed",
-                                style: TextStyle(
-                                    color: Colors.grey, fontSize: 12)),
+                            SizedBox(height: 20,),
+
+                            InkWell(
+                                onTap: () {
+                                  showDialog(
+                                      context: context,
+                                      builder: (context) => AlertDialog(
+                                        title: Text(
+                                            "Confirm Shift Cancel"),
+                                        content: Text(
+                                            "Are you sure you want to cancel this shift?"),
+                                        actions: [
+                                          InkWell(
+                                            onTap: () {
+                                              Navigator.pop(bottomSheetContext);
+                                              Navigator.pop(context);
+                                            },
+                                            splashColor: Colors.transparent,
+                                            highlightColor: Colors.transparent,
+                                            child: SizedBox(
+                                                width: 50,
+                                                child: Center(
+                                                    child: Text(
+                                                      "No",
+                                                      style: TextStyle(
+                                                          fontSize: 18),
+                                                    ))),
+                                          ),
+                                          InkWell(
+                                            splashColor: Colors.transparent,
+                                            highlightColor: Colors.transparent,
+                                            onTap: () {
+                                              widget.provider
+                                                  .updateShiftStatus(
+                                                  index,
+                                                  formatDate(shift
+                                                      .startTime
+                                                      .toString()),
+                                                  context);
+                                              Navigator.pop(bottomSheetContext);
+                                              Navigator.pop(context);
+                                            },
+                                            enableFeedback: false,
+                                            child: Text("Yes",
+                                                style: TextStyle(
+                                                    fontSize: 18,
+                                                    color:
+                                                    Colors.pink)),
+                                          ),
+                                        ],
+                                      ));
+                                },
+
+                              //delete
+                              child: Row(
+                                children: [
+                                  Icon(Icons.close,
+                                        color: Colors.red[300]),
+                                  Padding(
+                                    padding:
+                                    const EdgeInsets.only(left: 8.0),
+                                    child: Text(
+                                      "Cancel",
+                                      style: TextStyle(
+                                          fontSize: 18, color: Colors.pink),
+                                    ),
+                                  )
+                                ],
+                              ),
+                            )
                           ],
                         ),
-                      ],
+                      ),
+                    )),
+              );
+            },
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(8),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black12,
+                      blurRadius: 10,
+                      offset: Offset(0, 4),
                     ),
-                    const SizedBox(height: 30),
                   ],
                 ),
-                contentPadding: const EdgeInsets.all(10),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
+                child: ListTile(
+                  leading: Image.asset(
+                    "lib/assets/1625_logo.png",
+                    width: 50,
+                  ),
+                  title: Text(
+                    shift.shiftType,
+                    style: const TextStyle(color: Colors.grey, fontSize: 13),
+                  ),
+                  subtitle: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          const Text("Start time:",
+                              style: TextStyle(fontWeight: FontWeight.bold)),
+                          Text(
+                              " ${widget.provider.dateFormater(shift.startTime)}"),
+                        ],
+                      ),
+                      const SizedBox(height: 5),
+                      Row(
+                        children: [
+                          const Text("End time:",
+                              style: TextStyle(fontWeight: FontWeight.bold)),
+                          Text(
+                              " ${widget.provider.dateFormater(shift.endTime)}"),
+                        ],
+                      ),
+                      const SizedBox(height: 5),
+                      Row(
+                        children: [
+                          const Text("Location:",
+                              style: TextStyle(fontWeight: FontWeight.bold)),
+                          Text(" ${shift.location}"),
+                        ],
+                      ),
+                      const SizedBox(height: 5),
+                      Row(
+                        children: [
+                          const Text("Hrs:",
+                              style: TextStyle(fontWeight: FontWeight.bold)),
+                          Text(shift.duration),
+                        ],
+                      ),
+                      const SizedBox(height: 5),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Row(
+                            children: [
+                              const Text("Rate:",
+                                  style:
+                                      TextStyle(fontWeight: FontWeight.bold)),
+                              Text("${shift.rate}"),
+                            ],
+                          ),
+                          Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Checkbox(
+                                value: _isCheckedList[index],
+                                onChanged: (value) {
+                                  setState(() {
+                                    _isCheckedList[index] = value ?? false;
+                                    widget.provider.updateShiftStatus(
+                                        index,
+                                        formatDate(shift.startTime.toString()),
+                                        context,
+                                        shiftType: "Completed");
+                                  });
+                                },
+                              ),
+                              const Text("Mark Completed",
+                                  style: TextStyle(
+                                      color: Colors.grey, fontSize: 12)),
+                            ],
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 30),
+                    ],
+                  ),
+                  contentPadding: const EdgeInsets.all(10),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  tileColor: Colors.white,
+                  selectedTileColor: Colors.grey[100],
                 ),
-                tileColor: Colors.white,
-                selectedTileColor: Colors.grey[100],
               ),
             ),
           );

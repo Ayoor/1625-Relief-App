@@ -2,7 +2,10 @@ update shift adding UI --done
 Implement Shift Adding Function and implement toastification. --done
 delete shifts by long press
 completed shift by month
+next shift time auto = 8 hrs
 auto arrange shifts by date.
+disable future shift as completed
+fix shift saving error
 
 Income screen (Setting a budget, total amount earned, total amount  to be earned, total expected gross,
 Overview (Bar Chart , total shifts done in the month, total shifts allocated, total shifts remaining to target
