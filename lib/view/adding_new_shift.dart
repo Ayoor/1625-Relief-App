@@ -479,7 +479,7 @@ class _NewShiftState extends State<NewShift> {
                     initialDateTime: minDate(timeDetail).add(
                         Duration(minutes: 1)),
                     maximumDate: DateTime.now().add(Duration(days: 40)),
-                    minimumDate: minDate(timeDetail),
+                    minimumDate: DateTime.now().add(Duration(minutes: 1)),
                   ),
                 ),
                 SizedBox(height: 10),
@@ -504,7 +504,13 @@ class _NewShiftState extends State<NewShift> {
     if (timeDetail == "end") {
       return startTime!.add(Duration(hours: 8));
     }
-    return DateTime.now();
+    if(startTime!=null) {
+      return startTime!;
+    }
+    else {
+      return DateTime.now();
+    }
+
   }
 
   void reset(BuildContext context, List<Shifts> shifts) {
