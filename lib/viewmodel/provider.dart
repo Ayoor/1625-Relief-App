@@ -22,7 +22,7 @@ class AppProvider extends ChangeNotifier {
 
   List<Shifts> get cancelledShifts => _cancelledShifts;
 
-  final List<Shifts> _completedShifts = ShiftsData().completedShifts;
+  List<Shifts> _completedShifts = ShiftsData().completedShifts;
 
   List<Shifts> get completedShifts => _completedShifts;
 
@@ -202,6 +202,7 @@ class AppProvider extends ChangeNotifier {
                   dateofAction: shiftData['dateofAction'],
                 );
 
+
                 _scheduledShifts.add(shift);
               } catch (e) {
                 print("Error parsing shift data for date $dateKey: $e");
@@ -244,10 +245,14 @@ class AppProvider extends ChangeNotifier {
               }
             }
           });
+          _scheduledShifts.sort((a, b) => a.startTime.compareTo(b.startTime));
+          _cancelledShifts.sort((a, b) => a.startTime.compareTo(b.startTime));
+          _completedShifts.sort((a, b) => a.startTime.compareTo(b.startTime));
+         _completedShifts= _completedShifts.reversed.toList();
 
-          allShifts.add(_scheduledShifts);
-          allShifts.add(_completedShifts);
-          allShifts.add(_cancelledShifts);
+          // allShifts.add(_scheduledShifts);
+          // allShifts.add(_completedShifts);
+          // allShifts.add(_cancelledShifts);
 
           notifyListeners();
         } else {

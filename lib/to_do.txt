@@ -2,9 +2,8 @@ update shift adding UI --done
 Implement Shift Adding Function and implement toastification. --done
 delete shifts by long press --done
 add dateofAction -- done
-arrange completed shift by date, and divide by month
 next shift time auto = 8 hrs --done
-auto arrange shifts by date.
+auto arrange shifts by date.--done
 disable future shift as completed
 fix shift saving error --done
 -make bottomsheet cover the bottomnavbar

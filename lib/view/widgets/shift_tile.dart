@@ -181,241 +181,255 @@ class _ShiftTileState extends State<ShiftTile> {
 //Cancelled
 
     if (widget.shiftType == "Cancelled") {
-      shiftTile = ListView.builder(
-        itemCount: widget.provider.cancelledShifts.length,
-        itemBuilder: (context, index) {
-          final shift = widget.provider.cancelledShifts[index];
+      shiftTile = RefreshIndicator(
+        color: Colors.blue,
+        backgroundColor: Colors.white,
+        onRefresh: () async {
+          widget.provider.loadData(context);
+        },
+        child: ListView.builder(
+          itemCount: widget.provider.cancelledShifts.length,
+          itemBuilder: (context, index) {
+            final shift = widget.provider.cancelledShifts[index];
 
-          return InkWell(
-            highlightColor: Colors.transparent,
-            splashColor: Colors.transparent,
-            onLongPress: (){
-              canceDeleteShift(index, shift, "Cancelled");
-            },
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Container(
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(8),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black12,
-                      blurRadius: 10,
-                      offset: Offset(0, 4),
-                    ),
-                  ],
-                ),
-                child: ListTile(
-                  leading: Image.asset(
-                    "lib/assets/1625_logo.png",
-                    width: 50,
-                  ),
-                  title: Text(
-                    shift.shiftType,
-                    style: const TextStyle(
-                        color: Colors.grey,
-                        fontSize: 13,
-                        decoration: TextDecoration.lineThrough),
-                  ),
-                  subtitle: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [SizedBox(height: 10,),
-                          const Text("Start time:",
-                              style: TextStyle(fontWeight: FontWeight.bold)),
-                          Text(
-                              " ${widget.provider.dateFormater(shift.startTime)},",
-                              style: TextStyle(
-                                  color: Colors.grey,
-                                  fontSize: 13,
-                                  decoration: TextDecoration.lineThrough)),
-                        ],
+            return InkWell(
+              highlightColor: Colors.transparent,
+              splashColor: Colors.transparent,
+              onLongPress: (){
+                canceDeleteShift(index, shift, "Cancelled");
+              },
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(8),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black12,
+                        blurRadius: 10,
+                        offset: Offset(0, 4),
                       ),
-                      const SizedBox(height: 5),
-                      Row(
-                        children: [
-                          const Text("End time:",
-                              style: TextStyle(fontWeight: FontWeight.bold)),
-                          Text(" ${widget.provider.dateFormater(shift.endTime)}",
-                              style: TextStyle(
-                                  color: Colors.grey,
-                                  fontSize: 13,
-                                  decoration: TextDecoration.lineThrough)),
-                        ],
-                      ),
-                      const SizedBox(height: 5),
-                      Row(
-                        children: [
-                          const Text("Location:",
-                              style: TextStyle(fontWeight: FontWeight.bold)),
-                          Text(" ${shift.location}",
-                              style: TextStyle(
-                                  color: Colors.grey,
-                                  fontSize: 13,
-                                  decoration: TextDecoration.lineThrough)),
-                        ],
-                      ),
-                      const SizedBox(height: 5),
-                      Row(
-                        children: [
-                          const Text("Hrs:",
-                              style: TextStyle(fontWeight: FontWeight.bold)),
-                          Text(shift.duration,
-                              style: TextStyle(
-                                  color: Colors.grey,
-                                  fontSize: 13,
-                                  decoration: TextDecoration.lineThrough)),
-                        ],
-                      ),
-                      const SizedBox(height: 5),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Row(
-                            children: [
-                              const Text("Rate:",
-                                  style: TextStyle(fontWeight: FontWeight.bold)),
-                              Text("${shift.rate}",
-                                  style: TextStyle(
-                                      color: Colors.grey,
-                                      fontSize: 13,
-                                      decoration: TextDecoration.lineThrough)),
-                            ],
-                          ),
-                          const Text("Cancelled",
-                              style: TextStyle(color: Colors.grey)),
-                        ],
-                      ),
-                      const SizedBox(height: 30),
                     ],
                   ),
-                  contentPadding: const EdgeInsets.all(10),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
+                  child: ListTile(
+                    leading: Image.asset(
+                      "lib/assets/1625_logo.png",
+                      width: 50,
+                    ),
+                    title: Text(
+                      shift.shiftType,
+                      style: const TextStyle(
+                          color: Colors.grey,
+                          fontSize: 13,
+                          decoration: TextDecoration.lineThrough),
+                    ),
+                    subtitle: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [SizedBox(height: 10,),
+                            const Text("Start time:",
+                                style: TextStyle(fontWeight: FontWeight.bold)),
+                            Text(
+                                " ${widget.provider.dateFormater(shift.startTime)},",
+                                style: TextStyle(
+                                    color: Colors.grey,
+                                    fontSize: 13,
+                                    decoration: TextDecoration.lineThrough)),
+                          ],
+                        ),
+                        const SizedBox(height: 5),
+                        Row(
+                          children: [
+                            const Text("End time:",
+                                style: TextStyle(fontWeight: FontWeight.bold)),
+                            Text(" ${widget.provider.dateFormater(shift.endTime)}",
+                                style: TextStyle(
+                                    color: Colors.grey,
+                                    fontSize: 13,
+                                    decoration: TextDecoration.lineThrough)),
+                          ],
+                        ),
+                        const SizedBox(height: 5),
+                        Row(
+                          children: [
+                            const Text("Location:",
+                                style: TextStyle(fontWeight: FontWeight.bold)),
+                            Text(" ${shift.location}",
+                                style: TextStyle(
+                                    color: Colors.grey,
+                                    fontSize: 13,
+                                    decoration: TextDecoration.lineThrough)),
+                          ],
+                        ),
+                        const SizedBox(height: 5),
+                        Row(
+                          children: [
+                            const Text("Hrs:",
+                                style: TextStyle(fontWeight: FontWeight.bold)),
+                            Text(shift.duration,
+                                style: TextStyle(
+                                    color: Colors.grey,
+                                    fontSize: 13,
+                                    decoration: TextDecoration.lineThrough)),
+                          ],
+                        ),
+                        const SizedBox(height: 5),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Row(
+                              children: [
+                                const Text("Rate:",
+                                    style: TextStyle(fontWeight: FontWeight.bold)),
+                                Text("${shift.rate}",
+                                    style: TextStyle(
+                                        color: Colors.grey,
+                                        fontSize: 13,
+                                        decoration: TextDecoration.lineThrough)),
+                              ],
+                            ),
+                            const Text("Cancelled",
+                                style: TextStyle(color: Colors.grey)),
+                          ],
+                        ),
+                        const SizedBox(height: 30),
+                      ],
+                    ),
+                    contentPadding: const EdgeInsets.all(10),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    tileColor: Colors.white,
+                    selectedTileColor: Colors.grey[100],
                   ),
-                  tileColor: Colors.white,
-                  selectedTileColor: Colors.grey[100],
                 ),
               ),
-            ),
-          );
-        },
+            );
+          },
+        ),
       );
     }
 
 //Completed
     if (widget.shiftType == "Completed") {
-      shiftTile = ListView.builder(
-        itemCount: widget.provider.completedShifts.length,
-        itemBuilder: (context, index) {
-          final shift = widget.provider.completedShifts[index];
+      shiftTile = RefreshIndicator(
+        color: Colors.blue,
+        backgroundColor: Colors.white,
+        onRefresh: () async {
+          widget.provider.loadData(context);
+        },
+        child: ListView.builder(
+          itemCount: widget.provider.completedShifts.length,
+          itemBuilder: (context, index) {
+            final shift = widget.provider.completedShifts[index];
 
-          return InkWell(
-            highlightColor: Colors.transparent,
-            splashColor: Colors.transparent,
-            onLongPress: (){
-              canceDeleteShift(index, shift, "Completed");
+            return InkWell(
+              highlightColor: Colors.transparent,
+              splashColor: Colors.transparent,
+              onLongPress: (){
+                canceDeleteShift(index, shift, "Completed");
 
-            },
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Container(
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(8),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black12,
-                      blurRadius: 10,
-                      offset: Offset(0, 4),
-                    ),
-                  ],
-                ),
-                child: ListTile(
-                  leading: Image.asset(
-                    "lib/assets/1625_logo.png",
-                    width: 50,
-                  ),
-                  title: Text(
-                    shift.shiftType,
-                    style: const TextStyle(color: Colors.grey, fontSize: 13),
-                  ),
-                  subtitle: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [SizedBox(height: 10,),
-                          const Text("Start time:",
-                              style: TextStyle(fontWeight: FontWeight.bold)),
-                          Text(
-                              " ${widget.provider.dateFormater(shift.startTime)}"),
-                        ],
+              },
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(8),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black12,
+                        blurRadius: 10,
+                        offset: Offset(0, 4),
                       ),
-                      const SizedBox(height: 5),
-                      Row(
-                        children: [
-                          const Text("End time:",
-                              style: TextStyle(fontWeight: FontWeight.bold)),
-                          Text(" ${widget.provider.dateFormater(shift.endTime)}"),
-                        ],
-                      ),
-                      const SizedBox(height: 5),
-                      Row(
-                        children: [
-                          const Text("Location:",
-                              style: TextStyle(fontWeight: FontWeight.bold)),
-                          Text(" ${shift.location}"),
-                        ],
-                      ),
-                      const SizedBox(height: 5),
-                      Row(
-                        children: [
-                          const Text("Hrs:",
-                              style: TextStyle(fontWeight: FontWeight.bold)),
-                          Text(shift.duration),
-                        ],
-                      ),
-                      const SizedBox(height: 5),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Row(
-                            children: [
-                              const Text("Rate:",
-                                  style: TextStyle(fontWeight: FontWeight.bold)),
-                              Text("${shift.rate}"),
-                            ],
-                          ),
-                          Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Icon(
-                                Icons.check,
-                                color: Colors.green,
-                              ),
-                              const Text("Completed",
-                                  style: TextStyle(
-                                      color: Colors.grey, fontSize: 12)),
-                            ],
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 30),
                     ],
                   ),
-                  contentPadding: const EdgeInsets.all(10),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
+                  child: ListTile(
+                    leading: Image.asset(
+                      "lib/assets/1625_logo.png",
+                      width: 50,
+                    ),
+                    title: Text(
+                      shift.shiftType,
+                      style: const TextStyle(color: Colors.grey, fontSize: 13),
+                    ),
+                    subtitle: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [SizedBox(height: 10,),
+                            const Text("Start time:",
+                                style: TextStyle(fontWeight: FontWeight.bold)),
+                            Text(
+                                " ${widget.provider.dateFormater(shift.startTime)}"),
+                          ],
+                        ),
+                        const SizedBox(height: 5),
+                        Row(
+                          children: [
+                            const Text("End time:",
+                                style: TextStyle(fontWeight: FontWeight.bold)),
+                            Text(" ${widget.provider.dateFormater(shift.endTime)}"),
+                          ],
+                        ),
+                        const SizedBox(height: 5),
+                        Row(
+                          children: [
+                            const Text("Location:",
+                                style: TextStyle(fontWeight: FontWeight.bold)),
+                            Text(" ${shift.location}"),
+                          ],
+                        ),
+                        const SizedBox(height: 5),
+                        Row(
+                          children: [
+                            const Text("Hrs:",
+                                style: TextStyle(fontWeight: FontWeight.bold)),
+                            Text(shift.duration),
+                          ],
+                        ),
+                        const SizedBox(height: 5),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Row(
+                              children: [
+                                const Text("Rate:",
+                                    style: TextStyle(fontWeight: FontWeight.bold)),
+                                Text("${shift.rate}"),
+                              ],
+                            ),
+                            Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(
+                                  Icons.check,
+                                  color: Colors.green,
+                                ),
+                                const Text("Completed",
+                                    style: TextStyle(
+                                        color: Colors.grey, fontSize: 12)),
+                              ],
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 30),
+                      ],
+                    ),
+                    contentPadding: const EdgeInsets.all(10),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    tileColor: Colors.white,
+                    selectedTileColor: Colors.grey[100],
                   ),
-                  tileColor: Colors.white,
-                  selectedTileColor: Colors.grey[100],
                 ),
               ),
-            ),
-          );
-        },
+            );
+          },
+        ),
       );
     }
 
