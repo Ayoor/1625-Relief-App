@@ -44,7 +44,7 @@ class AppProvider extends ChangeNotifier {
   }
 
   void updateShiftStatus(int index, String key, BuildContext context,
-      {String shiftType = ""}) async {
+      {String shiftType = "", String endTime = ""}) async {
     try {
       // Update the status of the shift locally
       // shifts[index].status = "Cancelled";
@@ -52,13 +52,6 @@ class AppProvider extends ChangeNotifier {
       // Reference to the specific shift in the Firebase Database
       final DatabaseReference dbRef =
           FirebaseDatabase.instance.ref().child("Shifts/$key");
-
-      // Update only the status field in Firebase
-      // if (shiftType == "Completed") {
-      //   await dbRef.update({"status": "Completed"});
-      // } else {
-      //   await dbRef.update({"status": "Cancelled"});
-      // }
 
       switch (shiftType) {
         case "Scheduled":
@@ -68,14 +61,27 @@ class AppProvider extends ChangeNotifier {
           await dbRef.update({"status": "Cancelled"});
           break;
         case "Completed":
+          print (endTime);
+          DateTime shiftEnd = DateTime.parse(endTime);
+          if (shiftEnd.isAfter(DateTime.now())) {
+            showMessage(
+              context: context,
+              message: "Oops! Too early to complete shift",
+              type: ToastificationType.error,
+              bgColor: Colors.red[400]!,
+              icon: Icons.error,
+            );
+            return;
+          }
           await dbRef.update({"status": "Completed"});
           break;
         case "Deleted":
           await dbRef.update({"status": "Deleted"});
           break;
-          case "Revert":
-            await dbRef.update({"status": "Scheduled"});
-            break;
+
+        case "Revert":
+          await dbRef.update({"status": "Scheduled"});
+          break;
       } // Notify listeners to update UI
       notifyListeners();
 
@@ -153,7 +159,7 @@ class AppProvider extends ChangeNotifier {
         duration: duration(context, start, end),
         status: status,
         dateofAction: dateFormater(DateTime.now()),
-      )   );
+      ));
       notifyListeners();
 
       showMessage(

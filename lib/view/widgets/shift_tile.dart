@@ -148,7 +148,7 @@ class _ShiftTileState extends State<ShiftTile> {
                                           index,
                                           formatDate(shift.startTime.toString()),
                                           context,
-                                          shiftType: "Completed");
+                                          shiftType: "Completed", endTime: shift.endTime.toString());
 
                                     });
                                   },
