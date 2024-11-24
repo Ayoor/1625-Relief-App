@@ -10,7 +10,7 @@ import '../model/shifts.dart';
 class AppProvider extends ChangeNotifier {
   DateTime _today = DateTime.now();
   Map<String, Shifts> newShift = {};
-  List <List<Shifts>> allShifts = [];
+  List<List<Shifts>> allShifts = [];
 
   // List<Shifts> _addedShifts = [];
   List<Shifts> shifts = [];
@@ -43,7 +43,8 @@ class AppProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void updateShiftStatus(int index, String key, BuildContext context, {String shiftType = ""}) async {
+  void updateShiftStatus(int index, String key, BuildContext context,
+      {String shiftType = ""}) async {
     try {
       // Update the status of the shift locally
       // shifts[index].status = "Cancelled";
@@ -53,14 +54,29 @@ class AppProvider extends ChangeNotifier {
           FirebaseDatabase.instance.ref().child("Shifts/$key");
 
       // Update only the status field in Firebase
-      if(shiftType == "Completed") {
-        await dbRef.update({"status": "Completed"});
-      }
-      else {
-        await dbRef.update({"status": "Cancelled"});
-      }
+      // if (shiftType == "Completed") {
+      //   await dbRef.update({"status": "Completed"});
+      // } else {
+      //   await dbRef.update({"status": "Cancelled"});
+      // }
 
-      // Notify listeners to update UI
+      switch (shiftType) {
+        case "Scheduled":
+          await dbRef.update({"status": "Scheduled"});
+          break;
+        case "Cancelled":
+          await dbRef.update({"status": "Cancelled"});
+          break;
+        case "Completed":
+          await dbRef.update({"status": "Completed"});
+          break;
+        case "Deleted":
+          await dbRef.update({"status": "Deleted"});
+          break;
+          case "Revert":
+            await dbRef.update({"status": "Scheduled"});
+            break;
+      } // Notify listeners to update UI
       notifyListeners();
 
       // Show success message if the context is still mounted
@@ -129,13 +145,15 @@ class AppProvider extends ChangeNotifier {
     } else {
       // If not a duplicate, add the shift
       shifts.add(Shifts(
-          startTime: start,
-          endTime: end,
-          location: location,
-          shiftType: getShiftTypeAndRate(start, location).item1,
-          rate: getShiftTypeAndRate(start, location).item2,
-          duration: duration(context, start, end),
-          status: status));
+        startTime: start,
+        endTime: end,
+        location: location,
+        shiftType: getShiftTypeAndRate(start, location).item1,
+        rate: getShiftTypeAndRate(start, location).item2,
+        duration: duration(context, start, end),
+        status: status,
+        dateofAction: dateFormater(DateTime.now()),
+      )   );
       notifyListeners();
 
       showMessage(
@@ -147,8 +165,7 @@ class AppProvider extends ChangeNotifier {
     }
   }
 
-  Future  fetchShifts(
-      BuildContext context) async {
+  Future fetchShifts(BuildContext context) async {
     final DatabaseReference dbRef = FirebaseDatabase.instance.ref();
 
     try {
@@ -166,59 +183,60 @@ class AppProvider extends ChangeNotifier {
           _cancelledShifts.clear();
 
           dateMap.forEach((dateKey, shiftData) {
-              if (shiftData['status'] == 'Scheduled') {
-                try {
-                  Shifts shift = Shifts(
-                    startTime: DateTime.parse(shiftData['startTime']),
-                    endTime: DateTime.parse(shiftData['endTime']),
-                    location: shiftData['location'],
-                    shiftType: shiftData['shiftType'],
-                    rate: shiftData['rate'].toDouble(),
-                    duration: shiftData['duration'],
-                    status: shiftData['status'],
-                  );
+            if (shiftData['status'] == 'Scheduled') {
+              try {
+                Shifts shift = Shifts(
+                  startTime: DateTime.parse(shiftData['startTime']),
+                  endTime: DateTime.parse(shiftData['endTime']),
+                  location: shiftData['location'],
+                  shiftType: shiftData['shiftType'],
+                  rate: shiftData['rate'].toDouble(),
+                  duration: shiftData['duration'],
+                  status: shiftData['status'],
+                  dateofAction: shiftData['dateofAction'],
+                );
 
-                  _scheduledShifts.add(shift);
-                } catch (e) {
-                  print("Error parsing shift data for date $dateKey: $e");
-                }
+                _scheduledShifts.add(shift);
+              } catch (e) {
+                print("Error parsing shift data for date $dateKey: $e");
               }
+            }
 
-              if (shiftData['status'] == 'Cancelled') {
-                try {
-                  Shifts shift = Shifts(
-                    startTime: DateTime.parse(shiftData['startTime']),
-                    endTime: DateTime.parse(shiftData['endTime']),
-                    location: shiftData['location'],
-                    shiftType: shiftData['shiftType'],
-                    rate: shiftData['rate'].toDouble(),
-                    duration: shiftData['duration'],
-                    status: shiftData['status'],
-                  );
-                  _cancelledShifts.add(shift);
-                } catch (e) {
-                  print("Error parsing shift data for date $dateKey: $e");
-                }
+            if (shiftData['status'] == 'Cancelled') {
+              try {
+                Shifts shift = Shifts(
+                  startTime: DateTime.parse(shiftData['startTime']),
+                  endTime: DateTime.parse(shiftData['endTime']),
+                  location: shiftData['location'],
+                  shiftType: shiftData['shiftType'],
+                  rate: shiftData['rate'].toDouble(),
+                  duration: shiftData['duration'],
+                  status: shiftData['status'],
+                  dateofAction: shiftData['dateofAction'],
+                );
+                _cancelledShifts.add(shift);
+              } catch (e) {
+                print("Error parsing shift data for date $dateKey: $e");
               }
+            }
 
-              if (shiftData['status'] == 'Completed') {
-                try {
-                  Shifts shift = Shifts(
-                    startTime: DateTime.parse(shiftData['startTime']),
-                    endTime: DateTime.parse(shiftData['endTime']),
-                    location: shiftData['location'],
-                    shiftType: shiftData['shiftType'],
-                    rate: shiftData['rate'].toDouble(),
-                    duration: shiftData['duration'],
-                    status: shiftData['status'],
-                  );
-                  _completedShifts.add(shift);
-                }
-                catch (e) {
-                  print("Error parsing shift data for date $dateKey: $e");
-                }
+            if (shiftData['status'] == 'Completed') {
+              try {
+                Shifts shift = Shifts(
+                  startTime: DateTime.parse(shiftData['startTime']),
+                  endTime: DateTime.parse(shiftData['endTime']),
+                  location: shiftData['location'],
+                  shiftType: shiftData['shiftType'],
+                  rate: shiftData['rate'].toDouble(),
+                  duration: shiftData['duration'],
+                  status: shiftData['status'],
+                  dateofAction: shiftData['dateofAction'],
+                );
+                _completedShifts.add(shift);
+              } catch (e) {
+                print("Error parsing shift data for date $dateKey: $e");
               }
-
+            }
           });
 
           allShifts.add(_scheduledShifts);
@@ -362,7 +380,16 @@ class AppProvider extends ChangeNotifier {
     return "${duration.inHours} hours, ${duration.inMinutes.remainder(60)} minutes";
   }
 
-// Shifts getSelectedDayShift(DateTime selectedDate){
-//      return _addedShifts[selectedDate];
-// }
+  bool isLoading = true;
+
+  Future<void> loadData(BuildContext context) async {
+    try {
+      await fetchShifts(context);
+    } catch (e) {
+      // Handle error if needed
+    } finally {
+      isLoading = false;
+      notifyListeners();
+    }
+  }
 }

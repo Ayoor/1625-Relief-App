@@ -12,18 +12,19 @@ class AllShifts extends StatefulWidget {
   State<AllShifts> createState() => _AllShiftsState();
 }
 
-class _AllShiftsState extends State<AllShifts> with SingleTickerProviderStateMixin {
+class _AllShiftsState extends State<AllShifts>
+    with SingleTickerProviderStateMixin {
   late TabController _tabController;
+
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 3, vsync: this);
 
-    // Fetch scheduled shifts when the widget is first created.
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      Provider.of<AppProvider>(context, listen: false).fetchShifts(context);
-    });
+    Provider.of<AppProvider>(context, listen: false)
+        .loadData(context);
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -33,7 +34,8 @@ class _AllShiftsState extends State<AllShifts> with SingleTickerProviderStateMix
           width: 150,
           child: FloatingActionButton(
             onPressed: () async {
-              Navigator.push(context, MaterialPageRoute(builder: (context) => const NewShift()));
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => const NewShift()));
             },
             backgroundColor: Colors.orange,
             child: const Text(
@@ -52,9 +54,15 @@ class _AllShiftsState extends State<AllShifts> with SingleTickerProviderStateMix
             indicatorColor: Colors.orange,
             controller: _tabController,
             tabs: const [
-              Tab(child: Text("Scheduled", style: TextStyle(color: Colors.white))),
-              Tab(child: Text("Completed", style: TextStyle(color: Colors.white))),
-              Tab(child: Text("Cancelled", style: TextStyle(color: Colors.white))),
+              Tab(
+                  child:
+                      Text("Scheduled", style: TextStyle(color: Colors.white))),
+              Tab(
+                  child:
+                      Text("Completed", style: TextStyle(color: Colors.white))),
+              Tab(
+                  child:
+                      Text("Cancelled", style: TextStyle(color: Colors.white))),
             ],
           ),
         ),
@@ -64,19 +72,34 @@ class _AllShiftsState extends State<AllShifts> with SingleTickerProviderStateMix
             controller: _tabController,
             children: [
               // Tab 1 - Scheduled Shifts
+              if (!provider.isLoading)
               provider.scheduledShifts.isEmpty
                   ? const Center(child: Text("No shift Scheduled yet"))
-                  : ShiftTile(provider: provider, shiftType: "Scheduled",),
+                  : ShiftTile(
+                      provider: provider,
+                      shiftType: "Scheduled",
+                    ),
+              if(provider.isLoading)
+                Column(mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    SizedBox(height:30, width:30,child: CircularProgressIndicator(color: Colors.orange, backgroundColor: Colors.blue,)),
+                    SizedBox(height: 10,),Text("Fetching shifts", style: TextStyle(fontWeight: FontWeight.bold),)
+                  ],
+                ),
 
               // Tab 2 - Completed Shifts
               provider.completedShifts.isEmpty
-                  ? const Center(child: Text("You have not completed any shift yet"))
+                  ? const Center(
+                      child: Text("You have not completed any shift yet"))
                   : ShiftTile(provider: provider, shiftType: "Completed"),
 
               // Tab 3 - Cancelled Shifts
               provider.cancelledShifts.isEmpty
                   ? const Center(child: Text("No cancelled shift"))
-                  : ShiftTile(provider: provider, shiftType: "Cancelled",),
+                  : ShiftTile(
+                      provider: provider,
+                      shiftType: "Cancelled",
+                    ),
             ],
           ),
         ),
