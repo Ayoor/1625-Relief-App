@@ -28,10 +28,12 @@ dependencies:
   drop_down_list: ^0.0.8
   dropdown_flutter: 1.0.1
   toastification:
+  calendar_date_picker2:
   colour:
   intl:
   fluttertoast:
   tuple:
+  gauge_chart:
 
 dev_dependencies:
   flutter_test:

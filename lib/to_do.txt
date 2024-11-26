@@ -10,8 +10,7 @@ fix shift saving error --done
 
 Income screen (Setting a budget, total amount earned, total amount  to be earned, total expected gross,
 Overview (Bar Chart , total shifts done in the month, total shifts allocated, total shifts remaining to target
-Shift editing
-Shift Cancellation with who cancelled (drop down "me", "1625")
+
 
 connect app to db --done
 create login and sign up Using google auth
