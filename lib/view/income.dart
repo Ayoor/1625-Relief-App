@@ -1,7 +1,9 @@
+import 'package:circular_charts/circular_charts.dart';
 import 'package:colour/colour.dart';
 import 'package:flutter/material.dart';
 import 'package:gauge_chart/gauge_chart.dart';
 import 'package:provider/provider.dart';
+import 'package:relief_app/view/widgets/striped_table.dart';
 import '../viewmodel/provider.dart';
 
 class Income extends StatefulWidget {
@@ -61,40 +63,64 @@ class _IncomeState extends State<Income> with SingleTickerProviderStateMixin {
               // Tab 1 - Income1
               SingleChildScrollView(
                 child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const SizedBox(
-                      height: 30,
+                      height: 10,
                     ),
-                    GaugeChart(
-                      centerText: ["\nHello"],
-                      children: [
-                        PieData(
-                          value: 4,
-                          color: Colors.blue.shade300,
-                          description: "Planned",
-                        ),
-                        PieData(
-                          value: 10,
-                          color: Colors.orange,
-                          description: "Taken",
-                        ),
-                        PieData(
-                          value: 14,
-                          color: Colour("#FFB703"),
-                          description: "To plan",
-                        ),
-                      ],
-                      gap: 1,
-                      animateDuration: const Duration(seconds: 4),
-                      start: 180,
-                      displayIndex: 1,
-                      shouldAnimate: true,
-                      animateFromEnd: false,
-                      isHalfChart: false,
-                      size: 200,
-                      showValue: false,
-                      borderWidth: 15,
+                    Text(
+                      getDateRange(),
+                      style: TextStyle(
+                          color: Colors.blue,
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold),
                     ),
+                    SizedBox(
+                      height: 20,
+                    ),
+                    Center(
+                      child: CircularChart(
+                        animationTime: 800,
+                        chartHeight: 200,
+                        chartWidth: 400,
+                        pieChartChildNames: [
+                          "CEH",
+                          "SGH",
+                          "Woodleaze",
+                        ],
+                        pieChartEndColors: [
+                          Colors.blue.shade300,
+                          Colors.orange,
+                          Colour("#FFB703"),
+                        ],
+                        pieChartStartColors: [
+                          Colors.blue.shade300,
+                          Colors.orange,
+                          Colour("#FFB703"),
+                        ],
+                        centreCircleTitle: "Title",
+                        // isShowingCentreCircle: true,
+                        pieChartPercentages: [
+                          60,
+                          20,
+                          20,
+                        ],
+                        overAllPercentage: 100,
+                        isShowingLegend: true,
+                      ),
+                    ),
+                    SizedBox(
+                      height: 50,
+                    ),
+                    Text(
+                      "Income Breakdown",
+                      style: TextStyle(
+                          color: Colors.blue,
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold),
+                    ),
+                    StripedTable()
+                    // StripedTable()
                   ],
                 ),
               ),
@@ -111,6 +137,27 @@ class _IncomeState extends State<Income> with SingleTickerProviderStateMixin {
         ),
       ),
     );
+  }
+
+  String getDateRange() {
+    DateTime now = DateTime.now();
+
+    DateTime startDate;
+    DateTime endDate;
+
+    if (now.day <= 10) {
+      // If the date is on or before the 10th of the current month
+      startDate =
+          DateTime(now.year, now.month - 1, 11); // 11th of the previous month
+      endDate = DateTime(now.year, now.month, 10); // 10th of the current month
+    } else {
+      // If the date is after the 10th of the current month
+      startDate =
+          DateTime(now.year, now.month, 11); // 11th of the current month
+      endDate = DateTime(now.year, now.month + 1, 10); // 10th of the next month
+    }
+
+    return "${startDate.day}/${startDate.month}/${startDate.year} - ${endDate.day}/${endDate.month}/${endDate.year}";
   }
 
   @override

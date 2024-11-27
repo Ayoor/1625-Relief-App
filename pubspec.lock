@@ -65,6 +65,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.3.0"
+  circular_charts:
+    dependency: "direct main"
+    description:
+      name: circular_charts
+      sha256: c777cd2f7070da66aa81c1f72164d194290a5f2f456a2eeeed4fb7307779e7c3
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.0.1"
   clock:
     dependency: transitive
     description:
