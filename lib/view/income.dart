@@ -61,67 +61,69 @@ class _IncomeState extends State<Income> with SingleTickerProviderStateMixin {
             controller: _tabController,
             children: [
               // Tab 1 - Income1
-              SingleChildScrollView(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const SizedBox(
-                      height: 10,
-                    ),
-                    Text(
-                      getDateRange(),
-                      style: TextStyle(
+              RefreshIndicator(
+                backgroundColor: Colors.white,
+                color: Colors.blue,
+                onRefresh: () async {
+                  provider.getIncomeSummary(context);
+                },
+                child: SingleChildScrollView(
+                  physics: const AlwaysScrollableScrollPhysics(), // Ensure scrolling even when content is short
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const SizedBox(height: 10),
+                      Text(
+                        getDateRange(),
+                        style: TextStyle(
                           color: Colors.blue,
                           fontSize: 16,
-                          fontWeight: FontWeight.bold),
-                    ),
-                    SizedBox(
-                      height: 20,
-                    ),
-                    Center(
-                      child: CircularChart(
-                        animationTime: 800,
-                        chartHeight: 200,
-                        chartWidth: 400,
-                        pieChartChildNames: [
-                          "CEH",
-                          "SGH",
-                          "Woodleaze",
-                        ],
-                        pieChartEndColors: [
-                          Colors.blue.shade300,
-                          Colors.orange,
-                          Colour("#FFB703"),
-                        ],
-                        pieChartStartColors: [
-                          Colors.blue.shade300,
-                          Colors.orange,
-                          Colour("#FFB703"),
-                        ],
-                        centreCircleTitle: "Title",
-                        // isShowingCentreCircle: true,
-                        pieChartPercentages: [
-                          60,
-                          20,
-                          20,
-                        ],
-                        overAllPercentage: 100,
-                        isShowingLegend: true,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
-                    ),
-                    SizedBox(
-                      height: 50,
-                    ),
-                    Text(
-                      "Income Breakdown",
-                      style: TextStyle(
+                      const SizedBox(height: 20),
+                      Center(
+                        child: CircularChart(
+                          animationTime: 800,
+                          chartHeight: 200,
+                          chartWidth: 400,
+                          pieChartChildNames: [
+                            "CEH",
+                            "SGH",
+                            "Woodleaze",
+                          ],
+                          pieChartEndColors: [
+                            Colors.blue.shade300,
+                            Colors.orange,
+                            Colour("#FFB703"),
+                          ],
+                          pieChartStartColors: [
+                            Colors.blue.shade300,
+                            Colors.orange,
+                            Colour("#FFB703"),
+                          ],
+                          centreCircleTitle: "Title",
+                          pieChartPercentages: [
+                            60,
+                            20,
+                            20,
+                          ],
+                          overAllPercentage: 100,
+                          isShowingLegend: true,
+                        ),
+                      ),
+                      const SizedBox(height: 50),
+                      Text(
+                        "Income Breakdown",
+                        style: TextStyle(
                           color: Colors.blue,
                           fontSize: 18,
-                          fontWeight: FontWeight.bold),
-                    ),
-                    StripedTable()
-                    // StripedTable()
-                  ],
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      StripedTable(),
+                    ],
+                  ),
                 ),
               ),
 
@@ -134,7 +136,8 @@ class _IncomeState extends State<Income> with SingleTickerProviderStateMixin {
               ),
             ],
           ),
-        ),
+        )
+        ,
       ),
     );
   }

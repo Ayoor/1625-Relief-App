@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:relief_app/model/shifts.dart';
 import 'package:relief_app/view/adding_new_shift.dart';
 import 'package:relief_app/view/widgets/shift_tile.dart';
 import '../viewmodel/provider.dart';

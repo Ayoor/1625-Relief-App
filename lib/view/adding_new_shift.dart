@@ -413,7 +413,7 @@ class _NewShiftState extends State<NewShift> {
                                       Text("Hrs: ",
                                           style: TextStyle(
                                               fontWeight: FontWeight.bold)),
-                                      Text(shift.duration),
+                                      Text(shift.durationText),
                                     ],
                                   ),
                                   SizedBox(
@@ -477,7 +477,7 @@ class _NewShiftState extends State<NewShift> {
                 },
                 use24hFormat: false,
                 showDayOfWeek: true,
-                initialDateTime: minDate(timeDetail).add(Duration(minutes: 60)),
+                initialDateTime: minDate(timeDetail).add(Duration(minutes: 15)),
                 maximumDate: DateTime.now().add(Duration(days: 40)),
                 minimumDate: DateTime.now().subtract(Duration(minutes: 0)),
               ),
@@ -500,16 +500,31 @@ class _NewShiftState extends State<NewShift> {
     );
   }
 
-  DateTime minDate(timeDetail) {
+  DateTime minDate(String timeDetail) {
     if (timeDetail == "end") {
       return startTime!.add(Duration(hours: 8));
     }
+
     if (startTime != null) {
       return startTime!;
     } else {
-      return DateTime.now();
+      // Get the current time
+      DateTime now = DateTime.now();
+
+      // Round the minutes to the nearest 15-minute interval
+      int roundedMinutes = (now.minute / 15).round() * 15;
+
+      // Handle cases where rounding exceeds 60 minutes
+      if (roundedMinutes >= 60) {
+        roundedMinutes = 0;
+        // now = now.add(Duration(hours: 1));
+      }
+
+      // Return the adjusted time
+      return DateTime(now.year, now.month, now.day, now.hour, roundedMinutes);
     }
   }
+
 
   void reset(BuildContext context, List<Shifts> shifts) {
     if (shifts.isNotEmpty) {

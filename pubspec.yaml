@@ -35,6 +35,7 @@ dependencies:
   tuple:
   gauge_chart:
   circular_charts:
+  pie_chart:
 
 dev_dependencies:
   flutter_test:

@@ -61,7 +61,7 @@ class AppProvider extends ChangeNotifier {
           await dbRef.update({"status": "Cancelled"});
           break;
         case "Completed":
-          print (endTime);
+          print(endTime);
           DateTime shiftEnd = DateTime.parse(endTime);
           if (shiftEnd.isAfter(DateTime.now())) {
             showMessage(
@@ -156,7 +156,8 @@ class AppProvider extends ChangeNotifier {
         location: location,
         shiftType: getShiftTypeAndRate(start, location).item1,
         rate: getShiftTypeAndRate(start, location).item2,
-        duration: duration(context, start, end),
+        durationText: duration(context, start, end),
+        duration: getDuration(start, end) ,
         status: status,
         dateofAction: dateFormater(DateTime.now()),
       ));
@@ -170,6 +171,12 @@ class AppProvider extends ChangeNotifier {
           icon: Icons.info_outline);
     }
   }
+  double getDuration(DateTime start, DateTime end) {
+    // Calculate the duration in hours by dividing the total minutes by 60
+    double duration = end.difference(start).inMinutes / 60.0;
+    return double.parse(duration.toStringAsFixed(2)); // Round to 2 decimal places
+  }
+
 
   Future fetchShifts(BuildContext context) async {
     final DatabaseReference dbRef = FirebaseDatabase.instance.ref();
@@ -197,11 +204,12 @@ class AppProvider extends ChangeNotifier {
                   location: shiftData['location'],
                   shiftType: shiftData['shiftType'],
                   rate: shiftData['rate'].toDouble(),
-                  duration: shiftData['duration'],
+                  durationText: shiftData['durationText'],
                   status: shiftData['status'],
                   dateofAction: shiftData['dateofAction'],
-                );
+                  duration: shiftData['duration'].toDouble(),
 
+                );
 
                 _scheduledShifts.add(shift);
               } catch (e) {
@@ -217,9 +225,11 @@ class AppProvider extends ChangeNotifier {
                   location: shiftData['location'],
                   shiftType: shiftData['shiftType'],
                   rate: shiftData['rate'].toDouble(),
-                  duration: shiftData['duration'],
+                  durationText: shiftData['durationText'],
                   status: shiftData['status'],
                   dateofAction: shiftData['dateofAction'],
+                  duration: shiftData['duration'].toDouble(),
+
                 );
                 _cancelledShifts.add(shift);
               } catch (e) {
@@ -235,9 +245,10 @@ class AppProvider extends ChangeNotifier {
                   location: shiftData['location'],
                   shiftType: shiftData['shiftType'],
                   rate: shiftData['rate'].toDouble(),
-                  duration: shiftData['duration'],
+                  durationText: shiftData['durationText'],
                   status: shiftData['status'],
                   dateofAction: shiftData['dateofAction'],
+                  duration: shiftData['duration'].toDouble(),
                 );
                 _completedShifts.add(shift);
               } catch (e) {
@@ -248,7 +259,7 @@ class AppProvider extends ChangeNotifier {
           _scheduledShifts.sort((a, b) => a.startTime.compareTo(b.startTime));
           _cancelledShifts.sort((a, b) => a.startTime.compareTo(b.startTime));
           _completedShifts.sort((a, b) => a.startTime.compareTo(b.startTime));
-         _completedShifts= _completedShifts.reversed.toList();
+          _completedShifts = _completedShifts.reversed.toList();
 
           // allShifts.add(_scheduledShifts);
           // allShifts.add(_completedShifts);
@@ -279,6 +290,42 @@ class AppProvider extends ChangeNotifier {
       notifyListeners();
       return [];
     }
+  }
+
+  double _CEHShiftHrs=0;
+   double _CEHShiftIncome=0;
+
+  double get CEHShiftHrs => _CEHShiftHrs;
+   double _SGHShiftHrs = 0;
+   double _SGHShiftIncome =0;
+   double _woodleazeShiftHrs=0;
+   double _woodleazeShiftIncome=0;
+
+  double get CEHShiftIncome => _CEHShiftIncome;
+
+  void getIncomeSummary(BuildContext context) async {
+    _CEHShiftHrs= 0;
+    _CEHShiftIncome = 0;
+     _SGHShiftHrs =0;
+     _SGHShiftIncome=0 ;
+     _woodleazeShiftHrs=0;
+     _woodleazeShiftIncome=0;
+    await fetchShifts(context);
+    for (Shifts shift in _completedShifts) {
+      if (shift.location == "Charles England House") {
+        _CEHShiftHrs += shift.duration.toDouble();
+        _CEHShiftIncome += (shift.duration.toDouble() * shift.rate);
+      }
+      if (shift.location == "St. George's House") {
+        _SGHShiftHrs += shift.duration.toDouble();
+        _SGHShiftIncome += (shift.duration.toDouble() * shift.rate);
+      }
+      if (shift.location == "Woodleaze") {
+        _woodleazeShiftHrs += shift.duration.toDouble();
+        _woodleazeShiftIncome += (shift.duration.toDouble() * shift.rate);
+      }
+    }
+    notifyListeners();
   }
 
   DateTime convertToDateTime(String date) {
@@ -403,4 +450,12 @@ class AppProvider extends ChangeNotifier {
       notifyListeners();
     }
   }
+
+  double get SGHShiftHrs => _SGHShiftHrs;
+
+  double get woodleazeShiftHrs => _woodleazeShiftHrs;
+
+  double get SGHShiftIncome => _SGHShiftIncome;
+
+  double get woodleazeShiftIncome => _woodleazeShiftIncome;
 }

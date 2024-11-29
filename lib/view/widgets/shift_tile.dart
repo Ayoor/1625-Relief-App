@@ -119,9 +119,9 @@ class _ShiftTileState extends State<ShiftTile> {
                         const SizedBox(height: 5),
                         Row(
                           children: [
-                            const Text("Hrs:",
+                            const Text("Hrs: ",
                                 style: TextStyle(fontWeight: FontWeight.bold)),
-                            Text(shift.duration),
+                            Text(shift.durationText),
                           ],
                         ),
                         const SizedBox(height: 5),
@@ -268,7 +268,7 @@ class _ShiftTileState extends State<ShiftTile> {
                           children: [
                             const Text("Hrs:",
                                 style: TextStyle(fontWeight: FontWeight.bold)),
-                            Text(shift.duration,
+                            Text(shift.durationText,
                                 style: TextStyle(
                                     color: Colors.grey,
                                     fontSize: 13,
@@ -387,7 +387,7 @@ class _ShiftTileState extends State<ShiftTile> {
                           children: [
                             const Text("Hrs:",
                                 style: TextStyle(fontWeight: FontWeight.bold)),
-                            Text(shift.duration),
+                            Text(shift.durationText),
                           ],
                         ),
                         const SizedBox(height: 5),
