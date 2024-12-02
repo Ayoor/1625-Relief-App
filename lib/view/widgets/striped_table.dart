@@ -1,5 +1,6 @@
 import 'package:colour/colour.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:relief_app/viewmodel/provider.dart';
 
@@ -13,8 +14,8 @@ class StripedTable extends StatefulWidget {
 class _StripedTableState extends State<StripedTable> {
   @override
   void initState() {
-    Provider.of<AppProvider>(context, listen: false)
-        .getIncomeSummary(context);
+    // Provider.of<AppProvider>(context, listen: false)
+    //     .getIncomeSummary(context);
     // TODO: implement initState
     super.initState();
 
@@ -70,7 +71,7 @@ class _StripedTableState extends State<StripedTable> {
                     ],
                   ),
                   // Table Body (Striped Rows)
-                  incomeTable(hrs: provider.CEHShiftHrs, income: provider.CEHShiftIncome, isOdd: true, projectName: "CEH"),
+                  incomeTable(hrs: (provider.CEHShiftHrs), income: provider.CEHShiftIncome, isOdd: true, projectName: "CEH"),
                   incomeTable(hrs: provider.SGHShiftHrs, income: provider.SGHShiftIncome, projectName: "SGH"),
                   incomeTable(hrs: provider.woodleazeShiftHrs, income: provider.woodleazeShiftIncome, isOdd: true, projectName: "Woodleaze"),
                   incomeTable(hrs: sum(provider.CEHShiftHrs, provider.SGHShiftHrs, provider.woodleazeShiftHrs), income: sum(provider.CEHShiftIncome, provider.SGHShiftIncome, provider.woodleazeShiftIncome), projectName: "Total", isLast: true),
@@ -87,6 +88,7 @@ double sum(ceh,sgh,woodlease){
 }
   TableRow incomeTable(
       {required String projectName, required double hrs, required double income, bool isOdd= false, bool isLast= false}) {
+      var formatter = NumberFormat.currency(locale: "en_UK", decimalDigits: 2, symbol: "£");
     return TableRow(
               decoration: BoxDecoration(
                 color: isLast
@@ -111,7 +113,7 @@ double sum(ceh,sgh,woodlease){
                 Padding(
                   padding: EdgeInsets.all(8.0),
                   child: Text(
-                    "£$income",
+                    formatter.format(income),
                     textAlign: TextAlign.center,
                   ),
                 ),

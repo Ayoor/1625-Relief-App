@@ -1,8 +1,9 @@
-import 'package:circular_charts/circular_charts.dart';
+
 import 'package:colour/colour.dart';
 import 'package:flutter/material.dart';
-import 'package:gauge_chart/gauge_chart.dart';
 import 'package:provider/provider.dart';
+import 'package:relief_app/view/history.dart';
+import 'package:relief_app/view/widgets/income_pie_chart.dart';
 import 'package:relief_app/view/widgets/striped_table.dart';
 import '../viewmodel/provider.dart';
 
@@ -21,15 +22,12 @@ class _IncomeState extends State<Income> with SingleTickerProviderStateMixin {
     super.initState();
     _tabController = TabController(length: 3, vsync: this);
 
+    Provider.of<AppProvider>(context, listen: false)
+        .getIncomeSummary(context);
+
     // Provider.of<AppProvider>(context, listen: false)
     //     .loadData(context);
   }
-
-  final List<PieData> pies = [
-    PieData(value: 0.15, color: Colors.yellow, description: 'SGH'),
-    PieData(value: 0.35, color: Colors.cyan, description: 'WL'),
-    PieData(value: 0.45, color: Colors.lightGreen, description: 'CEH'),
-  ];
 
   @override
   Widget build(BuildContext context) {
@@ -60,7 +58,7 @@ class _IncomeState extends State<Income> with SingleTickerProviderStateMixin {
           child: TabBarView(
             controller: _tabController,
             children: [
-              // Tab 1 - Income1
+              // Tab 1 - Income
               RefreshIndicator(
                 backgroundColor: Colors.white,
                 color: Colors.blue,
@@ -78,39 +76,12 @@ class _IncomeState extends State<Income> with SingleTickerProviderStateMixin {
                         style: TextStyle(
                           color: Colors.blue,
                           fontSize: 16,
-                          fontWeight: FontWeight.bold,
                         ),
                       ),
                       const SizedBox(height: 20),
                       Center(
-                        child: CircularChart(
-                          animationTime: 800,
-                          chartHeight: 200,
-                          chartWidth: 400,
-                          pieChartChildNames: [
-                            "CEH",
-                            "SGH",
-                            "Woodleaze",
-                          ],
-                          pieChartEndColors: [
-                            Colors.blue.shade300,
-                            Colors.orange,
-                            Colour("#FFB703"),
-                          ],
-                          pieChartStartColors: [
-                            Colors.blue.shade300,
-                            Colors.orange,
-                            Colour("#FFB703"),
-                          ],
-                          centreCircleTitle: "Title",
-                          pieChartPercentages: [
-                            60,
-                            20,
-                            20,
-                          ],
-                          overAllPercentage: 100,
-                          isShowingLegend: true,
-                        ),
+                        child: IncomePieChart(CEH: provider.CEHShiftIncome, SGH: provider.SGHShiftIncome, woodleaze: provider.woodleazeShiftIncome,
+                        total: provider.CEHShiftIncome + provider.SGHShiftIncome + provider.woodleazeShiftIncome ,),
                       ),
                       const SizedBox(height: 50),
                       Text(
@@ -128,9 +99,7 @@ class _IncomeState extends State<Income> with SingleTickerProviderStateMixin {
               ),
 
               // Tab 2 - Completed Shifts
-              Center(
-                child: Text("Income 2"),
-              ),
+              History(),
               Center(
                 child: Text("Income 3"),
               ),

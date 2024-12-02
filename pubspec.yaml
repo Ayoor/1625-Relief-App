@@ -18,7 +18,6 @@ dependencies:
   animated_splash_screen:
   persistent_bottom_nav_bar_v2:
   provider:
-  fl_chart:
   table_calendar:
   firebase_database:
   firebase_core:
@@ -33,8 +32,6 @@ dependencies:
   intl:
   fluttertoast:
   tuple:
-  gauge_chart:
-  circular_charts:
   pie_chart:
 
 dev_dependencies:

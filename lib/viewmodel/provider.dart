@@ -6,6 +6,7 @@ import 'package:tuple/tuple.dart';
 
 import '../model/shiftData.dart';
 import '../model/shifts.dart';
+import '../utils/location.dart';
 
 class AppProvider extends ChangeNotifier {
   DateTime _today = DateTime.now();
@@ -31,6 +32,14 @@ class AppProvider extends ChangeNotifier {
   String get status => _status;
 
   List<Shifts> get scheduledShifts => _scheduledShifts;
+
+  double get SGHShiftHrs => _SGHShiftHrs;
+
+  double get woodleazeShiftHrs => _woodleazeShiftHrs;
+
+  double get SGHShiftIncome => _SGHShiftIncome;
+
+  double get woodleazeShiftIncome => _woodleazeShiftIncome;
 
   void removeShift(int index, BuildContext context) {
     shifts.removeAt(index);
@@ -313,15 +322,12 @@ class AppProvider extends ChangeNotifier {
     await fetchShifts(context);
     for (Shifts shift in _completedShifts) {
       if (shift.location == "Charles England House") {
-        _CEHShiftHrs += shift.duration.toDouble();
-        _CEHShiftIncome += (shift.duration.toDouble() * shift.rate);
+        _CEHShiftIncome +=  shift.duration.toDouble() * shift.rate;
       }
       if (shift.location == "St. George's House") {
-        _SGHShiftHrs += shift.duration.toDouble();
         _SGHShiftIncome += (shift.duration.toDouble() * shift.rate);
       }
       if (shift.location == "Woodleaze") {
-        _woodleazeShiftHrs += shift.duration.toDouble();
         _woodleazeShiftIncome += (shift.duration.toDouble() * shift.rate);
       }
     }
@@ -450,12 +456,44 @@ class AppProvider extends ChangeNotifier {
       notifyListeners();
     }
   }
+  LocationIncomeHistory SGH = LocationIncomeHistory();
+  LocationIncomeHistory CEH = LocationIncomeHistory();
+  LocationIncomeHistory WL = LocationIncomeHistory();
 
-  double get SGHShiftHrs => _SGHShiftHrs;
 
-  double get woodleazeShiftHrs => _woodleazeShiftHrs;
+  void shiftHistory(BuildContext context) {
 
-  double get SGHShiftIncome => _SGHShiftIncome;
 
-  double get woodleazeShiftIncome => _woodleazeShiftIncome;
-}
+    if (_completedShifts.isNotEmpty) {
+      _completedShifts= _completedShifts.reversed.toList();
+      // Only process shifts for the current year
+      if (_completedShifts.last.startTime.year == DateTime.now().year) {
+
+        // Map each location to its respective class
+        final locationMap = {
+          "St. George's House": SGH,
+          "Charles England House": CEH,
+          "Woodleaze": WL,
+        };
+
+        for (final location in locationMap.values) {
+          location.resetMonthlyValues();
+        }
+
+        for (Shifts cs in _completedShifts.toList()) {
+          final monthIndex = cs.startTime.month; // 1 for Jan, 2 for Feb, etc.
+
+          // Update the corresponding month dynamically
+          if (locationMap.containsKey(cs.location)) {
+            final LocationIncomeHistory locationClass = locationMap[cs.location]!;
+            locationClass.updateMonthlyValue(monthIndex, cs.duration * cs.rate);
+          }
+        }
+      }
+    }
+
+    notifyListeners();
+  }
+
+}// end of provider class
+
