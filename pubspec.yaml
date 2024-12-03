@@ -33,6 +33,9 @@ dependencies:
   fluttertoast:
   tuple:
   pie_chart:
+  flutter_sales_graph:
+  fl_chart:
+  flutter_docx
 
 dev_dependencies:
   flutter_test:

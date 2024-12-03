@@ -14,8 +14,8 @@ class StripedTable extends StatefulWidget {
 class _StripedTableState extends State<StripedTable> {
   @override
   void initState() {
-    // Provider.of<AppProvider>(context, listen: false)
-    //     .getIncomeSummary(context);
+    Provider.of<AppProvider>(context, listen: false)
+        .getIncomeSummary(context);
     // TODO: implement initState
     super.initState();
 
@@ -33,7 +33,7 @@ class _StripedTableState extends State<StripedTable> {
               borderRadius: BorderRadius.circular(20),
               child: Table(
                 columnWidths: const {
-                  0: FlexColumnWidth(2), // Project column (wider)
+                  0: FlexColumnWidth(1), // Project column (wider)
                   1: FlexColumnWidth(1), // Total Hours column
                   2: FlexColumnWidth(1), // Income column
                 },

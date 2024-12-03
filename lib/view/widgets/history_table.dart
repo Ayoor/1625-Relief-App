@@ -18,7 +18,9 @@ class _HistoryTableState extends State<HistoryTable> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    Provider.of<AppProvider>(context, listen: false).shiftHistory(context);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Provider.of<AppProvider>(context, listen: false).shiftHistory(context);
+    });
   }
 
   @override

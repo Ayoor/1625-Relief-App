@@ -323,12 +323,16 @@ class AppProvider extends ChangeNotifier {
     for (Shifts shift in _completedShifts) {
       if (shift.location == "Charles England House") {
         _CEHShiftIncome +=  shift.duration.toDouble() * shift.rate;
+        _CEHShiftHrs += shift.duration;
       }
       if (shift.location == "St. George's House") {
         _SGHShiftIncome += (shift.duration.toDouble() * shift.rate);
+        _SGHShiftHrs += shift.duration;
+
       }
       if (shift.location == "Woodleaze") {
         _woodleazeShiftIncome += (shift.duration.toDouble() * shift.rate);
+        _woodleazeShiftHrs += shift.duration;
       }
     }
     notifyListeners();
@@ -494,6 +498,27 @@ class AppProvider extends ChangeNotifier {
 
     notifyListeners();
   }
+  List<Shifts> _filteredShifts =[];
 
+  List<Shifts> get filteredShifts => _filteredShifts;
+
+  void generareTimeSheet(DateTime start, DateTime end, String location, BuildContext context) {
+    _filteredShifts.clear;
+    if( _completedShifts.isNotEmpty) {
+      _filteredShifts = _completedShifts.where((shift) =>
+         shift.startTime.isAfter(start.subtract(Duration(days: 1))) &&
+            shift.startTime.isBefore(end.add(Duration(days: 1))) && shift.location == location
+      ).toList();
+    }
+    else{
+      showMessage(context: context, message: "No shifts in timeframe", type: ToastificationType.error, bgColor: Colors.red.shade200, icon: Icons.cancel_rounded);
+    }
+    if(_filteredShifts.isEmpty){
+      showMessage(context: context, message: "No shifts in timeframe", type: ToastificationType.error, bgColor: Colors.red.shade200, icon: Icons.cancel_rounded);
+
+    }
+    _filteredShifts= _filteredShifts.reversed.toList();
+    notifyListeners();
+}
 }// end of provider class
 

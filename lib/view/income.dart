@@ -1,8 +1,7 @@
-
-import 'package:colour/colour.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:relief_app/view/history.dart';
+import 'package:relief_app/view/timesheet.dart';
 import 'package:relief_app/view/widgets/income_pie_chart.dart';
 import 'package:relief_app/view/widgets/striped_table.dart';
 import '../viewmodel/provider.dart';
@@ -22,8 +21,7 @@ class _IncomeState extends State<Income> with SingleTickerProviderStateMixin {
     super.initState();
     _tabController = TabController(length: 3, vsync: this);
 
-    Provider.of<AppProvider>(context, listen: false)
-        .getIncomeSummary(context);
+    // Provider.of<AppProvider>(context, listen: false).getIncomeSummary(context);
 
     // Provider.of<AppProvider>(context, listen: false)
     //     .loadData(context);
@@ -66,7 +64,8 @@ class _IncomeState extends State<Income> with SingleTickerProviderStateMixin {
                   provider.getIncomeSummary(context);
                 },
                 child: SingleChildScrollView(
-                  physics: const AlwaysScrollableScrollPhysics(), // Ensure scrolling even when content is short
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  // Ensure scrolling even when content is short
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -80,8 +79,14 @@ class _IncomeState extends State<Income> with SingleTickerProviderStateMixin {
                       ),
                       const SizedBox(height: 20),
                       Center(
-                        child: IncomePieChart(CEH: provider.CEHShiftIncome, SGH: provider.SGHShiftIncome, woodleaze: provider.woodleazeShiftIncome,
-                        total: provider.CEHShiftIncome + provider.SGHShiftIncome + provider.woodleazeShiftIncome ,),
+                        child: IncomePieChart(
+                          CEH: provider.CEHShiftIncome,
+                          SGH: provider.SGHShiftIncome,
+                          woodleaze: provider.woodleazeShiftIncome,
+                          total: provider.CEHShiftIncome +
+                              provider.SGHShiftIncome +
+                              provider.woodleazeShiftIncome,
+                        ),
                       ),
                       const SizedBox(height: 50),
                       Text(
@@ -100,13 +105,10 @@ class _IncomeState extends State<Income> with SingleTickerProviderStateMixin {
 
               // Tab 2 - Completed Shifts
               History(),
-              Center(
-                child: Text("Income 3"),
-              ),
+              TimeSheet(),
             ],
           ),
-        )
-        ,
+        ),
       ),
     );
   }
