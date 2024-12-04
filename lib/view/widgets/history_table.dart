@@ -186,7 +186,6 @@ class _HistoryTableState extends State<HistoryTable> {
             provider.WL.Oct + provider.WL.Nov + provider.WL.Dec),
       ],
     ];
-    ;
 
     List<TableRow> rows = [];
 
