@@ -15,8 +15,8 @@ class TimesheetTable extends StatefulWidget {
 class _TimesheetTableState extends State<TimesheetTable> {
   @override
   void initState() {
-    Provider.of<AppProvider>(context, listen: false)
-        .getIncomeSummary(context);
+    // Provider.of<AppProvider>(context, listen: false)
+    //     .getIncomeSummary(context);
     // TODO: implement initState
     super.initState();
 
@@ -99,7 +99,6 @@ class _TimesheetTableState extends State<TimesheetTable> {
   }
   double sum(ceh,sgh,woodlease){
     return ceh + sgh + woodlease;
-
   }
   TableRow timeSheetBody(
       {required List<Shifts> completedShifts,required String date, required String start, required String end, required String hours, required bool isLast, required bool isOdd}) {

@@ -1,5 +1,3 @@
-import 'dart:io';
-import 'package:docx_template/docx_template.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -8,6 +6,7 @@ import 'package:tuple/tuple.dart';
 
 import '../model/shiftData.dart';
 import '../model/shifts.dart';
+import '../utils/dateformat.dart';
 import '../utils/location.dart';
 
 class AppProvider extends ChangeNotifier {
@@ -503,6 +502,9 @@ class AppProvider extends ChangeNotifier {
   List<Shifts> _filteredShifts =[];
 
   List<Shifts> get filteredShifts => _filteredShifts;
+ final List <List<String>> _exportData = [];
+
+  List<List<String>> get exportData => _exportData;
 
   void generateTimeSheet(DateTime start, DateTime end, String location, BuildContext context) {
     _filteredShifts.clear;
@@ -520,40 +522,60 @@ class AppProvider extends ChangeNotifier {
 
     }
     _filteredShifts= _filteredShifts.reversed.toList();
+    for (Shifts completedShift in _filteredShifts) {
+      exportData.add([
+        ReadableDate(dateTime: completedShift.startTime).date(),
+        ReadableDate(dateTime: completedShift.startTime).time(),
+        "",
+        ReadableDate(dateTime: completedShift.endTime).time(),
+        "${completedShift.duration}",]);
+      _totalHours+= completedShift.duration;
+    }
+    if(_filteredShifts.length < 12){
+      for(int i=0; i< 12 -_filteredShifts.length ; i++){
+        exportData.add(["\n", "\n", "\n", "\n", "\n",]);
+      }
+
+    }
+
+
     notifyListeners();
 }
 
-  Future<void> exportTimeSheet({
-    required String name,
-    required String month,
-    required double payRate,
-    required List<Shifts> shifts, // Now receiving a List of Shifts objects
-  }) async {
-    // Load the template
-    final data = File("lib/assets/ceh.docx");
-    final docx = await DocxTemplate.fromBytes(await data.readAsBytes());
+  // Future<void> exportTimeSheet({
+  //   required String name,
+  //   required String month,
+  //   required double payRate,
+  //   required List<Shifts> shifts, // Now receiving a List of Shifts objects
+  // }) async {
+  //   // Load the template
+  //   final data = File("lib/assets/ceh.docx");
+  //   final docx = await DocxTemplate.fromBytes(await data.readAsBytes());
+  //
+  //   // Replace placeholders
+  //   Content content = Content();
+  //   content
+  //     ..add(TextContent("NAME", name))
+  //     ..add(TextContent("MONTH", month))
+  //     ..add(TextContent("PAY_RATE", payRate.toString()));
+  //
+  //   // Transform the List<Shifts> into table rows
+  //   List<RowContent> tableRows = [];
+  //   for (var shift in shifts) {
+  //     tableRows.add(RowContent()
+  //       ..add(TextContent("DATE", DateFormat('dd/MM/yyyy').format(shift.startTime)))
+  //       ..add(TextContent("START_TIME", DateFormat('hh:mm a').format(shift.startTime)))
+  //       ..add(TextContent("END_TIME", DateFormat('hh:mm a').format(shift.endTime))));
+  //   }
+  //   content.add(TableContent("SHIFTS", tableRows));
+  //
+  //   // Generate the document
+  //   final docGenerated = await docx.generate(content);
+  //   final fileGenerated = File('generated.docx');
+  //   if (docGenerated != null) await fileGenerated.writeAsBytes(docGenerated);
+  // }
+double _totalHours = 0;
 
-    // Replace placeholders
-    Content content = Content();
-    content
-      ..add(TextContent("NAME", name))
-      ..add(TextContent("MONTH", month))
-      ..add(TextContent("PAY_RATE", payRate.toString()));
-
-    // Transform the List<Shifts> into table rows
-    List<RowContent> tableRows = [];
-    for (var shift in shifts) {
-      tableRows.add(RowContent()
-        ..add(TextContent("DATE", DateFormat('dd/MM/yyyy').format(shift.startTime)))
-        ..add(TextContent("START_TIME", DateFormat('hh:mm a').format(shift.startTime)))
-        ..add(TextContent("END_TIME", DateFormat('hh:mm a').format(shift.endTime))));
-    }
-    content.add(TableContent("SHIFTS", tableRows));
-
-    // Generate the document
-    final docGenerated = await docx.generate(content);
-    final fileGenerated = File('generated.docx');
-    if (docGenerated != null) await fileGenerated.writeAsBytes(docGenerated);
-  }
+  double get totalHours => _totalHours;
 }// end of provider class
 

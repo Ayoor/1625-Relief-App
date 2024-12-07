@@ -81,7 +81,7 @@ class _AnimatedBarGraphState extends State<AnimatedBarGraph> {
         }).toList(),
         gridData: const FlGridData(show: true, drawVerticalLine: false),
       ),
-      swapAnimationDuration: const Duration(milliseconds: 500),
+      swapAnimationDuration: const Duration(milliseconds: 2000),
       swapAnimationCurve: Curves.easeInOut,
     );
   }

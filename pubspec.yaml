@@ -36,6 +36,9 @@ dependencies:
   flutter_sales_graph:
   fl_chart:
   docx_template:
+  pdf:
+  path_provider:
+  open_file:
 
 dev_dependencies:
   flutter_test:
