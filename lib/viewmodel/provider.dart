@@ -531,9 +531,9 @@ class AppProvider extends ChangeNotifier {
         "${completedShift.duration}",]);
       _totalHours+= completedShift.duration;
     }
-    if(_filteredShifts.length < 12){
-      for(int i=0; i< 12 -_filteredShifts.length ; i++){
-        exportData.add(["\n", "\n", "\n", "\n", "\n",]);
+    if(_filteredShifts.length < 22){
+      for(int i=0; i< 22 -_filteredShifts.length ; i++){
+        exportData.add(["a","a","b","b","b",]);
       }
 
     }

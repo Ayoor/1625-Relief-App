@@ -11,7 +11,7 @@ import 'package:relief_app/view/widgets/timesheet_table.dart';
 import 'package:relief_app/viewmodel/provider.dart';
 import 'package:toastification/toastification.dart';
 
-import '../utils/pdf_api.dart';
+import '../utils/time_sheet_exporter.dart';
 
 class TimeSheet extends StatefulWidget {
   const TimeSheet({super.key});
@@ -298,13 +298,22 @@ class _TimeSheetState extends State<TimeSheet> {
                           ),
                           GestureDetector(
                             onTap: () async {
-                              final simplePDF = await PdfApi(
-                                total: provider.totalHours,
-                                      name: 'Ayodele',
+                              // final simplePDF = await TimeSheetExporter(
+                              //   total: provider.totalHours,
+                              //         name: 'Ayodele',
+                              //         range:
+                              //             "${dateFormater(startTime)} to ${dateFormater(endTime)}",
+                              //         data: provider.exportData).cehTimeSheet();
+                              // SaveandOpenPDF().openPDF(simplePDF);
+
+                              final simplePDF = await TimeSheetExporter(
+                                      name: 'Ayodele Oduola',
                                       range:
                                           "${dateFormater(startTime)} to ${dateFormater(endTime)}",
-                                      data: provider.exportData).generateSimplePdf();
+                                      data: provider.exportData,
+                                      total: provider.totalHours).newCEHTimeSheet();
                               SaveandOpenPDF().openPDF(simplePDF);
+
                               // provider.exportTimeSheet(name: "Ayodele",
                               //     month: "${dateFormater(
                               //         startTime)} to ${dateFormater(endTime)}",
