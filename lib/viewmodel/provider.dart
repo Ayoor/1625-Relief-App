@@ -1,6 +1,12 @@
+import 'dart:io';
+
+import 'package:docx_template/docx_template.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
+import 'package:open_file/open_file.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:toastification/toastification.dart';
 import 'package:tuple/tuple.dart';
 
@@ -521,61 +527,109 @@ class AppProvider extends ChangeNotifier {
       showMessage(context: context, message: "No shifts in timeframe", type: ToastificationType.error, bgColor: Colors.red.shade200, icon: Icons.cancel_rounded);
 
     }
-    _filteredShifts= _filteredShifts.reversed.toList();
-    for (Shifts completedShift in _filteredShifts) {
-      exportData.add([
-        ReadableDate(dateTime: completedShift.startTime).date(),
-        ReadableDate(dateTime: completedShift.startTime).time(),
-        "",
-        ReadableDate(dateTime: completedShift.endTime).time(),
-        "${completedShift.duration}",]);
-      _totalHours+= completedShift.duration;
-    }
-    if(_filteredShifts.length < 22){
-      for(int i=0; i< 22 -_filteredShifts.length ; i++){
-        exportData.add(["a","a","b","b","b",]);
-      }
 
-    }
+    _filteredShifts= _filteredShifts.reversed.toList();  //show shifts in ascending order by date
+
+    // convert to timesheet format
+    // for (Shifts completedShift in _filteredShifts) {
+    //   exportData.add([
+    //     ReadableDate(dateTime: completedShift.startTime).date(),
+    //     ReadableDate(dateTime: completedShift.startTime).time(),
+    //     "",
+    //     ReadableDate(dateTime: completedShift.endTime).time(),
+    //     "${completedShift.duration}",]);
+    //   _totalHours+= completedShift.duration;
+    // }
+    // if(_filteredShifts.length < 22){
+    //   for(int i=0; i< 22 -_filteredShifts.length ; i++){
+    //     exportData.add(["","","","","",]);
+    //   }
 
 
     notifyListeners();
 }
 
-  // Future<void> exportTimeSheet({
-  //   required String name,
-  //   required String month,
-  //   required double payRate,
-  //   required List<Shifts> shifts, // Now receiving a List of Shifts objects
-  // }) async {
-  //   // Load the template
-  //   final data = File("lib/assets/ceh.docx");
-  //   final docx = await DocxTemplate.fromBytes(await data.readAsBytes());
-  //
-  //   // Replace placeholders
-  //   Content content = Content();
-  //   content
-  //     ..add(TextContent("NAME", name))
-  //     ..add(TextContent("MONTH", month))
-  //     ..add(TextContent("PAY_RATE", payRate.toString()));
-  //
-  //   // Transform the List<Shifts> into table rows
-  //   List<RowContent> tableRows = [];
-  //   for (var shift in shifts) {
-  //     tableRows.add(RowContent()
-  //       ..add(TextContent("DATE", DateFormat('dd/MM/yyyy').format(shift.startTime)))
-  //       ..add(TextContent("START_TIME", DateFormat('hh:mm a').format(shift.startTime)))
-  //       ..add(TextContent("END_TIME", DateFormat('hh:mm a').format(shift.endTime))));
-  //   }
-  //   content.add(TableContent("SHIFTS", tableRows));
-  //
-  //   // Generate the document
-  //   final docGenerated = await docx.generate(content);
-  //   final fileGenerated = File('generated.docx');
-  //   if (docGenerated != null) await fileGenerated.writeAsBytes(docGenerated);
-  // }
+  Future<void> exportTimeSheet({
+    required String name,
+    required String month,
+    required List<Shifts> shifts, // Now receiving a List of Shifts objects
+  }) async {
+    try {
+      // Load the template
+      final File data = await file(); // Your file loading function
+
+      final docx = await DocxTemplate.fromBytes(await data.readAsBytes());
+
+      // Replace placeholders
+      Content content = Content();
+      content
+        ..add(TextContent("Name", name))
+        ..add(TextContent("Month", month));
+
+      // Initialize table rows
+      List<RowContent> tableRows = [];
+
+      // Loop through shifts and transform into table rows
+      double totalHours = 0;
+
+      for (var shift in shifts) {
+        totalHours += shift.duration;  // Calculate total hours
+
+        // Add row for each shift
+        tableRows.add(RowContent()
+          ..add(TextContent("Date", ReadableDate(dateTime: shift.startTime).date()))
+          ..add(TextContent("Start", ReadableDate(dateTime: shift.startTime).time()))
+          ..add(TextContent("End", ReadableDate(dateTime: shift.endTime).time()))
+          ..add(TextContent("Hrs", shift.duration.toString())));
+      }
+
+      // Add total row
+      tableRows.add(RowContent()..add(TextContent("Total", totalHours.toStringAsFixed(2))));
+
+      // Add table content
+      content.add(TableContent("SHIFTS", tableRows));
+
+      // Notify listeners if necessary (for state management)
+      notifyListeners();
+
+      // Generate the document
+      final docGenerated = await docx.generate(content);
+
+      // Save the generated document
+      final fileGenerated = File('timesheet.docx');
+      if (docGenerated != null) await fileGenerated.writeAsBytes(docGenerated);
+
+      // Open the file (you may use your openfile function to open it)
+      openfile(fileGenerated);
+
+    } catch (e) {
+      print("Error generating timesheet: $e");
+    }
+  }
 double _totalHours = 0;
 
   double get totalHours => _totalHours;
 }// end of provider class
 
+Future<File> file() async {
+  // Load the asset as a byte array
+  final byteData = await rootBundle.load('lib/assets/timesheet.docx');
+
+  final buffer = byteData.buffer.asUint8List();
+
+  // Get the directory where you want to store the file
+  final directory = await getApplicationDocumentsDirectory();
+
+  // Create a file path
+  final filePath = '${directory.path}/timesheet.docx';
+
+  // Create a file and write the bytes to it
+  final file = File(filePath);
+  await file.writeAsBytes(buffer);
+
+  return file; // Return the file instance
+}
+Future openfile(file) async{
+  final path = file.path;
+  await OpenFile.open(path);
+}

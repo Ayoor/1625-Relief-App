@@ -37,6 +37,7 @@ dependencies:
   fl_chart:
   docx_template:
   pdf:
+  syncfusion_flutter_pdf:
   path_provider:
   open_file:
 
@@ -49,10 +50,7 @@ dev_dependencies:
 
 
 flutter:
-
   uses-material-design: true
-
-
   assets:
-    - lib/assets/1625_logo.png
-    - lib/assets/ceh.docx
+    - lib/assets/
+    - lib/assets/timesheet.docx

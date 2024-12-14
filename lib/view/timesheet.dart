@@ -298,21 +298,11 @@ class _TimeSheetState extends State<TimeSheet> {
                           ),
                           GestureDetector(
                             onTap: () async {
-                              // final simplePDF = await TimeSheetExporter(
-                              //   total: provider.totalHours,
-                              //         name: 'Ayodele',
-                              //         range:
-                              //             "${dateFormater(startTime)} to ${dateFormater(endTime)}",
-                              //         data: provider.exportData).cehTimeSheet();
-                              // SaveandOpenPDF().openPDF(simplePDF);
-
-                              final simplePDF = await TimeSheetExporter(
-                                      name: 'Ayodele Oduola',
-                                      range:
-                                          "${dateFormater(startTime)} to ${dateFormater(endTime)}",
-                                      data: provider.exportData,
-                                      total: provider.totalHours).newCEHTimeSheet();
-                              SaveandOpenPDF().openPDF(simplePDF);
+                              provider.exportTimeSheet(
+                                  name: "Ayodele Oduola",
+                                  month:
+                                      "${dateFormater(startTime)} to ${dateFormater(endTime)}",
+                                  shifts: provider.filteredShifts);
 
                               // provider.exportTimeSheet(name: "Ayodele",
                               //     month: "${dateFormater(
