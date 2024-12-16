@@ -502,9 +502,9 @@ class AppProvider extends ChangeNotifier {
   List<Shifts> _filteredShifts =[];
 
   List<Shifts> get filteredShifts => _filteredShifts;
- final List <List<String>> _exportData = [];
+ final List <List<dynamic>> _exportData = [];
 
-  List<List<String>> get exportData => _exportData;
+  List<List<dynamic>> get exportData => _exportData;
 
   void generateTimeSheet(DateTime start, DateTime end, String location, BuildContext context) {
     _filteredShifts.clear;
@@ -528,12 +528,12 @@ class AppProvider extends ChangeNotifier {
         ReadableDate(dateTime: completedShift.startTime).time(),
         "",
         ReadableDate(dateTime: completedShift.endTime).time(),
-        "${completedShift.duration}",]);
+        completedShift.duration,]);
       _totalHours+= completedShift.duration;
     }
-    if(_filteredShifts.length < 22){
-      for(int i=0; i< 22 -_filteredShifts.length ; i++){
-        exportData.add(["a","a","b","b","b",]);
+    if(_filteredShifts.length < 30){
+      for(int i=0; i<= 28 - _filteredShifts.length ; i++){
+        exportData.add(["a$i","a$i","b$i","B$i", 10,]);
       }
 
     }

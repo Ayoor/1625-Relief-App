@@ -3,13 +3,13 @@ import 'package:flutter/services.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart';
+import 'package:relief_app/utils/dateformat.dart';
 import 'package:relief_app/utils/saveandopenPDF.dart';
-import 'package:pdf/widgets.dart' as pw;
 
 class TimeSheetExporter {
   final String name;
   final String range;
-  List<List<String>> data;
+  List<List<dynamic>> data;
   double total;
 
   TimeSheetExporter(
@@ -191,237 +191,271 @@ class TimeSheetExporter {
     final logo = (await rootBundle.load("lib/assets/1625_logo.png"))
         .buffer
         .asUint8List();
+
+    Widget fullpage(List<List<dynamic>> timeSheetData, {double totalHrs =0}) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Image(MemoryImage(logo), width: 50),
+          SizedBox(height: 5),
+          Table(
+              border: TableBorder.all(width: 1, color: PdfColors.grey),
+              columnWidths: const {
+                // Project column (wider)
+                0: FlexColumnWidth(1),
+                // Total Hours column// Income column
+              },
+              children: [
+                TableRow(
+                    decoration: BoxDecoration(color: PdfColors.teal100),
+                    children: [
+                      Padding(
+                        padding: EdgeInsets.all(5),
+                        child: Text("Relief Time Sheet",
+                            style: TextStyle(fontWeight: FontWeight.bold),
+                            textAlign: TextAlign.center),
+                      ),
+                    ]),
+              ]),
+          Table(
+              border: TableBorder.all(width: 1, color: PdfColors.grey),
+              columnWidths: const {
+                // Project column (wider)
+                0: FlexColumnWidth(1),
+                1: FlexColumnWidth(3),
+                // Total Hours column// Income column
+              },
+              children: [
+                TableRow(children: [
+                  Padding(
+                    padding: EdgeInsets.all(5),
+                    child: Text("Name",
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                        textAlign: TextAlign.center),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.all(5),
+                    child: Text(name,
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                        textAlign: TextAlign.center),
+                  )
+                ]),
+                TableRow(children: [
+                  Padding(
+                    padding: EdgeInsets.all(5),
+                    child: Text("Month",
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                        textAlign: TextAlign.center),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.all(5),
+                    child: Text(range,
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                        textAlign: TextAlign.center),
+                  )
+                ])
+              ]),
+
+          Table(
+              border: TableBorder.all(width: 1, color: PdfColors.grey),
+              columnWidths: const {
+                // Project column (wider)
+                0: FlexColumnWidth(1),
+                // Total Hours column// Income column
+              },
+              children: [
+                TableRow(children: [
+                  Padding(
+                    padding: EdgeInsets.all(10),
+                    child: Text("",
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                        textAlign: TextAlign.center),
+                  ),
+                ]),
+              ]),
+          TableHelper.fromTextArray(
+            columnWidths: const {
+              // Project column (wider)
+              0: FlexColumnWidth(1),
+              1: FlexColumnWidth(1),
+              2: FlexColumnWidth(1),
+              3: FlexColumnWidth(1),
+              4: FlexColumnWidth(1),
+              // Total Hours column// Income column
+            },
+            data: timeSheetData,
+            headers: [
+              "Date",
+              "Start Time",
+              "Launch break",
+              "End Time",
+              "Total Hours",
+            ],
+            cellAlignment: Alignment.center,
+            border: TableBorder.all(width: 1, color: PdfColors.grey),
+            tableWidth: TableWidth.max,
+            headerStyle: TextStyle(
+              fontSize: 11,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+
+          Table(
+              border: TableBorder.all(width: 1, color: PdfColors.grey),
+              columnWidths: const {
+                0: FlexColumnWidth(3.99),
+                // Project column (wider)
+                1: FlexColumnWidth(1),
+                // Total Hours column// Income column
+              },
+              children: [
+                TableRow(
+                    children: [
+                  Padding(
+                    padding: EdgeInsets.all(10),
+                    child: Text("Total number of hours completed",
+                        textAlign: TextAlign.center),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.all(10),
+                    child: Center(child: Text("$totalHrs")),
+                  )
+                ]),
+              ]),
+
+
+          Table(
+              border: TableBorder.all(width: 1, color: PdfColors.grey),
+              columnWidths: const {
+                // Project column (wider)
+                0: FlexColumnWidth(1),
+                // Total Hours column// Income column
+              },
+              children: [
+                TableRow(children: [
+                  Padding(
+                    padding: EdgeInsets.all(10),
+                    child: Text(
+                        "Continue on a separate sheet if needed \nPlease ensure all shifts completed are recorded and that your sign below. Failure to do so will mean your timesheet cannot be processed and you will not be paid.",
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                        textAlign: TextAlign.center),
+                  )
+                ]),
+              ]), //signed
+
+          Padding(
+            padding: const EdgeInsets.only(top: 17),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Signed
+                Row(
+                  children: [
+                    Text(
+                      "SIGNED:",
+                    ),
+                    Expanded(
+                      child: Divider(
+                        color: PdfColors.grey,
+                        thickness: 1,
+                        endIndent: 8,
+                        indent: 8,
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(height: 17),
+
+                // Manager's Signature
+                Row(
+                  children: [
+                    Text(
+                      "MANAGERS SIGNATURE:",
+                    ),
+                    Expanded(
+                      child: Divider(
+                        color: PdfColors.grey,
+                        thickness: 1,
+                        endIndent: 8,
+                        indent: 8,
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(height: 17),
+
+                // Manager's Name
+                Row(
+                  children: [
+                    Text(
+                      "MANAGERS NAME:",
+                    ),
+                    Expanded(
+                      child: Divider(
+                        color: PdfColors.grey,
+                        thickness: 1,
+                        endIndent: 8,
+                        indent: 8,
+                      ),
+                    ),
+                  ],
+                ),
+
+                // Note
+              ],
+            ),
+          ),
+          SizedBox(height: 20),
+        ],
+      );
+    }
+
     pdf.addPage(
       MultiPage(
           build: (Context context) {
-            return [
-              Image(MemoryImage(logo), width: 50),
-              SizedBox(height: 10),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Table(
-                      border:
-                      TableBorder.all(width: 1, color: PdfColors.grey),
-                      columnWidths: const {
-                        // Project column (wider)
-                        0: FlexColumnWidth(1),
-                        // Total Hours column// Income column
-                      },
-                      children: [
-                        TableRow(
-                            decoration: BoxDecoration(color: PdfColors.teal100),
-                            children: [
-                          Padding(
-                            padding: EdgeInsets.all(10),
-                            child: Text("Relief Time Sheet",
-                                style:
-                                TextStyle(fontWeight: FontWeight.bold),
-                                textAlign: TextAlign.center),
-                          ),
-                        ]),
-                      ]),
-                  Table(
-                      border:
-                          TableBorder.all(width: 1, color: PdfColors.grey),
-                      columnWidths: const {
-                        // Project column (wider)
-                        0: FlexColumnWidth(1),
-                        1: FlexColumnWidth(3),
-                        // Total Hours column// Income column
-                      },
-                      children: [
-                        TableRow(children: [
-                          Padding(
-                            padding: EdgeInsets.all(10),
-                            child: Text("Name",
-                                style:
-                                    TextStyle(fontWeight: FontWeight.bold),
-                                textAlign: TextAlign.center),
-                          ),
-                          Padding(
-                            padding: EdgeInsets.all(10),
-                            child: Text(name,
-                                style:
-                                    TextStyle(fontWeight: FontWeight.bold),
-                                textAlign: TextAlign.center),
-                          )
-                        ]),
-                        TableRow(children: [
-                          Padding(
-                            padding: EdgeInsets.all(10),
-                            child: Text("Month",
-                                style:
-                                    TextStyle(fontWeight: FontWeight.bold),
-                                textAlign: TextAlign.center),
-                          ),
-                          Padding(
-                            padding: EdgeInsets.all(10),
-                            child: Text(range,
-                                style:
-                                    TextStyle(fontWeight: FontWeight.bold),
-                                textAlign: TextAlign.center),
-                          )
-                        ])
-                      ]),
+            double totalhours;
+            if (data.length <= 13) {
+              totalhours = total;
+              return [fullpage(data, totalHrs: totalhours)];
+            }
 
-                  Table(
-                      border:
-                          TableBorder.all(width: 1, color: PdfColors.grey),
-                      columnWidths: const {
-                        // Project column (wider)
-                        0: FlexColumnWidth(1),
-                        // Total Hours column// Income column
-                      },
-                      children: [
-                        TableRow(children: [
-                          Padding(
-                            padding: EdgeInsets.all(10),
-                            child: Text("",
-                                style:
-                                    TextStyle(fontWeight: FontWeight.bold),
-                                textAlign: TextAlign.center),
-                          ),
-                        ]),
-                      ]),
-                  TableHelper.fromTextArray(
-                    columnWidths: const {
-                      // Project column (wider)
-                      0: FlexColumnWidth(1.18),
-                      1: FlexColumnWidth(1),
-                      2: FlexColumnWidth(.5),
-                      3: FlexColumnWidth(1),
-                      4: FlexColumnWidth(1),
-                      // Total Hours column// Income column
-                    },
-                    data: data,
-                    headers: [
-                      "Date",
-                      "Start Time",
-                      "Launch break (N/A if hostel shift)",
-                      "End Time",
-                      "Hours completed"
-                    ],
-                    cellAlignment: Alignment.center,
-                    border:
-                        TableBorder.all(width: 1, color: PdfColors.grey),
-                    tableWidth: TableWidth.max,
-                    headerStyle: TextStyle(
-                      fontSize: 11,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  Table(
-                      border:
-                          TableBorder.all(width: 1, color: PdfColors.grey),
-                      columnWidths: const {
-                        0: FlexColumnWidth(3.7),
-                        // Project column (wider)
-                        1: FlexColumnWidth(1),
-                        // Total Hours column// Income column
-                      },
-                      children: [
-                        TableRow(children: [
-                          Padding(
-                            padding: EdgeInsets.all(10),
-                            child: Text("Total number of hours completed"),
-                          ),
-                          Padding(
-                            padding: EdgeInsets.all(10),
-                            child: Text("$total"),
-                          )
-                        ]),
-                      ]),
-                  Table(
-                      border:
-                          TableBorder.all(width: 1, color: PdfColors.grey),
-                      columnWidths: const {
-                        // Project column (wider)
-                        0: FlexColumnWidth(1),
-                        // Total Hours column// Income column
-                      },
-                      children: [
-                        TableRow(children: [
-                          Padding(
-                            padding: EdgeInsets.all(10),
-                            child: Text(
-                                "Continue on a separate sheet if needed \nPlease ensure all shifts completed are recorded and that your sign below. Failure to do so will mean your timesheet cannot be processed and you will not be paid.",
-                                style:
-                                    TextStyle(fontWeight: FontWeight.bold),
-                                textAlign: TextAlign.center),
-                          )
-                        ]),
-                      ]), //signed
+            else {
+              int customSplitIndex = 15; // Split after the 7th element
+              List<List<dynamic>> dataA = data.sublist(0, customSplitIndex);
+              List<List<dynamic>> dataB = data.sublist(customSplitIndex);
+              double totalhoursA=0;
+              double totalhoursB=0;
 
-                  Padding(
-                    padding: const EdgeInsets.only(top: 25.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        // Signed
-                        Row(
-                          children: [
-                            Text(
-                              "SIGNED:",
-                            ),
-                            Expanded(
-                              child: Divider(
-                                color: PdfColors.grey,
-                                thickness: 1,
-                                endIndent: 8,
-                                indent: 8,
-                              ),
-                            ),
-                          ],
-                        ),
-                        SizedBox(height: 20),
 
-                        // Manager's Signature
-                        Row(
-                          children: [
-                            Text(
-                              "MANAGERS SIGNATURE:",
-                            ),
-                            Expanded(
-                              child: Divider(
-                                color: PdfColors.grey,
-                                thickness: 1,
-                                endIndent: 8,
-                                indent: 8,
-                              ),
-                            ),
-                          ],
-                        ),
-                        SizedBox(height: 20),
+              for (int i =0; i < dataA.length; i++) {
+                // double dailyTotal = dataA[i][4]
+                totalhoursA+= dataA[i][4];
+              }
 
-                        // Manager's Name
-                        Row(
-                          children: [
-                            Text(
-                              "MANAGERS NAME:",
-                            ),
-                            Expanded(
-                              child: Divider(
-                                color: PdfColors.grey,
-                                thickness: 1,
-                                endIndent: 8,
-                                indent: 8,
-                              ),
-                            ),
-                          ],
-                        ),
 
-                        // Note
-
-                      ],
-                    ),
-                  )
-                ],
-              )
-            ];
+              if (dataB.length < 15) {
+                for (int i = 0; i <= (15 - dataB.length); i++) {
+                  dataB.add([
+                    "\n",
+                    "\n",
+                    "\n",
+                    "\n",
+                    5,
+                  ]);
+                }
+              }
+              for (int i =0; i < dataB.length; i++) {
+                // double dailyTotal = dataA[i][4]
+                totalhoursB+= dataB[i][4];
+              }
+              return [
+                fullpage(dataA, totalHrs: totalhoursA),
+                fullpage(dataB, totalHrs: totalhoursB),
+              ];
+            }
           },
           pageFormat: PdfPageFormat.a4),
     );
-    return SaveandOpenPDF().savePDF("docName", pdf);
+    return SaveandOpenPDF().savePDF("Timesheet ${ReadableDate(dateTime: DateTime.now()).date()}", pdf);
   }
 }
