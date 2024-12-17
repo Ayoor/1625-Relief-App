@@ -40,6 +40,7 @@ dependencies:
   syncfusion_flutter_pdf:
   path_provider:
   open_file:
+  permission_handler:
 
 dev_dependencies:
   flutter_test:
