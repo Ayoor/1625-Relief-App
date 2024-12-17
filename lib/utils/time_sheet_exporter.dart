@@ -336,7 +336,7 @@ class TimeSheetExporter {
                   Padding(
                     padding: EdgeInsets.all(10),
                     child: Text(
-                        "Continue on a separate sheet if needed \nPlease ensure all shifts completed are recorded and that your sign below. Failure to do so will mean your timesheet cannot be processed and you will not be paid.",
+                        "Continue on a separate sheet if needed\nPlease ensure all shifts completed are recorded and that your sign below. Failure to do so will mean your timesheet cannot be processed and you will not be paid.",
                         style: TextStyle(fontWeight: FontWeight.bold),
                         textAlign: TextAlign.center),
                   )
@@ -414,40 +414,42 @@ class TimeSheetExporter {
       MultiPage(
           build: (Context context) {
             double totalhours;
-            if (data.length <= 13) {
+            if (data.length <= 15) {
               totalhours = total;
               return [fullpage(data, totalHrs: totalhours)];
             }
-
             else {
-              int customSplitIndex = 15; // Split after the 7th element
+              int customSplitIndex = 15;
               List<List<dynamic>> dataA = data.sublist(0, customSplitIndex);
               List<List<dynamic>> dataB = data.sublist(customSplitIndex);
+              print(dataA.length, );
+              print(dataB.length, );
+
               double totalhoursA=0;
               double totalhoursB=0;
 
-
               for (int i =0; i < dataA.length; i++) {
-                // double dailyTotal = dataA[i][4]
-                totalhoursA+= dataA[i][4];
-              }
-
-
-              if (dataB.length < 15) {
-                for (int i = 0; i <= (15 - dataB.length); i++) {
-                  dataB.add([
-                    "\n",
-                    "\n",
-                    "\n",
-                    "\n",
-                    5,
-                  ]);
+                if(dataA[i][4] != "\n"){
+                  totalhoursA+= dataA[i][4];
                 }
+
               }
               for (int i =0; i < dataB.length; i++) {
-                // double dailyTotal = dataA[i][4]
-                totalhoursB+= dataB[i][4];
+                if(dataB[i][4] != "\n"){
+                  totalhoursB+= dataB[i][4];
+                }
               }
+
+              if (dataB.length < 15) {
+                int rowsToAdd = 15 - dataB.length; // Calculate how many rows to add
+                List<List<dynamic>> rowsToInsert = List.generate(rowsToAdd, (index) => [
+                  "\n", "\n", "\n", "\n", "\n"
+                ]); // Generate the rows to add
+
+                // Add the rows to dataB outside the loop
+                dataB.addAll(rowsToInsert);
+              }
+
               return [
                 fullpage(dataA, totalHrs: totalhoursA),
                 fullpage(dataB, totalHrs: totalhoursB),
@@ -456,6 +458,6 @@ class TimeSheetExporter {
           },
           pageFormat: PdfPageFormat.a4),
     );
-    return SaveandOpenPDF().savePDF("Timesheet ${ReadableDate(dateTime: DateTime.now()).date()}", pdf);
+    return SaveandOpenPDF().savePDF(" ${DateTime.now().month}-${DateTime.now().year} Timesheet", pdf);
   }
 }
