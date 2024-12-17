@@ -17,7 +17,7 @@ class SaveandOpenPDF{
     }
 
     // Construct the file path
-    final filePath = "${root.path}/$docName.pdf";
+    final filePath = "${root.path}/$docName.pdf ";
 
     // Create a File instance
     final file = File(filePath);
