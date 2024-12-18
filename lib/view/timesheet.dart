@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:intl/intl.dart';
+import 'package:persistent_bottom_nav_bar_v2/persistent_bottom_nav_bar_v2.dart';
 import 'package:provider/provider.dart';
 import 'package:relief_app/utils/saveandopenPDF.dart';
 import 'package:relief_app/view/widgets/timesheet_table.dart';
@@ -297,23 +298,8 @@ class _TimeSheetState extends State<TimeSheet> {
                                 TextStyle(fontSize: 14, color: Colors.black45),
                           ),
                           GestureDetector(
-                            onTap: () async {
-
-                             final file= await TimeSheetExporter(
-                                      name: "Ayodele Oduola",
-                                      range:
-                                          "${dateFormater(startTime)} to ${dateFormater(endTime)}",
-                                      data: provider.exportData,
-                                      total: provider.totalHours)
-                                  .newCEHTimeSheet();
-provider.showMessage(context: context, message: "Time sheet exported to Downloads", type: ToastificationType.success, bgColor: Colors.lightGreen, icon: Icons.check);
-                              SaveandOpenPDF().openPDF(file);
-
-                              // provider.exportTimeSheet(name: "Ayodele",
-                              //     month: "${dateFormater(
-                              //         startTime)} to ${dateFormater(endTime)}",
-                              //     payRate: 12,
-                              //     shifts: provider.filteredShifts);
+                            onTap: () {
+                              showBottomSheet();
                             },
                             child: Text(
                               "Export",
@@ -388,6 +374,118 @@ provider.showMessage(context: context, message: "Time sheet exported to Download
           ],
         ),
       ),
+    );
+  }
+
+  void showBottomSheet() {
+    final provider = Provider.of<AppProvider>(context, listen: false);
+    showMaterialModalBottomSheet(
+      backgroundColor: Colors.white,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(
+            20.0), // Adjust the radius for desired curvature
+      ),
+      context: context,
+      builder: (bottomSheetContext) => Padding(
+          padding: const EdgeInsets.all(10),
+          child: SizedBox(
+            height: MediaQuery.of(context).size.height / 6,
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Column(
+                children: [
+                  //delete
+                  InkWell(
+                    splashColor: Colors.transparent,
+                    highlightColor: Colors.transparent,
+                    onTap: () async {
+                      Navigator.pop(context);
+                      final file = await TimeSheetExporter(
+                          name: "Ayodele Oduola",
+                          range:
+                          "${dateFormater(startTime)} to ${dateFormater(endTime)}",
+                          data: provider.exportData,
+                          total: provider.totalHours)
+                          .newCEHTimeSheet();
+                      SaveandOpenPDF().sendEmailWithAttachment(file);
+                      if (mounted) {
+                        provider.showMessage(
+                            context: context,
+                            message: "Your timesheet has been sent to your email",
+                            type: ToastificationType.success,
+                            bgColor: Colors.lightGreen,
+                            icon: Icons.email_outlined);
+                        // Navigator.pop(bottomSheetContext);
+                      }
+
+                    },
+                    child: Row(
+                      children: [
+                        Icon(
+                          Icons.mail,
+                          color: Colors.blueGrey,
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(left: 8.0),
+                          child: Text(
+                            "Send to Email",
+                            style: TextStyle(
+                              fontSize: 18,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  SizedBox(
+                    height: 20,
+                  ),
+
+                  InkWell(
+                    onTap: () async {
+                      Navigator.pop(context);
+
+                      final file = await TimeSheetExporter(
+                              name: "Ayodele Oduola",
+                              range:
+                                  "${dateFormater(startTime)} to ${dateFormater(endTime)}",
+                              data: provider.exportData,
+                              total: provider.totalHours)
+                          .newCEHTimeSheet();
+                      if (mounted) {
+                        provider.showMessage(
+                            context: context,
+                            message: "Timesheet downloaded",
+                            type: ToastificationType.success,
+                            bgColor: Colors.lightGreen,
+                            icon: Icons.download_outlined);
+
+                      }
+
+                      Future.delayed(Duration(seconds: 1), () => SaveandOpenPDF().openPDF(file),);
+
+                    },
+
+                    //cancel
+                    child: Row(
+                      children: [
+                        Icon(Icons.download, color: Colors.blueGrey),
+                        Padding(
+                          padding: const EdgeInsets.only(left: 8.0),
+                          child: Text(
+                            "Download",
+                            style: TextStyle(
+                              fontSize: 18,
+                            ),
+                          ),
+                        )
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          )),
     );
   }
 }

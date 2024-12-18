@@ -192,7 +192,7 @@ class TimeSheetExporter {
         .buffer
         .asUint8List();
 
-    Widget fullpage(List<List<dynamic>> timeSheetData, {double totalHrs =0}) {
+    Widget fullpage(List<List<dynamic>> timeSheetData, {double totalHrs = 0}) {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -309,8 +309,7 @@ class TimeSheetExporter {
                 // Total Hours column// Income column
               },
               children: [
-                TableRow(
-                    children: [
+                TableRow(children: [
                   Padding(
                     padding: EdgeInsets.all(10),
                     child: Text("Total number of hours completed",
@@ -322,7 +321,6 @@ class TimeSheetExporter {
                   )
                 ]),
               ]),
-
 
           Table(
               border: TableBorder.all(width: 1, color: PdfColors.grey),
@@ -417,34 +415,43 @@ class TimeSheetExporter {
             if (data.length <= 15) {
               totalhours = total;
               return [fullpage(data, totalHrs: totalhours)];
-            }
-            else {
+            } else {
               int customSplitIndex = 15;
               List<List<dynamic>> dataA = data.sublist(0, customSplitIndex);
               List<List<dynamic>> dataB = data.sublist(customSplitIndex);
-              print(dataA.length, );
-              print(dataB.length, );
+              print(
+                dataA.length,
+              );
+              print(
+                dataB.length,
+              );
 
-              double totalhoursA=0;
-              double totalhoursB=0;
+              double totalhoursA = 0;
+              double totalhoursB = 0;
 
-              for (int i =0; i < dataA.length; i++) {
-                if(dataA[i][4] != "\n"){
-                  totalhoursA+= dataA[i][4];
+              for (int i = 0; i < dataA.length; i++) {
+                if (dataA[i][4] != "\n") {
+                  totalhoursA += dataA[i][4];
                 }
-
               }
-              for (int i =0; i < dataB.length; i++) {
-                if(dataB[i][4] != "\n"){
-                  totalhoursB+= dataB[i][4];
+              for (int i = 0; i < dataB.length; i++) {
+                if (dataB[i][4] != "\n") {
+                  totalhoursB += dataB[i][4];
                 }
               }
 
               if (dataB.length < 15) {
-                int rowsToAdd = 15 - dataB.length; // Calculate how many rows to add
-                List<List<dynamic>> rowsToInsert = List.generate(rowsToAdd, (index) => [
-                  "\n", "\n", "\n", "\n", "\n"
-                ]); // Generate the rows to add
+                int rowsToAdd =
+                    15 - dataB.length; // Calculate how many rows to add
+                List<List<dynamic>> rowsToInsert = List.generate(
+                    rowsToAdd,
+                    (index) => [
+                          "\n",
+                          "\n",
+                          "\n",
+                          "\n",
+                          "\n"
+                        ]); // Generate the rows to add
 
                 // Add the rows to dataB outside the loop
                 dataB.addAll(rowsToInsert);
@@ -458,7 +465,7 @@ class TimeSheetExporter {
           },
           pageFormat: PdfPageFormat.a4),
     );
-    return SaveandOpenPDF().savePDF(" ${DateTime.now().month}-${DateTime.now().year} Timesheet", pdf);
+    return SaveandOpenPDF().savePDF(
+        " ${DateTime.now().month}-${DateTime.now().year} Timesheet", pdf);
   }
-
 }
