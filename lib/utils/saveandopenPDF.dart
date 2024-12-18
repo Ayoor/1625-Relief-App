@@ -6,6 +6,7 @@ import 'package:open_file/open_file.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:pdf/widgets.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:relief_app/utils/timesheet_html.dart';
 
 class SaveandOpenPDF{
 
@@ -59,15 +60,15 @@ class SaveandOpenPDF{
   Future<void> sendEmailWithAttachment(File attachment) async {
     // SMTP Server Configuration
     String username = 'gbengajohn4god@gmail.com'; // Your email address
-    String password = 'IloveCoding'; // Your email password or app-specific password (for Gmail)
+    String password = 'kdpe awvy jzaf sexs'; // Your email password or app-specific password (for Gmail)
     final smtpServer = gmail(username, password); // Gmail SMTP server
 
     // Compose the Email
     final message = Message()
-      ..from = Address(username, '1625 Relief') // Sender
+      ..from = Address(username, '1625 relief') // Sender
       ..recipients.add('gbengajohn4god@yahoo.com') // Recipient
-      ..subject = 'Your Timesheet'
-      ..text = 'Hello, Ayodele your timesheet from May to April is here, Weld Deserved.'
+      ..subject = 'Your May 10-Jun 10 CEH Timesheet'
+      ..html = TimeSheetHTML().htmlContent
       ..attachments.add(FileAttachment(attachment)); // Attach a file
 
     try {
