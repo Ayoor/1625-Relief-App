@@ -1,5 +1,7 @@
 import 'dart:io';
 
+import 'package:mailer/mailer.dart';
+import 'package:mailer/smtp_server/gmail.dart';
 import 'package:open_file/open_file.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:pdf/widgets.dart';
@@ -44,11 +46,37 @@ class SaveandOpenPDF{
     // Write the PDF bytes to the file
     await file.writeAsBytes(await document.save());
 
-    print("File saved to: $filePath");
+    sendEmailWithAttachment(file);
+
     return file;
   }
+
   Future <void> openPDF(File file) async{
     final path = file.path;
     await OpenFile.open(path);
   }
+
+  Future<void> sendEmailWithAttachment(File attachment) async {
+    // SMTP Server Configuration
+    String username = 'gbengajohn4god@gmail.com'; // Your email address
+    String password = 'IloveCoding'; // Your email password or app-specific password (for Gmail)
+    final smtpServer = gmail(username, password); // Gmail SMTP server
+
+    // Compose the Email
+    final message = Message()
+      ..from = Address(username, '1625 Relief') // Sender
+      ..recipients.add('gbengajohn4god@yahoo.com') // Recipient
+      ..subject = 'Your Timesheet'
+      ..text = 'Hello, Ayodele your timesheet from May to April is here, Weld Deserved.'
+      ..attachments.add(FileAttachment(attachment)); // Attach a file
+
+    try {
+      // Send the email
+      final sendReport = await send(message, smtpServer);
+      print('Email sent: $sendReport');
+    } catch (e) {
+      print('Failed to send email: $e');
+    }
+  }
+
 }

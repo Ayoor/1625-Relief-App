@@ -128,9 +128,10 @@ class AppProvider extends ChangeNotifier {
       required Color bgColor,
       required IconData icon}) {
     toastification.show(
+
       context: context,
       title: Text(message),
-      alignment: Alignment.bottomCenter,
+      alignment: Alignment.topCenter,
       type: type,
       backgroundColor: bgColor,
       foregroundColor: Colors.white,
