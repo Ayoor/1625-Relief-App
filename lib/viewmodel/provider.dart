@@ -128,7 +128,6 @@ class AppProvider extends ChangeNotifier {
       required Color bgColor,
       required IconData icon}) {
     toastification.show(
-
       context: context,
       title: Text(message),
       alignment: Alignment.topCenter,
@@ -140,7 +139,7 @@ class AppProvider extends ChangeNotifier {
         color: Colors.white,
       ),
       style: ToastificationStyle.flatColored,
-      autoCloseDuration: const Duration(seconds: 3),
+      autoCloseDuration: const Duration(seconds: 5),
       showProgressBar: false,
       dragToClose: true,
     );
@@ -168,7 +167,7 @@ class AppProvider extends ChangeNotifier {
         shiftType: getShiftTypeAndRate(start, location).item1,
         rate: getShiftTypeAndRate(start, location).item2,
         durationText: duration(context, start, end),
-        duration: getDuration(start, end) ,
+        duration: getDuration(start, end),
         status: status,
         dateofAction: dateFormater(DateTime.now()),
       ));
@@ -182,12 +181,13 @@ class AppProvider extends ChangeNotifier {
           icon: Icons.info_outline);
     }
   }
+
   double getDuration(DateTime start, DateTime end) {
     // Calculate the duration in hours by dividing the total minutes by 60
     double duration = end.difference(start).inMinutes / 60.0;
-    return double.parse(duration.toStringAsFixed(2)); // Round to 2 decimal places
+    return double.parse(
+        duration.toStringAsFixed(2)); // Round to 2 decimal places
   }
-
 
   Future fetchShifts(BuildContext context) async {
     final DatabaseReference dbRef = FirebaseDatabase.instance.ref();
@@ -219,7 +219,6 @@ class AppProvider extends ChangeNotifier {
                   status: shiftData['status'],
                   dateofAction: shiftData['dateofAction'],
                   duration: shiftData['duration'].toDouble(),
-
                 );
 
                 _scheduledShifts.add(shift);
@@ -240,7 +239,6 @@ class AppProvider extends ChangeNotifier {
                   status: shiftData['status'],
                   dateofAction: shiftData['dateofAction'],
                   duration: shiftData['duration'].toDouble(),
-
                 );
                 _cancelledShifts.add(shift);
               } catch (e) {
@@ -303,34 +301,33 @@ class AppProvider extends ChangeNotifier {
     }
   }
 
-  double _CEHShiftHrs=0;
-   double _CEHShiftIncome=0;
+  double _CEHShiftHrs = 0;
+  double _CEHShiftIncome = 0;
 
   double get CEHShiftHrs => _CEHShiftHrs;
-   double _SGHShiftHrs = 0;
-   double _SGHShiftIncome =0;
-   double _woodleazeShiftHrs=0;
-   double _woodleazeShiftIncome=0;
+  double _SGHShiftHrs = 0;
+  double _SGHShiftIncome = 0;
+  double _woodleazeShiftHrs = 0;
+  double _woodleazeShiftIncome = 0;
 
   double get CEHShiftIncome => _CEHShiftIncome;
 
   void getIncomeSummary(BuildContext context) async {
-    _CEHShiftHrs= 0;
+    _CEHShiftHrs = 0;
     _CEHShiftIncome = 0;
-     _SGHShiftHrs =0;
-     _SGHShiftIncome=0 ;
-     _woodleazeShiftHrs=0;
-     _woodleazeShiftIncome=0;
+    _SGHShiftHrs = 0;
+    _SGHShiftIncome = 0;
+    _woodleazeShiftHrs = 0;
+    _woodleazeShiftIncome = 0;
     await fetchShifts(context);
     for (Shifts shift in _completedShifts) {
       if (shift.location == "Charles England House") {
-        _CEHShiftIncome +=  shift.duration.toDouble() * shift.rate;
+        _CEHShiftIncome += shift.duration.toDouble() * shift.rate;
         _CEHShiftHrs += shift.duration;
       }
       if (shift.location == "St. George's House") {
         _SGHShiftIncome += (shift.duration.toDouble() * shift.rate);
         _SGHShiftHrs += shift.duration;
-
       }
       if (shift.location == "Woodleaze") {
         _woodleazeShiftIncome += (shift.duration.toDouble() * shift.rate);
@@ -462,19 +459,16 @@ class AppProvider extends ChangeNotifier {
       notifyListeners();
     }
   }
+
   LocationIncomeHistory SGH = LocationIncomeHistory();
   LocationIncomeHistory CEH = LocationIncomeHistory();
   LocationIncomeHistory WL = LocationIncomeHistory();
 
-
   void shiftHistory(BuildContext context) {
-
-
     if (_completedShifts.isNotEmpty) {
-      _completedShifts= _completedShifts.reversed.toList();
+      _completedShifts = _completedShifts.reversed.toList();
       // Only process shifts for the current year
       if (_completedShifts.last.startTime.year == DateTime.now().year) {
-
         // Map each location to its respective class
         final locationMap = {
           "St. George's House": SGH,
@@ -491,7 +485,8 @@ class AppProvider extends ChangeNotifier {
 
           // Update the corresponding month dynamically
           if (locationMap.containsKey(cs.location)) {
-            final LocationIncomeHistory locationClass = locationMap[cs.location]!;
+            final LocationIncomeHistory locationClass =
+                locationMap[cs.location]!;
             locationClass.updateMonthlyValue(monthIndex, cs.duration * cs.rate);
           }
         }
@@ -500,84 +495,127 @@ class AppProvider extends ChangeNotifier {
 
     notifyListeners();
   }
-  List<Shifts> _filteredShifts =[];
+
+  List<Shifts> _filteredShifts = [];
 
   List<Shifts> get filteredShifts => _filteredShifts;
- final List <List<dynamic>> _exportData = [];
+  final List<List<dynamic>> _exportData = [];
 
   List<List<dynamic>> get exportData => _exportData;
 
-  void generateTimeSheet(DateTime start, DateTime end, String location, BuildContext context) {
+  void generateTimeSheet(
+      DateTime start, DateTime end, String location, BuildContext context) {
     _filteredShifts.clear();
     _exportData.clear();
-    if( _completedShifts.isNotEmpty) {
-      _filteredShifts = _completedShifts.where((shift) =>
-         shift.startTime.isAfter(start.subtract(Duration(days: 1))) &&
-            shift.startTime.isBefore(end.add(Duration(days: 1))) && shift.location == location
-      ).toList();
+    if (_completedShifts.isNotEmpty) {
+      _filteredShifts = _completedShifts
+          .where((shift) =>
+              shift.startTime.isAfter(start.subtract(Duration(days: 1))) &&
+              shift.startTime.isBefore(end.add(Duration(days: 1))) &&
+              shift.location == location)
+          .toList();
+    } else {
+      showMessage(
+          context: context,
+          message: "No shifts in timeframe",
+          type: ToastificationType.error,
+          bgColor: Colors.red.shade200,
+          icon: Icons.cancel_rounded);
     }
-    else{
-      showMessage(context: context, message: "No shifts in timeframe", type: ToastificationType.error, bgColor: Colors.red.shade200, icon: Icons.cancel_rounded);
+    if (_filteredShifts.isEmpty) {
+      showMessage(
+          context: context,
+          message: "No shifts in timeframe",
+          type: ToastificationType.error,
+          bgColor: Colors.red.shade200,
+          icon: Icons.cancel_rounded);
     }
-    if(_filteredShifts.isEmpty){
-      showMessage(context: context, message: "No shifts in timeframe", type: ToastificationType.error, bgColor: Colors.red.shade200, icon: Icons.cancel_rounded);
-
-    }
-    _filteredShifts= _filteredShifts.reversed.toList();
+    _filteredShifts = _filteredShifts.reversed.toList();
     for (Shifts completedShift in _filteredShifts) {
       exportData.add([
         ReadableDate(dateTime: completedShift.startTime).date(),
         ReadableDate(dateTime: completedShift.startTime).time(),
         "",
         ReadableDate(dateTime: completedShift.endTime).time(),
-        completedShift.duration,]);
-      _totalHours+= completedShift.duration;
+        completedShift.duration,
+      ]);
+      _totalHours += completedShift.duration;
     }
-    if(_filteredShifts.length < 15){
-      for(int i=0; i< 15 - _filteredShifts.length ; i++){
-        exportData.add(["\n","\n","\n","\n","\n",]);
+    if (_filteredShifts.length < 15) {
+      for (int i = 0; i < 15 - _filteredShifts.length; i++) {
+        exportData.add([
+          "\n",
+          "\n",
+          "\n",
+          "\n",
+          "\n",
+        ]);
       }
-
     }
-
 
     notifyListeners();
-}
+  }
 
-  // Future<void> exportTimeSheet({
-  //   required String name,
-  //   required String month,
-  //   required double payRate,
-  //   required List<Shifts> shifts, // Now receiving a List of Shifts objects
-  // }) async {
-  //   // Load the template
-  //   final data = File("lib/assets/ceh.docx");
-  //   final docx = await DocxTemplate.fromBytes(await data.readAsBytes());
-  //
-  //   // Replace placeholders
-  //   Content content = Content();
-  //   content
-  //     ..add(TextContent("NAME", name))
-  //     ..add(TextContent("MONTH", month))
-  //     ..add(TextContent("PAY_RATE", payRate.toString()));
-  //
-  //   // Transform the List<Shifts> into table rows
-  //   List<RowContent> tableRows = [];
-  //   for (var shift in shifts) {
-  //     tableRows.add(RowContent()
-  //       ..add(TextContent("DATE", DateFormat('dd/MM/yyyy').format(shift.startTime)))
-  //       ..add(TextContent("START_TIME", DateFormat('hh:mm a').format(shift.startTime)))
-  //       ..add(TextContent("END_TIME", DateFormat('hh:mm a').format(shift.endTime))));
-  //   }
-  //   content.add(TableContent("SHIFTS", tableRows));
-  //
-  //   // Generate the document
-  //   final docGenerated = await docx.generate(content);
-  //   final fileGenerated = File('generated.docx');
-  //   if (docGenerated != null) await fileGenerated.writeAsBytes(docGenerated);
+
+  int get monthCompletedShifts => _monthCompletedShifts;
+  late int _monthCompletedShifts;
+  late int _monthAlocatedShifts;
+  late int _monthCancelledShifts;
+  late int _balanceShifts;
+  late double _totalIncomeforTheMonth;
+  List<Shifts> _monthlycompletedShifts = [];
+  List<Shifts> _monthlycancelledShifts = [];
+
+  List<Shifts> get monthlycancelledShifts => _monthlycancelledShifts;
+  List<Shifts> _monthlyScheduledShifts = [];
+
+  List<Shifts> get monthlycompletedShifts => _monthlycompletedShifts;
+
+  void overviewData(BuildContext context, DateTime start, DateTime end,) async {
+  _monthCancelledShifts =0;
+  _monthAlocatedShifts = 0;
+  _monthCompletedShifts = 0;
+    await fetchShifts(context);
+
+    _monthlycompletedShifts = _completedShifts
+        .where((shift) =>
+    shift.startTime.isAfter(start.subtract(Duration(days: 40))) &&
+        shift.startTime.isBefore(end.add(Duration(days: 40))))
+        .toList();
+    _monthlyScheduledShifts = _scheduledShifts
+        .where((shift) =>
+    shift.startTime.isAfter(start.subtract(Duration(days: 40))) &&
+        shift.startTime.isBefore(end.add(Duration(days: 40))))
+        .toList();
+    _monthlycancelledShifts = _cancelledShifts
+        .where((shift) =>
+    shift.startTime.isAfter(start.subtract(Duration(days: 40))) &&
+        shift.startTime.isBefore(end.add(Duration(days: 40))))
+        .toList();
+    _monthCompletedShifts = _monthlycompletedShifts.length;
+    _monthAlocatedShifts = _monthlycompletedShifts.length + _monthlyScheduledShifts.length;
+    _monthCancelledShifts = _monthlycancelledShifts.length;
+  _totalIncomeforTheMonth =0;
+
+    for (Shifts shifts in _monthlycompletedShifts ){
+      _totalIncomeforTheMonth += shifts.rate * shifts.duration;
+    }
+    notifyListeners();
+  }
+
+
   // }
-double _totalHours = 0;
+  double _totalHours = 0;
 
   double get totalHours => _totalHours;
-}// end of provider class
 
+  int get monthAlocatedShifts => _monthAlocatedShifts;
+
+  int get monthCancelledShifts => _monthCancelledShifts;
+
+  int get balanceShifts => _balanceShifts;
+
+  double get totalIncomeforTheMonth => _totalIncomeforTheMonth;
+
+  List<Shifts> get monthlyScheduledShifts => _monthlyScheduledShifts;
+} // end of provider class

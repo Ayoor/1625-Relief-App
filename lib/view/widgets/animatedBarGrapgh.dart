@@ -1,11 +1,17 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 
-
 class AnimatedBarGraph extends StatefulWidget {
-  final List<double>yValues;
-  final List<String>labels;
-  const AnimatedBarGraph({super.key, required this.yValues, required this.labels});
+  final List<double> yValues;
+  final List<String> labels;
+  final double? maxY;
+
+  const AnimatedBarGraph({
+    Key? key,
+    required this.yValues,
+    required this.labels,
+    this.maxY,
+  }) : super(key: key);
 
   @override
   _AnimatedBarGraphState createState() => _AnimatedBarGraphState();
@@ -13,14 +19,37 @@ class AnimatedBarGraph extends StatefulWidget {
 
 class _AnimatedBarGraphState extends State<AnimatedBarGraph> {
 
+  double wholeNumberDouble(double value) {
+    return double.parse(value.toStringAsFixed(value.truncateToDouble() == value ? 0 : 1));
+  }
+
   @override
   Widget build(BuildContext context) {
-    double maxYValue = widget.yValues.reduce((a, b) => a > b ? a : b); // Find the maximum y value
+    double? maxYValue = 0;
+    double maxAdjust = 0;
+    double interval = 0;
+
+    // Determine the maxY value and adjust it based on the input
+    if (widget.maxY == null) {
+      maxYValue = widget.yValues.reduce((a, b) => a > b ? a : b);
+      maxAdjust = 400;
+      interval = 500;
+    } else {
+      maxYValue = widget.maxY;
+      interval = 5;
+    }
+
+    // Define custom colors for each bar
+    List<Color> barColors = [
+      Colors.lightBlue,
+      Colors.deepOrangeAccent.shade100,
+      Colors.grey.shade200
+    ];
 
     return BarChart(
-      BarChartData(
-        alignment: BarChartAlignment.spaceAround,
-        maxY: maxYValue + 400, // Adjust maxY to be slightly higher than the max value in yValues
+      BarChartData(backgroundColor: Colors.transparent,
+        alignment: BarChartAlignment.center,
+        maxY: maxYValue! + maxAdjust,
         minY: 0,
         barTouchData: BarTouchData(enabled: true),
         titlesData: FlTitlesData(
@@ -32,48 +61,60 @@ class _AnimatedBarGraphState extends State<AnimatedBarGraph> {
                 int index = value.toInt();
                 return Padding(
                   padding: const EdgeInsets.only(top: 8.0),
-                  child: Text(widget.labels[index], style: const TextStyle(fontSize: 12)),
+                  child: Text(
+                    widget.labels[index],
+                    style: const TextStyle(fontSize: 12),
+                  ),
                 );
               },
-              interval: 1,
+              interval: 1, // Adjusted to show each label
               reservedSize: 28,
             ),
           ),
           leftTitles: AxisTitles(
-            sideTitles: SideTitles(
+            sideTitles: SideTitles(maxIncluded: true, minIncluded: false,
               showTitles: true,
               getTitlesWidget: (value, meta) {
-                if(value >= 1000) {
-                  // Format the Y-axis values
-                  return Text('${(value / 1000).toStringAsFixed(1)}k',
-                      style: const TextStyle(fontSize: 12));
+                if (value >= 1000) {
+                  // Format Y-axis values as k for thousands
+                  return Text(
+                    '${(value / 1000).toStringAsFixed(1)}k',
+                    style: const TextStyle(fontSize: 12),
+                  );
                 }
-                else{
-                  return Text('$value',
-                      style: const TextStyle(fontSize: 12));
+                else {
+                  return Text(
+                    (value.toStringAsFixed(0)),
+                    style: const TextStyle(fontSize: 12),
+                  );
                 }
               },
-              interval: 500, // Adjust the interval based on your data range
+              interval: interval,
               reservedSize: 40,
             ),
           ),
-          topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-          rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+          topTitles: const AxisTitles(
+            sideTitles: SideTitles(showTitles: false),
+          ),
+          rightTitles: const AxisTitles(
+            sideTitles: SideTitles(showTitles: false),
+          ),
         ),
         borderData: FlBorderData(
-          show: true,
+          show: false,
           border: Border.all(color: Colors.grey, width: 1),
         ),
         barGroups: widget.yValues.asMap().entries.map((entry) {
           int index = entry.key;
           double value = entry.value;
+
           return BarChartGroupData(
             x: index,
             barRods: [
               BarChartRodData(
                 toY: value,
                 width: 16,
-                color: Colors.blue,
+                color: barColors[index % barColors.length],
                 borderRadius: BorderRadius.circular(4),
               ),
             ],
@@ -85,5 +126,4 @@ class _AnimatedBarGraphState extends State<AnimatedBarGraph> {
       swapAnimationCurve: Curves.easeInOut,
     );
   }
-
 }

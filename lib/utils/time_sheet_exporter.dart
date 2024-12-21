@@ -196,7 +196,13 @@ class TimeSheetExporter {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Image(MemoryImage(logo), width: 50),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Image(MemoryImage(logo), width: 50),
+              Text("Generated on Relief App", style: TextStyle(color: PdfColors.grey, fontSize: 10))
+            ]
+          ),
           SizedBox(height: 5),
           Table(
               border: TableBorder.all(width: 1, color: PdfColors.grey),
