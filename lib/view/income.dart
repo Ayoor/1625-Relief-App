@@ -21,10 +21,7 @@ class _IncomeState extends State<Income> with SingleTickerProviderStateMixin {
     super.initState();
     _tabController = TabController(length: 3, vsync: this);
 
-    // Provider.of<AppProvider>(context, listen: false).getIncomeSummary(context);
 
-    // Provider.of<AppProvider>(context, listen: false)
-    //     .loadData(context);
   }
 
   @override

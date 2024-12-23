@@ -43,7 +43,7 @@ class _AnimatedBarGraphState extends State<AnimatedBarGraph> {
     List<Color> barColors = [
       Colors.lightBlue,
       Colors.deepOrangeAccent.shade100,
-      Colors.grey.shade200
+      Colors.purpleAccent.shade100
     ];
 
     return BarChart(

@@ -31,4 +31,5 @@ Adding Shift to Database --done
 Editing shifts on Database --done
 Implement daily tasks checklist
 add "generated from relief app" on timesheet --done
+rework on duplicate shifts (not working with different locations)
 

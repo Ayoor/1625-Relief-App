@@ -558,11 +558,11 @@ class AppProvider extends ChangeNotifier {
 
 
   int get monthCompletedShifts => _monthCompletedShifts;
-  late int _monthCompletedShifts;
-  late int _monthAlocatedShifts;
-  late int _monthCancelledShifts;
-  late int _balanceShifts;
-  late double _totalIncomeforTheMonth;
+   int _monthCompletedShifts=0;
+   int _monthAlocatedShifts=0;
+   int _monthCancelledShifts=0;
+   final int _balanceShifts=0;
+   double _totalIncomeforTheMonth=0;
   List<Shifts> _monthlycompletedShifts = [];
   List<Shifts> _monthlycancelledShifts = [];
 
@@ -570,36 +570,96 @@ class AppProvider extends ChangeNotifier {
   List<Shifts> _monthlyScheduledShifts = [];
 
   List<Shifts> get monthlycompletedShifts => _monthlycompletedShifts;
+  double _compJan =0, _compFeb =0, _compMar =0, _compMay =0, _compApr =0, _compJun =0,  _compJul =0, _compAug =0 , _compSep =0, _compOct =0, _compNov =0, _compDec =0;
 
-  void overviewData(BuildContext context, DateTime start, DateTime end,) async {
-  _monthCancelledShifts =0;
-  _monthAlocatedShifts = 0;
-  _monthCompletedShifts = 0;
-    await fetchShifts(context);
 
+  double get compJan => _compJan;
+
+  void overviewData(BuildContext context, DateTime start, DateTime end) async {
+    // _monthCancelledShifts = 0;
+    // _monthAlocatedShifts = 0;
+    // _monthCompletedShifts = 0;
+    // _totalIncomeforTheMonth = 0;
+
+print("start completed $_monthCompletedShifts");
+print("start allocated $_monthAlocatedShifts");
+print("cs ${_completedShifts.length}");
+
+    // Filter shifts for the given range
     _monthlycompletedShifts = _completedShifts
         .where((shift) =>
-    shift.startTime.isAfter(start.subtract(Duration(days: 40))) &&
-        shift.startTime.isBefore(end.add(Duration(days: 40))))
+    shift.startTime.isAfter(start) && shift.startTime.isBefore(end))
         .toList();
+
     _monthlyScheduledShifts = _scheduledShifts
         .where((shift) =>
-    shift.startTime.isAfter(start.subtract(Duration(days: 40))) &&
-        shift.startTime.isBefore(end.add(Duration(days: 40))))
+    shift.startTime.isAfter(start) && shift.startTime.isBefore(end))
         .toList();
+
     _monthlycancelledShifts = _cancelledShifts
         .where((shift) =>
-    shift.startTime.isAfter(start.subtract(Duration(days: 40))) &&
-        shift.startTime.isBefore(end.add(Duration(days: 40))))
+    shift.startTime.isAfter(start) && shift.startTime.isBefore(end))
         .toList();
-    _monthCompletedShifts = _monthlycompletedShifts.length;
-    _monthAlocatedShifts = _monthlycompletedShifts.length + _monthlyScheduledShifts.length;
-    _monthCancelledShifts = _monthlycancelledShifts.length;
-  _totalIncomeforTheMonth =0;
 
-    for (Shifts shifts in _monthlycompletedShifts ){
-      _totalIncomeforTheMonth += shifts.rate * shifts.duration;
+    // Calculate shift counts
+    _monthCompletedShifts = _monthlycompletedShifts.length;
+    _monthAlocatedShifts =
+        _monthlycompletedShifts.length + _monthlyScheduledShifts.length;
+    _monthCancelledShifts = _monthlycancelledShifts.length;
+
+
+
+    // Calculate total income for completed shifts
+    for (Shifts shift in _monthlycompletedShifts) {
+      _totalIncomeforTheMonth += shift.rate * shift.duration;
     }
+
+    // Process completed shifts by year and month
+    for (int i = 0; i < _completedShifts.length; i++) {
+      if (_completedShifts[i].startTime.year != DateTime.now().year) {
+        continue; // Skip shifts not in the current year
+      }
+
+      switch (_completedShifts[i].startTime.month) {
+        case 1:
+          _compJan++;
+          break;
+        case 2:
+          _compFeb++;
+          break;
+        case 3:
+          _compMar++;
+          break;
+        case 4:
+          _compApr++;
+          break;
+        case 5:
+          _compMay++;
+          break;
+        case 6:
+          _compJun++;
+          break;
+        case 7:
+          _compJul++;
+          break;
+        case 8:
+          _compAug++;
+          break;
+        case 9:
+          _compSep++;
+          break;
+        case 10:
+          _compOct++;
+          break;
+        case 11:
+          _compNov++;
+          break;
+        case 12:
+          _compDec++;
+          break;
+      }
+    }
+
     notifyListeners();
   }
 
@@ -618,4 +678,26 @@ class AppProvider extends ChangeNotifier {
   double get totalIncomeforTheMonth => _totalIncomeforTheMonth;
 
   List<Shifts> get monthlyScheduledShifts => _monthlyScheduledShifts;
+
+  get compFeb => _compFeb;
+
+  get compMar => _compMar;
+
+  get compMay => _compMay;
+
+  get compApr => _compApr;
+
+  get compJun => _compJun;
+
+  get compJul => _compJul;
+
+  get compAug => _compAug;
+
+  get compSep => _compSep;
+
+  get compOct => _compOct;
+
+  get compNov => _compNov;
+
+  get compDec => _compDec;
 } // end of provider class

@@ -479,7 +479,7 @@ class _NewShiftState extends State<NewShift> {
                 showDayOfWeek: true,
                 initialDateTime: minDate(timeDetail).add(Duration(minutes: 15)),
                 maximumDate: DateTime.now().add(Duration(days: 40)),
-                minimumDate: DateTime.now().subtract(Duration(minutes: 15)),
+                minimumDate:  minDate(timeDetail).subtract(Duration(minutes: 15)),
               ),
             ),
             SizedBox(height: 10),
