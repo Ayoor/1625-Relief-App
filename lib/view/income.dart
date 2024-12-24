@@ -68,10 +68,10 @@ class _IncomeState extends State<Income> with SingleTickerProviderStateMixin {
                     children: [
                       const SizedBox(height: 10),
                       Text(
-                        getDateRange(),
+                        "Income from ${provider.getDateRange()}",
                         style: TextStyle(
                           color: Colors.blue,
-                          fontSize: 16,
+                          fontSize: 14,
                         ),
                       ),
                       const SizedBox(height: 20),
@@ -110,26 +110,6 @@ class _IncomeState extends State<Income> with SingleTickerProviderStateMixin {
     );
   }
 
-  String getDateRange() {
-    DateTime now = DateTime.now();
-
-    DateTime startDate;
-    DateTime endDate;
-
-    if (now.day <= 10) {
-      // If the date is on or before the 10th of the current month
-      startDate =
-          DateTime(now.year, now.month - 1, 11); // 11th of the previous month
-      endDate = DateTime(now.year, now.month, 10); // 10th of the current month
-    } else {
-      // If the date is after the 10th of the current month
-      startDate =
-          DateTime(now.year, now.month, 11); // 11th of the current month
-      endDate = DateTime(now.year, now.month + 1, 10); // 10th of the next month
-    }
-
-    return "${startDate.day}/${startDate.month}/${startDate.year} - ${endDate.day}/${endDate.month}/${endDate.year}";
-  }
 
   @override
   void dispose() {

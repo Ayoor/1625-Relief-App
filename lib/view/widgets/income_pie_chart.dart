@@ -43,7 +43,7 @@ class _IncomePieChartState extends State<IncomePieChart> {
       ),
       chartValuesOptions: ChartValuesOptions(
         showChartValueBackground: false,
-        showChartValues: true,chartValueStyle: TextStyle(fontSize: 14, color: Colors.black, fontWeight: FontWeight.bold),
+        showChartValues: true,chartValueStyle: TextStyle(fontSize: 11, color: Colors.black, fontWeight: FontWeight.bold),
         showChartValuesInPercentage: false,
         showChartValuesOutside: true,
         decimalPlaces: 2,

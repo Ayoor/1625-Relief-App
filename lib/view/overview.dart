@@ -18,34 +18,14 @@ void initState() {
 
   WidgetsBinding.instance.addPostFrameCallback((_) {
     final provider = Provider.of<AppProvider>(context, listen: false);
-    getDateRange();
+    provider.getDateRange();
     provider.overviewData(
       context,
-      monthStart!,
-      monthEnd!,
+      provider.monthStart!,
+      provider.monthEnd!,
     );
   });
 }
-
-  DateTime? monthStart;
-  DateTime? monthEnd;
-
-  void getDateRange() {
-    DateTime now = DateTime.now();
-
-    if (now.day <= 10) {
-      // If the date is on or before the 10th of the current month
-      monthStart =
-          DateTime(now.year, now.month - 1, 11); // 11th of the previous month
-      monthEnd = DateTime(now.year, now.month, 10); // 10th of the current month
-    } else {
-      // If the date is after the 10th of the current month
-      monthStart =
-          DateTime(now.year, now.month, 11); // 11th of the current month
-      monthEnd =
-          DateTime(now.year, now.month + 1, 10); // 10th of the next month
-    }
-  }
   var formatter = NumberFormat.currency(locale: "en_UK", decimalDigits: 2, symbol: "£");
   @override
   Widget build(BuildContext context) {

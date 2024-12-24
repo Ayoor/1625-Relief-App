@@ -1,6 +1,7 @@
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:relief_app/view/income.dart';
 import 'package:toastification/toastification.dart';
 import 'package:tuple/tuple.dart';
 
@@ -320,7 +321,11 @@ class AppProvider extends ChangeNotifier {
     _woodleazeShiftHrs = 0;
     _woodleazeShiftIncome = 0;
     await fetchShifts(context);
-    for (Shifts shift in _completedShifts) {
+
+    getDateRange();
+    overviewData(context, monthStart!, monthEnd!);
+
+    for (Shifts shift in _monthlycompletedShifts) {
       if (shift.location == "Charles England House") {
         _CEHShiftIncome += shift.duration.toDouble() * shift.rate;
         _CEHShiftHrs += shift.duration;
@@ -465,31 +470,47 @@ class AppProvider extends ChangeNotifier {
   LocationIncomeHistory WL = LocationIncomeHistory();
 
   void shiftHistory(BuildContext context) {
+    final locationMap = {
+      "St. George's House": SGH,
+      "Charles England House": CEH,
+      "Woodleaze": WL,
+    };
     if (_completedShifts.isNotEmpty) {
       _completedShifts = _completedShifts.reversed.toList();
+
       // Only process shifts for the current year
       if (_completedShifts.last.startTime.year == DateTime.now().year) {
         // Map each location to its respective class
-        final locationMap = {
-          "St. George's House": SGH,
-          "Charles England House": CEH,
-          "Woodleaze": WL,
-        };
 
+
+        // Reinitialize values to avoid duplication
         for (final location in locationMap.values) {
-          location.resetMonthlyValues();
+          location.reInitialiseMonthlyValues();
         }
 
+        // Accumulate monthly values
         for (Shifts cs in _completedShifts.toList()) {
           final monthIndex = cs.startTime.month; // 1 for Jan, 2 for Feb, etc.
 
           // Update the corresponding month dynamically
           if (locationMap.containsKey(cs.location)) {
-            final LocationIncomeHistory locationClass =
-                locationMap[cs.location]!;
-            locationClass.updateMonthlyValue(monthIndex, cs.duration * cs.rate);
+            final LocationIncomeHistory locationClass = locationMap[cs.location]!;
+            locationClass.accumulateMonthlyValue(monthIndex, cs.duration * cs.rate);
           }
         }
+      }
+
+      else{
+        // Reinitialize values to avoid duplication
+        for (final location in locationMap.values) {
+          location.reInitialiseMonthlyValues();
+        }
+      }
+    }
+    else{
+      // Reinitialize values to avoid duplication
+      for (final location in locationMap.values) {
+        location.reInitialiseMonthlyValues();
       }
     }
 
@@ -576,14 +597,6 @@ class AppProvider extends ChangeNotifier {
   double get compJan => _compJan;
 
   void overviewData(BuildContext context, DateTime start, DateTime end) async {
-    // _monthCancelledShifts = 0;
-    // _monthAlocatedShifts = 0;
-    // _monthCompletedShifts = 0;
-    // _totalIncomeforTheMonth = 0;
-
-print("start completed $_monthCompletedShifts");
-print("start allocated $_monthAlocatedShifts");
-print("cs ${_completedShifts.length}");
 
     // Filter shifts for the given range
     _monthlycompletedShifts = _completedShifts
@@ -608,7 +621,7 @@ print("cs ${_completedShifts.length}");
     _monthCancelledShifts = _monthlycancelledShifts.length;
 
 
-
+    _totalIncomeforTheMonth =0;
     // Calculate total income for completed shifts
     for (Shifts shift in _monthlycompletedShifts) {
       _totalIncomeforTheMonth += shift.rate * shift.duration;
@@ -662,6 +675,28 @@ print("cs ${_completedShifts.length}");
 
     notifyListeners();
   }
+  DateTime? monthStart;
+  DateTime? monthEnd;
+  String getDateRange() {
+    DateTime now = DateTime.now();
+
+
+
+    if (now.day <= 10) {
+      // If the date is on or before the 10th of the current month
+      monthStart =
+          DateTime(now.year, now.month - 1, 11); // 11th of the previous month
+      monthEnd = DateTime(now.year, now.month, 10); // 10th of the current month
+    } else {
+      // If the date is after the 10th of the current month
+      monthStart =
+          DateTime(now.year, now.month, 11); // 11th of the current month
+      monthEnd = DateTime(now.year, now.month + 1, 10); // 10th of the next month
+    }
+
+    return "${monthStart!.day}/${monthStart!.month}/${monthStart!.year} - ${monthEnd!.day}/${monthEnd!.month}/${monthEnd!.year}";
+  }
+
 
 
   // }

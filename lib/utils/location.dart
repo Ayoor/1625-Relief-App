@@ -5,12 +5,12 @@ class LocationIncomeHistory extends ChangeNotifier {
   double Jul = 0, Aug = 0, Sep = 0, Oct = 0, Nov = 0, Dec = 0;
 
   // Reset all months to 0
-  void resetMonthlyValues() {
+  void reInitialiseMonthlyValues() {
     Jan = Feb = Mar = Apr = May = Jun = Jul = Aug = Sep = Oct = Nov = Dec = 0;
-    notifyListeners();
   }
 
-    void updateMonthlyValue(int monthIndex, double value)  {
+  // Accumulate value for a specific month
+  void accumulateMonthlyValue(int monthIndex, double value) {
     switch (monthIndex) {
       case 1:
         Jan += value;
@@ -46,7 +46,7 @@ class LocationIncomeHistory extends ChangeNotifier {
         Nov += value;
         break;
       case 12:
-        Dec = value;
+        Dec += value;
         break;
       default:
         break;
