@@ -271,11 +271,7 @@ class AppProvider extends ChangeNotifier {
           _completedShifts.sort((a, b) => a.startTime.compareTo(b.startTime));
           _completedShifts = _completedShifts.reversed.toList();
 
-          // allShifts.add(_scheduledShifts);
-          // allShifts.add(_completedShifts);
-          // allShifts.add(_cancelledShifts);
-
-          notifyListeners();
+               notifyListeners();
         } else {
           print("Data is not a Map. Unable to iterate.");
         }
@@ -482,7 +478,6 @@ class AppProvider extends ChangeNotifier {
       if (_completedShifts.last.startTime.year == DateTime.now().year) {
         // Map each location to its respective class
 
-
         // Reinitialize values to avoid duplication
         for (final location in locationMap.values) {
           location.reInitialiseMonthlyValues();
@@ -494,20 +489,19 @@ class AppProvider extends ChangeNotifier {
 
           // Update the corresponding month dynamically
           if (locationMap.containsKey(cs.location)) {
-            final LocationIncomeHistory locationClass = locationMap[cs.location]!;
-            locationClass.accumulateMonthlyValue(monthIndex, cs.duration * cs.rate);
+            final LocationIncomeHistory locationClass =
+                locationMap[cs.location]!;
+            locationClass.accumulateMonthlyValue(
+                monthIndex, cs.duration * cs.rate);
           }
         }
-      }
-
-      else{
+      } else {
         // Reinitialize values to avoid duplication
         for (final location in locationMap.values) {
           location.reInitialiseMonthlyValues();
         }
       }
-    }
-    else{
+    } else {
       // Reinitialize values to avoid duplication
       for (final location in locationMap.values) {
         location.reInitialiseMonthlyValues();
@@ -577,13 +571,12 @@ class AppProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-
   int get monthCompletedShifts => _monthCompletedShifts;
-   int _monthCompletedShifts=0;
-   int _monthAlocatedShifts=0;
-   int _monthCancelledShifts=0;
-   final int _balanceShifts=0;
-   double _totalIncomeforTheMonth=0;
+  int _monthCompletedShifts = 0;
+  int _monthAlocatedShifts = 0;
+  int _monthCancelledShifts = 0;
+  final int _balanceShifts = 0;
+  double _totalIncomeforTheMonth = 0;
   List<Shifts> _monthlycompletedShifts = [];
   List<Shifts> _monthlycancelledShifts = [];
 
@@ -591,27 +584,40 @@ class AppProvider extends ChangeNotifier {
   List<Shifts> _monthlyScheduledShifts = [];
 
   List<Shifts> get monthlycompletedShifts => _monthlycompletedShifts;
-  double _compJan =0, _compFeb =0, _compMar =0, _compMay =0, _compApr =0, _compJun =0,  _compJul =0, _compAug =0 , _compSep =0, _compOct =0, _compNov =0, _compDec =0;
-
+  double _compJan = 0,
+      _compFeb = 0,
+      _compMar = 0,
+      _compMay = 0,
+      _compApr = 0,
+      _compJun = 0,
+      _compJul = 0,
+      _compAug = 0,
+      _compSep = 0,
+      _compOct = 0,
+      _compNov = 0,
+      _compDec = 0;
 
   double get compJan => _compJan;
 
   void overviewData(BuildContext context, DateTime start, DateTime end) async {
+    await fetchShifts(context);
+    _compJan = _compFeb = _compMar = _compMay = _compApr = _compJun =
+        _compJul = _compAug = _compSep = _compOct = _compNov = _compDec = 0;
 
     // Filter shifts for the given range
     _monthlycompletedShifts = _completedShifts
         .where((shift) =>
-    shift.startTime.isAfter(start) && shift.startTime.isBefore(end))
+            shift.startTime.isAfter(start) && shift.startTime.isBefore(end))
         .toList();
 
     _monthlyScheduledShifts = _scheduledShifts
         .where((shift) =>
-    shift.startTime.isAfter(start) && shift.startTime.isBefore(end))
+            shift.startTime.isAfter(start) && shift.startTime.isBefore(end))
         .toList();
 
     _monthlycancelledShifts = _cancelledShifts
         .where((shift) =>
-    shift.startTime.isAfter(start) && shift.startTime.isBefore(end))
+            shift.startTime.isAfter(start) && shift.startTime.isBefore(end))
         .toList();
 
     // Calculate shift counts
@@ -620,8 +626,7 @@ class AppProvider extends ChangeNotifier {
         _monthlycompletedShifts.length + _monthlyScheduledShifts.length;
     _monthCancelledShifts = _monthlycancelledShifts.length;
 
-
-    _totalIncomeforTheMonth =0;
+    _totalIncomeforTheMonth = 0;
     // Calculate total income for completed shifts
     for (Shifts shift in _monthlycompletedShifts) {
       _totalIncomeforTheMonth += shift.rate * shift.duration;
@@ -675,12 +680,12 @@ class AppProvider extends ChangeNotifier {
 
     notifyListeners();
   }
+
   DateTime? monthStart;
   DateTime? monthEnd;
+
   String getDateRange() {
     DateTime now = DateTime.now();
-
-
 
     if (now.day <= 10) {
       // If the date is on or before the 10th of the current month
@@ -691,13 +696,12 @@ class AppProvider extends ChangeNotifier {
       // If the date is after the 10th of the current month
       monthStart =
           DateTime(now.year, now.month, 11); // 11th of the current month
-      monthEnd = DateTime(now.year, now.month + 1, 10); // 10th of the next month
+      monthEnd =
+          DateTime(now.year, now.month + 1, 10); // 10th of the next month
     }
 
     return "${monthStart!.day}/${monthStart!.month}/${monthStart!.year} - ${monthEnd!.day}/${monthEnd!.month}/${monthEnd!.year}";
   }
-
-
 
   // }
   double _totalHours = 0;

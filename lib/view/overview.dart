@@ -12,25 +12,28 @@ class Overview extends StatefulWidget {
   State<Overview> createState() => _OverviewState();
 }
 
-class _OverviewState extends State<Overview> {@override
-void initState() {
-  super.initState();
+class _OverviewState extends State<Overview> {
+  @override
+  void initState() {
+    super.initState();
 
-  WidgetsBinding.instance.addPostFrameCallback((_) {
-    final provider = Provider.of<AppProvider>(context, listen: false);
-    provider.getDateRange();
-    provider.overviewData(
-      context,
-      provider.monthStart!,
-      provider.monthEnd!,
-    );
-  });
-}
-  var formatter = NumberFormat.currency(locale: "en_UK", decimalDigits: 2, symbol: "£");
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final provider = Provider.of<AppProvider>(context, listen: false);
+      provider.getDateRange();
+      provider.overviewData(
+        context,
+        provider.monthStart!,
+        provider.monthEnd!,
+      );
+    });
+  }
+
+  var formatter =
+      NumberFormat.currency(locale: "en_UK", decimalDigits: 2, symbol: "£");
+
   @override
   Widget build(BuildContext context) {
     final provider = Provider.of<AppProvider>(context, listen: true);
-
 
     final List<OverviewDetails> overviewTiles = [
       OverviewDetails(
@@ -89,54 +92,66 @@ void initState() {
       appBar: AppBar(
         title: const Text('Overview'),
       ),
-      body: Consumer(builder: (context, provider, child) => SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.all(10.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
-                  "Summary",
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
-                const SizedBox(height: 30),
-                SizedBox(
-                    height: MediaQuery.of(context).size.height / 3,
-                    child: AnimatedBarGraph(
-                      yValues: yValues,
-                      labels: xLables,
-                      maxY: 35,
-                    )),
-                const SizedBox(height: 10),
-                Center(
-                    child: Text(
-                  "Completed shifts per month",
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
-                )),
-                SizedBox(
-                  height: 30,
-                ),
-                Text(
-                  "Your metrics this month",
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
-                SizedBox(
-                  height: 10,
-                ),
-                for (int index = 0; index < overviewTiles.length; index++)
-                  Container(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadiusDirectional.circular(5),
-                        color: Colors.white,
-                      ),
-                      margin: EdgeInsets.only(
-                          bottom: index == overviewTiles.length - 1 ? 80 : 10),
-                      child: ListTile(
-                          title: Text(overviewTiles[index].title),
-                          trailing: Text(index == overviewTiles.length - 1
-                              ? "${overviewTiles[index].value}"
-                              : "${overviewTiles[index].value}")))
-              ],
+      body: Consumer<AppProvider>(
+        builder: (context, provider, child) => RefreshIndicator(
+          onRefresh: () async{
+            provider.getDateRange();
+            provider.overviewData(
+              context,
+              provider.monthStart!,
+              provider.monthEnd!,
+            );
+          },
+          child: SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.all(10.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    "Summary",
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 30),
+                  SizedBox(
+                      height: MediaQuery.of(context).size.height / 3,
+                      child: AnimatedBarGraph(
+                        yValues: yValues,
+                        labels: xLables,
+                        maxY: 35,
+                      )),
+                  const SizedBox(height: 10),
+                  Center(
+                      child: Text(
+                    "Completed shifts per month",
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+                  )),
+                  SizedBox(
+                    height: 30,
+                  ),
+                  Text(
+                    "Your metrics this month",
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  SizedBox(
+                    height: 10,
+                  ),
+                  for (int index = 0; index < overviewTiles.length; index++)
+                    Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadiusDirectional.circular(5),
+                          color: Colors.white,
+                        ),
+                        margin: EdgeInsets.only(
+                            bottom:
+                                index == overviewTiles.length - 1 ? 80 : 10),
+                        child: ListTile(
+                            title: Text(overviewTiles[index].title),
+                            trailing: Text(index == overviewTiles.length - 1
+                                ? "${overviewTiles[index].value}"
+                                : "${overviewTiles[index].value}")))
+                ],
+              ),
             ),
           ),
         ),

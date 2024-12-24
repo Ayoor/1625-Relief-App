@@ -312,6 +312,7 @@ class _ShiftTileState extends State<ShiftTile> {
 
 //Completed
     if (widget.shiftType == "Completed") {
+      widget.provider.loadData(context);
       shiftTile = RefreshIndicator(
         color: Colors.blue,
         backgroundColor: Colors.white,
