@@ -38,6 +38,7 @@ class _TimeSheetState extends State<TimeSheet> {
     "St. George's House",
     "Woodleaze"
   ]; // Default location
+  Map<String, String> loc = {"Charles England House": "CEH", "St. George's House": "SGH", "Woodleaze": "WL"};
   DateTime? startTime;
   DateTime? endTime;
   final controller = BoardDateTimeController();
@@ -51,7 +52,7 @@ class _TimeSheetState extends State<TimeSheet> {
       return "Choose";
     }
   }
-
+String locationShort ="";
   @override
   Widget build(BuildContext context) {
     return Consumer<AppProvider>(
@@ -249,15 +250,11 @@ class _TimeSheetState extends State<TimeSheet> {
                           elevation: 0,
                         ),
                         onPressed: () {
-                          // provider.saveNewShifts(
-                          //     "Early",
-                          //     DateTime.now().add(Duration(minutes: 300)),
-                          //     DateTime.now().add(Duration(minutes: 600)),
-                          //     "Woodleaze",
-                          //     context);
+
                           if (startTime != null && endTime != null) {
                             provider.generateTimeSheet(startTime!, endTime!,
                                 selectedLocation, context);
+                            locationShort = loc[selectedLocation]??"";
                           } else {
                             toastification.show(
                               context: context,
@@ -293,7 +290,7 @@ class _TimeSheetState extends State<TimeSheet> {
                         mainAxisAlignment: MainAxisAlignment.spaceAround,
                         children: [
                           Text(
-                            "Your Shifts from ${dateFormater(startTime)} to ${dateFormater(endTime)}",
+                            "Your $locationShort shifts from ${dateFormater(startTime)} to ${dateFormater(endTime)}",
                             style:
                                 TextStyle(fontSize: 14, color: Colors.black45),
                           ),
