@@ -13,14 +13,7 @@ class TimesheetTable extends StatefulWidget {
 }
 
 class _TimesheetTableState extends State<TimesheetTable> {
-  @override
-  void initState() {
-    // Provider.of<AppProvider>(context, listen: false)
-    //     .getIncomeSummary(context);
-    // TODO: implement initState
-    super.initState();
 
-  }
   @override
   Widget build(BuildContext context) {
     return  Consumer<AppProvider>(builder: (context, provider, child) => Padding(
@@ -105,10 +98,11 @@ class _TimesheetTableState extends State<TimesheetTable> {
 
         return TableRow(
         decoration: BoxDecoration(
-          color: isLast
-              ? Colors.amberAccent.shade200 // Specific color for the last row
-              : (isOdd ? Colors.grey.shade200 : Colors.white),
-        ),
+        //   color: isLast
+        //       ? Colors.amberAccent.shade200 // Specific color for the last row
+        //       : (isOdd ? Colors.grey.shade200 : Colors.white),
+        // ),
+          color: isOdd ? Colors.grey.shade200 : Colors.white),
         children: [
           Padding(
             padding: EdgeInsets.all(8.0),

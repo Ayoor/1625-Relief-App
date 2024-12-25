@@ -94,6 +94,8 @@ class _OverviewState extends State<Overview> {
       ),
       body: Consumer<AppProvider>(
         builder: (context, provider, child) => RefreshIndicator(
+          color: Colors.blue,
+          backgroundColor: Colors.white,
           onRefresh: () async{
             provider.getDateRange();
             provider.overviewData(
@@ -103,6 +105,7 @@ class _OverviewState extends State<Overview> {
             );
           },
           child: SingleChildScrollView(
+            physics: AlwaysScrollableScrollPhysics(),
             child: Padding(
               padding: const EdgeInsets.all(10.0),
               child: Column(

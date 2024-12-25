@@ -310,16 +310,15 @@ class AppProvider extends ChangeNotifier {
   double get CEHShiftIncome => _CEHShiftIncome;
 
   void getIncomeSummary(BuildContext context) async {
-    _CEHShiftHrs = 0;
+     _CEHShiftHrs = 0;
     _CEHShiftIncome = 0;
     _SGHShiftHrs = 0;
     _SGHShiftIncome = 0;
     _woodleazeShiftHrs = 0;
     _woodleazeShiftIncome = 0;
-    await fetchShifts(context);
 
-    getDateRange();
-    overviewData(context, monthStart!, monthEnd!);
+       getDateRange();
+   await overviewData(context, monthStart!, monthEnd!);
 
     for (Shifts shift in _monthlycompletedShifts) {
       if (shift.location == "Charles England House") {
@@ -599,7 +598,7 @@ class AppProvider extends ChangeNotifier {
 
   double get compJan => _compJan;
 
-  void overviewData(BuildContext context, DateTime start, DateTime end) async {
+  Future overviewData(BuildContext context, DateTime start, DateTime end) async {
     await fetchShifts(context);
     _compJan = _compFeb = _compMar = _compMay = _compApr = _compJun =
         _compJul = _compAug = _compSep = _compOct = _compNov = _compDec = 0;
