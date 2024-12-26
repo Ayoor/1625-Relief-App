@@ -133,7 +133,7 @@ class _OverviewState extends State<Overview> {
                     height: 30,
                   ),
                   Text(
-                    "Your metrics this month",
+                    "Your metrics from ${provider.getDateRange()}",
                     style: TextStyle(fontWeight: FontWeight.bold),
                   ),
                   SizedBox(

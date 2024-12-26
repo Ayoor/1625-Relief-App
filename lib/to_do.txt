@@ -1,36 +1,19 @@
-update shift adding UI --done
-Implement Shift Adding Function and implement toastification. --done
-delete shifts by long press --done
-add dateofAction -- done
-next shift time auto = 8 hrs --done
-auto arrange shifts by date.--done
-disable future shift as completed --done
-fix shift saving error --done
 -make bottomsheet cover the bottomnavbar
 
 Income screen (
 Setting a budget,
-total amount earned,
 total amount to be earned,
-total expected gross, --done
-timesheet generation--done
-timesheet export --done
-Overview (Bar Chart of total number of shifts
- , total shifts done in the month,
-  total shifts allocated,
+Overview (
   total shifts remaining to target,
-   total completed shifts,
-    total amount earned)
+ )
 
 
-connect app to db --done
 create login and sign up Using google auth and ask for staff employee number.
-Change night shift to 12.3/hr--done
-add disclaimer to mail that it is gross income and may not be 100% correct. --done
-Adding Shift to Database --done
-Editing shifts on Database --done
+Onboarding Screen
 Implement daily tasks checklist
-add "generated from relief app" on timesheet --done
-rework on duplicate shifts (not working with different locations)
+push notifications
 create mock up images
 
+
+error
+(Add shifts, save them and press the big x button);

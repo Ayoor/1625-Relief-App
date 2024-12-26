@@ -129,8 +129,9 @@ class AppProvider extends ChangeNotifier {
       required Color bgColor,
       required IconData icon}) {
     toastification.show(
+
       context: context,
-      title: Text(message),
+      description: Text(message, style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),),
       alignment: Alignment.topCenter,
       type: type,
       backgroundColor: bgColor,
@@ -146,16 +147,23 @@ class AppProvider extends ChangeNotifier {
     );
   }
 
-  void addShift(
-      DateTime start, DateTime end, String location, BuildContext context) {
+  void addShift(DateTime start, DateTime end, String location,
+      BuildContext context) {
+    fetchShifts(context);
+
     // Check if there's already a shift with the same start time
-    bool isDuplicate = shifts.any((shift) => shift.startTime == start);
+    bool isDuplicate =false;
+
+    if (shifts.any((shift) =>
+        (start.isBefore(shift.endTime) && end.isAfter(shift.startTime)))) {
+      isDuplicate = true;
+    }
 
     if (isDuplicate) {
       // If duplicate, show a toast notification
       showMessage(
           context: context,
-          message: "Shift already exists for this date",
+          message: "A shift already exists in timeframe",
           type: ToastificationType.warning,
           bgColor: Colors.orange,
           icon: Icons.warning);
@@ -271,7 +279,7 @@ class AppProvider extends ChangeNotifier {
           _completedShifts.sort((a, b) => a.startTime.compareTo(b.startTime));
           _completedShifts = _completedShifts.reversed.toList();
 
-               notifyListeners();
+          notifyListeners();
         } else {
           print("Data is not a Map. Unable to iterate.");
         }
@@ -306,19 +314,24 @@ class AppProvider extends ChangeNotifier {
   double _SGHShiftIncome = 0;
   double _woodleazeShiftHrs = 0;
   double _woodleazeShiftIncome = 0;
+  double _allocatedIncome = 0;
+
+  double get allocatedIncome => _allocatedIncome;
+  String _allocatedIncomeText ="";
 
   double get CEHShiftIncome => _CEHShiftIncome;
 
   void getIncomeSummary(BuildContext context) async {
-     _CEHShiftHrs = 0;
+    _CEHShiftHrs = 0;
     _CEHShiftIncome = 0;
     _SGHShiftHrs = 0;
     _SGHShiftIncome = 0;
     _woodleazeShiftHrs = 0;
     _woodleazeShiftIncome = 0;
+    _allocatedIncome = 0;
 
-       getDateRange();
-   await overviewData(context, monthStart!, monthEnd!);
+    getDateRange();
+    await overviewData(context, monthStart!, monthEnd!);
 
     for (Shifts shift in _monthlycompletedShifts) {
       if (shift.location == "Charles England House") {
@@ -334,6 +347,21 @@ class AppProvider extends ChangeNotifier {
         _woodleazeShiftHrs += shift.duration;
       }
     }
+    _allocatedIncome = _CEHShiftIncome + _SGHShiftIncome + _woodleazeShiftIncome;
+    double remainingIncome=0;
+    print (_allocatedIncome);
+    int i =1;
+
+    for(Shifts shift in _scheduledShifts){
+      if(!shift.startTime.isBefore(monthStart!) && !shift.endTime.isAfter(monthEnd!)){
+        remainingIncome += shift.duration.toDouble() * shift.rate;
+        print ("${i++}");
+      }
+    }
+    print (remainingIncome);
+    var formatter = NumberFormat.currency(locale: "en_UK", decimalDigits: 2, symbol: "£");
+    _allocatedIncome += remainingIncome;
+    _allocatedIncomeText = formatter.format(_allocatedIncome);
     notifyListeners();
   }
 
@@ -352,11 +380,27 @@ class AppProvider extends ChangeNotifier {
   Future<void> saveNewShifts(
     BuildContext context,
     List<Shifts> shifts,
+      DateTime start,
+      DateTime end,
   ) async {
     if (shifts.isEmpty) {
       showMessage(
         context: context,
         message: "You need to add new shifts first",
+        type: ToastificationType.warning,
+        bgColor: Colors.red,
+        icon: Icons.cancel,
+      );
+      return;
+    }
+    await fetchShifts(context);
+
+
+    if (_scheduledShifts.any((shift) =>
+    (start.isBefore(shift.endTime) && end.isAfter(shift.startTime)))) {
+      showMessage(
+        context: context,
+        message: "Shift clash detected, unable to save new shifts",
         type: ToastificationType.warning,
         bgColor: Colors.red,
         icon: Icons.cancel,
@@ -598,7 +642,8 @@ class AppProvider extends ChangeNotifier {
 
   double get compJan => _compJan;
 
-  Future overviewData(BuildContext context, DateTime start, DateTime end) async {
+  Future overviewData(
+      BuildContext context, DateTime start, DateTime end) async {
     await fetchShifts(context);
     _compJan = _compFeb = _compMar = _compMay = _compApr = _compJun =
         _compJul = _compAug = _compSep = _compOct = _compNov = _compDec = 0;
@@ -606,17 +651,20 @@ class AppProvider extends ChangeNotifier {
     // Filter shifts for the given range
     _monthlycompletedShifts = _completedShifts
         .where((shift) =>
-            shift.startTime.isAfter(start) && shift.startTime.isBefore(end))
+    (shift.startTime.isAfter(start) || shift.startTime.isAtSameMomentAs(start)) &&
+        (shift.startTime.isBefore(end) || shift.startTime.isAtSameMomentAs(end)))
         .toList();
 
     _monthlyScheduledShifts = _scheduledShifts
         .where((shift) =>
-            shift.startTime.isAfter(start) && shift.startTime.isBefore(end))
+    (shift.startTime.isAfter(start) || shift.startTime.isAtSameMomentAs(start)) &&
+        (shift.startTime.isBefore(end) || shift.startTime.isAtSameMomentAs(end)))
         .toList();
 
     _monthlycancelledShifts = _cancelledShifts
         .where((shift) =>
-            shift.startTime.isAfter(start) && shift.startTime.isBefore(end))
+    (shift.startTime.isAfter(start) || shift.startTime.isAtSameMomentAs(start)) &&
+        (shift.startTime.isBefore(end) || shift.startTime.isAtSameMomentAs(end)))
         .toList();
 
     // Calculate shift counts
@@ -699,7 +747,7 @@ class AppProvider extends ChangeNotifier {
           DateTime(now.year, now.month + 1, 10); // 10th of the next month
     }
 
-    return "${monthStart!.day}/${monthStart!.month}/${monthStart!.year} - ${monthEnd!.day}/${monthEnd!.month}/${monthEnd!.year}";
+    return "${monthStart!.day}/${monthStart!.month}/${monthStart!.year} to ${monthEnd!.day}/${monthEnd!.month}/${monthEnd!.year}";
   }
 
   // }
@@ -738,4 +786,6 @@ class AppProvider extends ChangeNotifier {
   get compNov => _compNov;
 
   get compDec => _compDec;
+
+  String get allocatedIncomeText => _allocatedIncomeText;
 } // end of provider class

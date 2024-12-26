@@ -89,7 +89,7 @@ class _NewShiftState extends State<NewShift> {
                       color: Colors.blue,
                     ),
                     onPressed: () {
-                      provider.saveNewShifts(context, provider.shifts);
+                      provider.saveNewShifts(context, provider.shifts, startTime!, endTime!);
                     },
                   ),
                 ],
@@ -186,12 +186,13 @@ class _NewShiftState extends State<NewShift> {
                         child: Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 10.0),
                           child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                             children: [
+                              Icon(Icons.date_range, size: 14, color: Colors.grey,),
                               const Text(
                                 'Shift Starts at',
                                 style: TextStyle(
-                                    fontWeight: FontWeight.bold, fontSize: 17),
+                                    fontWeight: FontWeight.bold, fontSize: 14),
                               ),
                               Row(
                                 children: [
@@ -245,10 +246,11 @@ class _NewShiftState extends State<NewShift> {
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
+                              Icon(Icons.date_range, size: 14, color: Colors.grey,),
                               const Text(
                                 'Shift Closes at',
                                 style: TextStyle(
-                                    fontWeight: FontWeight.bold, fontSize: 17),
+                                    fontWeight: FontWeight.bold, fontSize: 14),
                               ),
                               Row(
                                 children: [
