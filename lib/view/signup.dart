@@ -129,9 +129,8 @@ String email ="";
                      password =  PasswordHash(password: password).encryptWithArgon2();
                      name= _nameController.text;
                       email= _emailController.text;
-bool x;
-                      x = await Authentication().checkEmailExists(email);
-                      print(x);
+bool isnewEmail = await Authentication().checkEmailExists(email);
+
                       // You can now send the hashed password to your backend
                     }
                   },
