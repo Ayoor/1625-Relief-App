@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
+import 'package:provider/provider.dart';
 import 'package:relief_app/viewmodel/provider.dart';
 
 import '../../model/shifts.dart';
@@ -15,16 +16,10 @@ class ShiftTile extends StatefulWidget {
 }
 
 class _ShiftTileState extends State<ShiftTile> {
-  late List<bool> _isCheckedList;
 
-  @override
+    @override
   void initState() {
     super.initState();
-
-    // The .filled() constructor creates a list with a specified length,
-    // and every element in the list is initialized with the same value.
-    _isCheckedList =
-        List<bool>.filled(widget.provider.scheduledShifts.length, false);
   }
 
   String formatDate(String dateTimeString) {
@@ -56,117 +51,118 @@ class _ShiftTileState extends State<ShiftTile> {
             final shift = widget.provider.scheduledShifts[index];
 
             //scheduled
-            return InkWell(
-              splashColor: Colors.transparent,
-              highlightColor: Colors.transparent,
-              onLongPress: (){
-                canceDeleteShift(index, shift, "Scheduled");
-              },
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(8),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black12,
-                        blurRadius: 10,
-                        offset: Offset(0, 4),
-                      ),
-                    ],
-                  ),
-                  child: ListTile(
-                    leading: Image.asset(
-                      "lib/assets/1625_logo.png",
-                      width: 50,
-                    ),
-                    title: Text(
-                      shift.shiftType,
-                      style: const TextStyle(color: Colors.grey, fontSize: 13),
-                    ),
-                    subtitle: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        SizedBox(height: 10,),
-                        Row(
-                          children: [
-                            const Text("Start time:",
-                                style: TextStyle(fontWeight: FontWeight.bold)),
-                            Text(
-                                " ${widget.provider.dateFormater(shift.startTime)}"),
-                          ],
+            return Consumer<AppProvider>( builder: (context, provider, child) => InkWell(
+                splashColor: Colors.transparent,
+                highlightColor: Colors.transparent,
+                onLongPress: (){
+                  canceDeleteShift(index, shift, "Scheduled");
+                },
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(8),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black12,
+                          blurRadius: 10,
+                          offset: Offset(0, 4),
                         ),
-                        const SizedBox(height: 5),
-                        Row(
-                          children: [
-                            const Text("End time:",
-                                style: TextStyle(fontWeight: FontWeight.bold)),
-                            Text(
-                                " ${widget.provider.dateFormater(shift.endTime)}"),
-                          ],
-                        ),
-                        const SizedBox(height: 5),
-                        Row(
-                          children: [
-                            const Text("Location:",
-                                style: TextStyle(fontWeight: FontWeight.bold)),
-                            Text(" ${shift.location}"),
-                          ],
-                        ),
-                        const SizedBox(height: 5),
-                        Row(
-                          children: [
-                            const Text("Hrs: ",
-                                style: TextStyle(fontWeight: FontWeight.bold)),
-                            Text(shift.durationText),
-                          ],
-                        ),
-                        const SizedBox(height: 5),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Row(
-                              children: [
-                                const Text("Rate:",
-                                    style:
-                                        TextStyle(fontWeight: FontWeight.bold)),
-                                Text("${shift.rate}"),
-                              ],
-                            ),
-                            Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Checkbox(
-                                  value: _isCheckedList[index],
-                                  onChanged: (value) {
-                                    setState(() {
-
-                                      widget.provider.updateShiftStatus(
-                                          index,
-                                          formatDate(shift.startTime.toString()),
-                                          context,
-                                          shiftType: "Completed", endTime: shift.endTime.toString());
-
-                                    });
-                                  },
-                                ),
-                                const Text("Mark Completed",
-                                    style: TextStyle(
-                                        color: Colors.grey, fontSize: 12)),
-                              ],
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 30),
                       ],
                     ),
-                    contentPadding: const EdgeInsets.all(10),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
+                    child: ListTile(
+                      leading: Image.asset(
+                        "lib/assets/1625_logo.png",
+                        width: 50,
+                      ),
+                      title: Text(
+                        shift.shiftType,
+                        style: const TextStyle(color: Colors.grey, fontSize: 13),
+                      ),
+                      subtitle: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          SizedBox(height: 10,),
+                          Row(
+                            children: [
+                              const Text("Start time:",
+                                  style: TextStyle(fontWeight: FontWeight.bold)),
+                              Text(
+                                  " ${widget.provider.dateFormater(shift.startTime)}"),
+                            ],
+                          ),
+                          const SizedBox(height: 5),
+                          Row(
+                            children: [
+                              const Text("End time:",
+                                  style: TextStyle(fontWeight: FontWeight.bold)),
+                              Text(
+                                  " ${widget.provider.dateFormater(shift.endTime)}"),
+                            ],
+                          ),
+                          const SizedBox(height: 5),
+                          Row(
+                            children: [
+                              const Text("Location:",
+                                  style: TextStyle(fontWeight: FontWeight.bold)),
+                              Text(" ${shift.location}"),
+                            ],
+                          ),
+                          const SizedBox(height: 5),
+                          Row(
+                            children: [
+                              const Text("Hrs: ",
+                                  style: TextStyle(fontWeight: FontWeight.bold)),
+                              Text(shift.durationText),
+                            ],
+                          ),
+                          const SizedBox(height: 5),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Row(
+                                children: [
+                                  const Text("Rate:",
+                                      style:
+                                          TextStyle(fontWeight: FontWeight.bold)),
+                                  Text("${shift.rate}"),
+                                ],
+                              ),
+                              Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Checkbox(
+                                    value: provider.checkboxes()[index],
+                                    onChanged: (value) {
+                                      setState(() {
+
+                                        widget.provider.updateShiftStatus(
+                                            index,
+                                            formatDate(shift.startTime.toString()),
+                                            context,
+                                            shiftType: "Completed", endTime: shift.endTime.toString());
+
+                                      });
+                                    },
+                                  ),
+                                  const Text("Mark Completed",
+                                      style: TextStyle(
+                                          color: Colors.grey, fontSize: 12)),
+                                ],
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 30),
+                        ],
+                      ),
+                      contentPadding: const EdgeInsets.all(10),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      tileColor: Colors.white,
+                      selectedTileColor: Colors.grey[100],
                     ),
-                    tileColor: Colors.white,
-                    selectedTileColor: Colors.grey[100],
                   ),
                 ),
               ),

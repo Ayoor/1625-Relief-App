@@ -186,14 +186,22 @@ class _NewShiftState extends State<NewShift> {
                         child: Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 10.0),
                           child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Icon(Icons.date_range, size: 14, color: Colors.grey,),
-                              const Text(
-                                'Shift Starts at',
-                                style: TextStyle(
-                                    fontWeight: FontWeight.bold, fontSize: 14),
-                              ),
+                              Row(
+                                children: [
+                                  Padding(
+                                    padding: const EdgeInsets.only(right: 15.0),
+                                    child: Icon(Icons.date_range, size: 17, color: Colors.grey,),
+                                  ),
+                          const Text(
+                            'Shift Starts at',
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold, fontSize: 14),
+                          )
+                                ],
+                              )
+,
                               Row(
                                 children: [
                                   TextButton(
@@ -246,11 +254,19 @@ class _NewShiftState extends State<NewShift> {
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Icon(Icons.date_range, size: 14, color: Colors.grey,),
-                              const Text(
-                                'Shift Closes at',
-                                style: TextStyle(
-                                    fontWeight: FontWeight.bold, fontSize: 14),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Padding(
+                                    padding: const EdgeInsets.only(right: 15.0),
+                                    child: Icon(Icons.date_range, size: 17, color: Colors.grey,),
+                                  ),
+                                  const Text(
+                                    'Shift Closes at',
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.bold, fontSize: 14),
+                                  ),
+                                ],
                               ),
                               Row(
                                 children: [

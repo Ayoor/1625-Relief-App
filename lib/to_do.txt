@@ -2,7 +2,6 @@
 
 Income screen (
 Setting a budget,
-total amount to be earned,
 Overview (
   total shifts remaining to target,
  )
@@ -14,6 +13,7 @@ Implement daily tasks checklist
 push notifications
 create mock up images
 
+divide all shifts into monthly sections
+use fingerprint
 
-error
-(Add shifts, save them and press the big x button);
+

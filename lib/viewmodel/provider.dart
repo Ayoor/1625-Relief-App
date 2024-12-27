@@ -432,6 +432,7 @@ class AppProvider extends ChangeNotifier {
           icon: Icons.check,
         );
       }
+      checkboxes();
     } catch (e) {
       // Show error notification if saving shifts fails
       if (context.mounted) {
@@ -444,6 +445,13 @@ class AppProvider extends ChangeNotifier {
         );
       }
     }
+  }
+  late  List<bool>  _isCheckedList;
+
+  List<bool>checkboxes (){
+    _isCheckedList =
+    List<bool>.filled(scheduledShifts.length, false);
+    return _isCheckedList;
   }
 
   Tuple2<String, double> getShiftTypeAndRate(
