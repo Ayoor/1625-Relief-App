@@ -1,27 +1,103 @@
+import 'dart:async';
+import 'dart:io';
+
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
+import 'package:mailer/mailer.dart';
+import 'package:mailer/smtp_server/gmail.dart';
+import 'package:relief_app/utils/otp_html.dart';
 
-class Authentication extends ChangeNotifier{
+class Authentication extends ChangeNotifier {
+  static final Authentication _instance = Authentication._internal();
+
+  Authentication._internal();
+
+  factory Authentication() => _instance;
+  late String genOTP;
+  late DateTime otpExpiryTime;
 
   Future<bool> checkEmailExists(String email) async {
-    final DatabaseReference ref = FirebaseDatabase.instance.ref('users');
+    email = email.replaceAll(".", "dot");
+    final DatabaseReference ref = FirebaseDatabase.instance.ref().child("Users/$email");
     final DataSnapshot snapshot = await ref.get();
 
     if (snapshot.exists) {
       final users = snapshot.value as Map;
       notifyListeners();
-      return users.values.any((user) => user['email'] == email);
+      email = email.replaceAll("dot", ".");
+      return users["Email"]== email;
+      // return users.values.any((user) => user['Email'] == email);
     }
     notifyListeners();
     return false;
   }
 
-  // void submitSignup(){
-  //   if (_formKey.currentState!.validateForm()) {
-  //     // Handle successful validation
-  //     print("Name: ${_nameController.text}");
-  //     print("Email: ${_emailController.text}");
-  //     print("Password: ${_passwordController.text}");
-  //   }
-  // }
+  Future<void> createNewUserData(
+      String firstName, String lastName, String email, String password) async {
+    final databaseRef = FirebaseDatabase.instance.ref().child("Users");
+
+    // Replace invalid characters in the email
+    final safeKey = email.replaceAll('.', 'dot');
+
+    // Save the data
+    await databaseRef.child(safeKey).set({
+      "First Name": firstName,
+      "Last Name": lastName,
+      "Email": email,
+      "Password": password, // Use encrypted password
+      "Account Status": "Awaiting email verification",
+    });
+
+    sendOTP(email);
+  }
+
+  bool isExpiredOTP() {
+    if (DateTime.now().difference(otpExpiryTime) >= Duration(minutes: 5)) {
+      return true;
+    }
+    return false;
+  }
+
+  bool isvalidOTP(String userotp) {
+
+    if (userotp != genOTP || isExpiredOTP()) {
+      return false;
+    }
+    return true;
+  }
+
+  Future<void> sendOTP(String email) async {
+    generateUniqueOTP();
+    print (genOTP);
+    // SMTP Server Configuration
+    String username = 'gbengajohn4god@gmail.com'; // Your email address
+    String password =
+        'kdpe awvy jzaf sexs'; // Your email password or app-specific password (for Gmail)
+    final smtpServer = gmail(username, password); // Gmail SMTP server
+    // Compose the Email
+    final message = Message()
+      ..from = Address(username, '1625 Relief') // Sender
+      ..recipients.add(email) // Recipient
+      ..subject = 'Your One time Registration Token'
+      ..html = OtpHtml(otp: genOTP).htmlContent; // Attach a file
+
+    try {
+      // Send the email
+      final sendReport = await send(message, smtpServer);
+      print('Email sent: $sendReport');
+    } catch (e) {
+      print('Failed to send email: $e');
+    }
+  }
+
+  void generateUniqueOTP() {
+    List<int> digits =
+        List.generate(10, (index) => index); // List of digits 0-9
+    digits.shuffle(); // Shuffle the digits randomly
+    otpExpiryTime = DateTime.now().add(
+        Duration(minutes: 5)); // Set OTP expiry time to 5 minutes from now
+    genOTP = digits.take(5).join();
+    print(
+        'Generated OTP: $genOTP'); // Print the generated OTP for debugging purposes
+  }
 }

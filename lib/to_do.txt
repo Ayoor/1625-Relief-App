@@ -13,6 +13,15 @@ Implement daily tasks checklist
 push notifications
 create mock up images
 
+add success screen for successful otp --done
+implement auth sign up
+implement login
+implement auth sign in
+implement save login
+if user tries to login with incomplete profile, redirect to confirm email
+change email to yahoo
+
+
 divide all shifts into monthly sections
 use fingerprint
 
