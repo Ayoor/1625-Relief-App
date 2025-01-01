@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:relief_app/view/signin.dart';
 
 class AccountSuccess extends StatelessWidget {
   const AccountSuccess({super.key});
@@ -23,7 +24,7 @@ backgroundColor: Colors.white,
               SizedBox(width: 300,
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(backgroundColor: Colors.lightBlue),
-                  onPressed: () => null,
+                  onPressed: () => Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=> Signin())),
                   child: const Text('Continue', style: TextStyle(color: Colors.white)),
                 ),
               ),

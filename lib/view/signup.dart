@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:relief_app/utils/passwordhash.dart';
 import 'package:relief_app/view/otpverificationscreen.dart';
+import 'package:relief_app/view/signin.dart';
 import 'package:relief_app/viewmodel/authentication.dart';
 
 class Signup extends StatefulWidget {
@@ -147,15 +148,18 @@ class _SignupState extends State<Signup> {
                 width: 300,
                 child: ElevatedButton(
                   style:
-                  ElevatedButton.styleFrom(backgroundColor: Colors.orange),
+                      ElevatedButton.styleFrom(backgroundColor: Colors.orange),
                   onPressed: () async {
-                    if (_formKey.currentState!.validate() && emailError == null) {
+                    if (_formKey.currentState!.validate() &&
+                        emailError == null) {
                       password = _passwordController.text;
                       firstName = _firstnameController.text.trim();
                       lastName = _lastnameController.text.trim();
                       email = _emailController.text.trim();
-                      password = PasswordHash(password: password).encryptWithArgon2();
-                      auth.createNewUserData(firstName, lastName, email, password);
+                      password =
+                          PasswordHash(password: password).encryptWithArgon2();
+                      auth.createNewUserData(
+                          firstName, lastName, email, password);
                       auth.sendOTP(email);
 
                       if (mounted) {
@@ -183,7 +187,7 @@ class _SignupState extends State<Signup> {
                     child: Container(
                       height: 1, // Set the line height
                       decoration:
-                      BoxDecoration(border: Border.all(color: Colors.grey)),
+                          BoxDecoration(border: Border.all(color: Colors.grey)),
                     ),
                   ),
                   Padding(
@@ -194,7 +198,7 @@ class _SignupState extends State<Signup> {
                     child: Container(
                       height: 1, // Set the line height
                       decoration:
-                      BoxDecoration(border: Border.all(color: Colors.grey)),
+                          BoxDecoration(border: Border.all(color: Colors.grey)),
                     ),
                   ),
                 ],
@@ -205,10 +209,10 @@ class _SignupState extends State<Signup> {
               SizedBox(
                 width: 300,
                 child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(backgroundColor: Colors.white, side: BorderSide(width: .5, color: Colors.grey)),
-                    onPressed: () {
-
-                    },
+                    style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.white,
+                        side: BorderSide(width: .5, color: Colors.grey)),
+                    onPressed: () {},
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
@@ -225,6 +229,22 @@ class _SignupState extends State<Signup> {
                         ),
                       ],
                     )),
+              ),
+              SizedBox(
+                height: 40,
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text("Already have an account?", style: TextStyle(fontSize: 16),),
+                  TextButton(
+                      onPressed: () => Navigator.pushReplacement(context,
+                          MaterialPageRoute(builder: (context) => Signin())),
+                      child: Text(
+                        "Sign in",
+                        style: TextStyle(color: Colors.pinkAccent, fontSize: 16),
+                      ))
+                ],
               )
             ]),
           ),
