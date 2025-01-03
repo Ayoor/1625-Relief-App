@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:relief_app/utils/passwordhash.dart';
-import 'package:relief_app/view/otpverificationscreen.dart';
+import 'package:relief_app/view/all_shifts.dart';
 import 'package:relief_app/view/signup.dart';
 import 'package:relief_app/viewmodel/authentication.dart';
+import 'package:relief_app/viewmodel/provider.dart';
+import 'package:toastification/toastification.dart';
 
 class Signin extends StatefulWidget {
   const Signin({super.key});
@@ -16,35 +18,18 @@ class _SigninState extends State<Signin> {
   bool obscureText = true;
   String password = "";
   String email = "";
-  String? emailError; // For real-time email validation errors
+  String errorMsg = "";
+  String emailError = "";
+  bool isFetching = false;
 
   final Authentication auth = Authentication();
-  final TextEditingController _firstnameController = TextEditingController();
-  final TextEditingController _lastnameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
-  Future<void> validateEmail(String value) async {
-    if (value.isEmpty) {
-      setState(() {
-        emailError = 'Please enter your email';
-      });
-      return;
-    }
-    if (!RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(value)) {
-      setState(() {
-        emailError = 'Please enter a valid email';
-      });
-      return;
-    }
-    bool exists = await auth.checkEmailExists(value);
-    setState(() {
-      emailError = exists ? 'Email already exists' : null;
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
+    AppProvider provider = AppProvider();
+
     return Scaffold(
       backgroundColor: Colors.white,
       body: SingleChildScrollView(
@@ -69,19 +54,42 @@ class _SigninState extends State<Signin> {
                 style: TextStyle(color: Colors.grey, fontSize: 15),
               ),
               const SizedBox(height: 40),
+
+              // email
               TextFormField(
+                validator: (value) {
+                  if (value!.isEmpty) {
+                    setState(() {
+                      emailError = 'Please enter your email';
+                    });
+                    return emailError;
+                  }
+                  if (!RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(value!)) {
+                    setState(() {
+                      emailError = 'Please enter a valid email';
+                    });
+                    return emailError;
+                  }
+                  setState(() {
+                    emailError = "";
+                  });
+                  return null;
+                },
                 controller: _emailController,
                 decoration: InputDecoration(
                   labelText: "Email",
                   border: const OutlineInputBorder(),
                   prefixIcon: const Icon(Icons.email_outlined, size: 20),
-                  errorText: emailError, // Show real-time error
+                  // errorText: emailError, // Real-time error display
                 ),
                 keyboardType: TextInputType.emailAddress,
                 textInputAction: TextInputAction.next,
-                onChanged: validateEmail,
+                // Call validation on change
               ),
               const SizedBox(height: 30),
+
+              //password
+
               TextFormField(
                 controller: _passwordController,
                 obscureText: obscureText,
@@ -116,31 +124,73 @@ class _SigninState extends State<Signin> {
                 width: 300,
                 child: ElevatedButton(
                   style:
-                  ElevatedButton.styleFrom(backgroundColor: Colors.orange),
+                      ElevatedButton.styleFrom(backgroundColor: Colors.orange),
                   onPressed: () async {
-                    if (_formKey.currentState!.validate() && emailError == null) {
+                    if (_formKey.currentState!.validate() &&
+                        (emailError == (null) || emailError == "")) {
                       password = _passwordController.text;
 
                       email = _emailController.text.trim();
-                      password = PasswordHash(password: password).encryptWithArgon2();
-                      // auth.createNewUserData(firstName, lastName, email, password);
-                      auth.sendOTP(email);
-
+                      password =
+                          PasswordHash(password: password).encryptWithArgon2();
+                      setState(() {
+                        isFetching = true;
+                      });
                       if (mounted) {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) =>
-                                OtpVerificationScreen(email: email),
-                          ),
-                        );
+                        //sign in logic
+                        bool isExistingEmail =
+                            await auth.checkEmailExists(email);
+                        if (isExistingEmail) {
+                          bool isValidCredentials = await auth
+                              .isValidCredentials(email, password, context);
+                          if (isValidCredentials) {
+                            Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => AllShifts(),
+                              ),
+                            );
+                          } else {
+                            setState(() {
+                              isFetching = false;
+                            });
+                            errorMsg = "Incorrect Password";
+                            provider.showMessage(
+                                context: context,
+                                message: errorMsg,
+                                type: ToastificationType.error,
+                                bgColor: Colors.red,
+                                icon: Icons.cancel);
+                          }
+                        } else {
+                          setState(() {
+                            isFetching = false;
+                          });
+                          errorMsg =
+                              "Sorry, this email has not been registered";
+                          provider.showMessage(
+                              context: context,
+                              message: errorMsg,
+                              type: ToastificationType.error,
+                              bgColor: Colors.red,
+                              icon: Icons.cancel);
+                        }
                       }
                     }
                   },
-                  child: const Text(
-                    "Sign in",
-                    style: TextStyle(color: Colors.white),
-                  ),
+                  child: isFetching
+                      ? SizedBox(
+                          height: 20,
+                          width: 20,
+                          child: CircularProgressIndicator(
+                            color: Colors.white,
+                            strokeWidth: 2,
+                          ),
+                        )
+                      : const Text(
+                          "Sign in",
+                          style: TextStyle(color: Colors.white),
+                        ),
                 ),
               ),
               SizedBox(height: 30),
@@ -151,7 +201,7 @@ class _SigninState extends State<Signin> {
                     child: Container(
                       height: 1, // Set the line height
                       decoration:
-                      BoxDecoration(border: Border.all(color: Colors.grey)),
+                          BoxDecoration(border: Border.all(color: Colors.grey)),
                     ),
                   ),
                   Padding(
@@ -162,7 +212,7 @@ class _SigninState extends State<Signin> {
                     child: Container(
                       height: 1, // Set the line height
                       decoration:
-                      BoxDecoration(border: Border.all(color: Colors.grey)),
+                          BoxDecoration(border: Border.all(color: Colors.grey)),
                     ),
                   ),
                 ],
@@ -173,10 +223,10 @@ class _SigninState extends State<Signin> {
               SizedBox(
                 width: 300,
                 child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(backgroundColor: Colors.white, side: BorderSide(width: .5, color: Colors.grey)),
-                    onPressed: () {
-
-                    },
+                    style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.white,
+                        side: BorderSide(width: .5, color: Colors.grey)),
+                    onPressed: () {},
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
@@ -200,16 +250,31 @@ class _SigninState extends State<Signin> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text("Don't have an account?", style: TextStyle(fontSize: 16),),
+                  Text(
+                    "Don't have an account?",
+                    style: TextStyle(fontSize: 16),
+                  ),
                   TextButton(
                       onPressed: () => Navigator.pushReplacement(context,
                           MaterialPageRoute(builder: (context) => Signup())),
                       child: Text(
                         "Sign up",
-                        style: TextStyle(color: Colors.pinkAccent, fontSize: 16),
+                        style:
+                            TextStyle(color: Colors.pinkAccent, fontSize: 16),
                       ))
                 ],
-              )
+              ),
+              SizedBox(
+                height: 20,
+              ),
+              TextButton(
+                  onPressed: () {},
+                  child: Text("Forgot password?",
+                      style: TextStyle(
+                        color: Colors.blue,
+                          fontSize: 12,
+                          decoration: TextDecoration.underline,
+                          decorationColor: Colors.blue)))
             ]),
           ),
         ),

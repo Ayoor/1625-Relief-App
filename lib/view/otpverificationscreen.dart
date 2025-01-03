@@ -217,7 +217,12 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
                   }
                   else {
                     setState(() {
+
+                      for(TextEditingController fields in otpFields) {
+                        fields.text ="";
+                      }
                       error = "Invalid OTP";
+                      _focusNode.requestFocus();
                     });
                   }
                 },

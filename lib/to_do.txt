@@ -14,10 +14,12 @@ push notifications
 create mock up images
 
 add success screen for successful otp --done
-implement auth sign up
-implement login
+implement auth sign up --done
+implement login-- email verification not working even with correct email
+Change sign in button to circularprogressbar when busy
 implement auth sign in
 implement save login
+forgot password
 if user tries to login with incomplete profile, redirect to confirm email
 change email to yahoo
 

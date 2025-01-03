@@ -6,6 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:mailer/mailer.dart';
 import 'package:mailer/smtp_server/gmail.dart';
 import 'package:relief_app/utils/otp_html.dart';
+import 'package:relief_app/viewmodel/provider.dart';
+import 'package:toastification/toastification.dart';
 
 class Authentication extends ChangeNotifier {
   static final Authentication _instance = Authentication._internal();
@@ -89,6 +91,34 @@ class Authentication extends ChangeNotifier {
       print('Failed to send email: $e');
     }
   }
+
+  Future<bool> isValidCredentials(String email, String password, BuildContext context) async{
+      final userEmail = email.replaceAll('.', 'dot');
+
+      final dbRef = FirebaseDatabase.instance.ref().child("Users/$userEmail");
+
+      try {
+        final DataSnapshot snapshot = await dbRef.get();
+
+        if (snapshot.exists) {
+          final users = snapshot.value as Map;
+          email = email.replaceAll("dot", ".");
+          if( users["Email"]== email && users["Password"]== password ) {
+            return true;
+          }
+        }
+      } catch (e) {
+        AppProvider().showMessage(context: context,
+            message: "An error occurred please try again later",
+            type: ToastificationType.error,
+            bgColor: Colors.red,
+            icon: Icons.cancel);
+      }
+      return false;
+      // Navigate to next screen
+
+    }
+
 
   void generateUniqueOTP() {
     List<int> digits =
