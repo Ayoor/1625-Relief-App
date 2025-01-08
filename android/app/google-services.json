@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "109576140067",
+    "firebase_url": "https://relief-513c5-default-rtdb.europe-west1.firebasedatabase.app",
+    "project_id": "relief-513c5",
+    "storage_bucket": "relief-513c5.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:109576140067:android:963436acd949af9c8bc896",
+        "android_client_info": {
+          "package_name": "com.ayodele.tech.relief_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "109576140067-4tk348780cd3sk4625n2r8uvi05aig8u.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD3ti9aPG6amtJ1yM9mcP5qikOzq25KHYk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "109576140067-4tk348780cd3sk4625n2r8uvi05aig8u.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "109576140067-bq242fn63bcc5u16qs4qsk1avm7b7h7n.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.ayodele.tech.reliefApp"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

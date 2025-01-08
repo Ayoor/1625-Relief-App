@@ -1,0 +1,32 @@
+-make bottomsheet cover the bottomnavbar
+
+Income screen (
+Setting a budget,
+Overview (
+  total shifts remaining to target,n
+ )
+
+
+create login and sign up Using google auth and ask for staff employee number.
+Onboarding Screen
+Implement daily tasks checklist
+push notifications
+create mock up images
+
+add success screen for successful otp --done
+implement login-- email verification not working even with correct email --done
+Change sign in button to circularprogressbar when busy --done
+add error modal --done
+update signin to only sign in verified email else send otp. --done
+implement auth sign up --next
+implement auth sign in
+implement save login
+forgot password
+if user tries to login with incomplete profile, redirect to confirm email
+change email to yahoo
+
+
+divide all shifts into monthly sections
+use fingerprint
+
+

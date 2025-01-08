@@ -1,0 +1,61 @@
+name: relief_app
+description: "An An for 1625 Relief Workers"
+
+publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+
+
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.5.0
+
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  cupertino_icons: ^1.0.8
+  animated_splash_screen:
+  persistent_bottom_nav_bar_v2:
+  provider:
+  table_calendar:
+  firebase_database:
+  firebase_core:
+  board_datetime_picker:
+  animated_custom_dropdown:
+  modal_bottom_sheet:
+  drop_down_list: ^0.0.8
+  dropdown_flutter: 1.0.1
+  toastification:
+  calendar_date_picker2:
+  colour:
+  intl:
+  fluttertoast:
+  tuple:
+  pie_chart:
+  flutter_sales_graph:
+  fl_chart:
+  docx_template:
+  pdf:
+  syncfusion_flutter_pdf:
+  path_provider:
+  open_file:
+  permission_handler:
+  mailer:
+  argon2:
+  firebase_auth:
+  google_sign_in:
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+
+  flutter_lints: ^5.0.0
+
+
+flutter:
+  uses-material-design: true
+  assets:
+    - lib/assets/
+    - lib/assets/timesheet.docx
