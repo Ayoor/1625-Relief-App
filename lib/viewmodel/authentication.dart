@@ -47,6 +47,7 @@ class Authentication extends ChangeNotifier {
       "Email": email,
       "Password": password, // Use encrypted password
       "Account Status": "Awaiting email verification",
+      "Account Type" :"Regular"
     });
 
     sendOTP(email);
