@@ -2,9 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:relief_app/view/all_shifts.dart';
 import 'package:relief_app/view/otpverificationscreen.dart';
 import 'package:relief_app/view/signup.dart';
+import 'package:relief_app/view/widgets/bottom_nav.dart';
 import 'package:relief_app/viewmodel/authentication.dart';
 import 'package:relief_app/viewmodel/provider.dart';
 import 'package:toastification/toastification.dart';
+
+import '../services/firebase_auth.dart';
 
 class Signin extends StatefulWidget {
   const Signin({super.key});
@@ -24,6 +27,7 @@ class _SigninState extends State<Signin> {
   final Authentication auth = Authentication();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  final AuthenticationService authService = AuthenticationService();
 
   @override
   Widget build(BuildContext context) {
@@ -133,7 +137,7 @@ class _SigninState extends State<Signin> {
                           Navigator.pushReplacement(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => AllShifts(),
+                              builder: (context) => HomeScreen(title: "1625 Relief"),
                             ),
                           );
                         }
@@ -142,11 +146,11 @@ class _SigninState extends State<Signin> {
                           Navigator.pushReplacement(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => OtpVerificationScreen(email: email),
+                              builder: (context) =>
+                                  OtpVerificationScreen(email: email),
                             ),
                           );
                         }
-
                       } catch (e) {
                         // showErrorToast(context, "Sign in failed. $e");
                         provider.showMessage(context: context,
@@ -216,20 +220,7 @@ class _SigninState extends State<Signin> {
                       setState(() {
                         isFetching = true;
                       });
-
-                      // try {
-                      //   await signin(context, provider);
-                      // } catch (e) {
-                      //   provider.showMessage(context: context,
-                      //       message: "An error occurred while trying to sign in",
-                      //       type: ToastificationType.error,
-                      //       bgColor: Colors.red,
-                      //       icon: Icons.cancel);
-                      // } finally {
-                      //   setState(() {
-                      //     isFetching = false;
-                      //   });
-                      // }
+                      googleSignin(provider);
                     },
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -313,6 +304,48 @@ class _SigninState extends State<Signin> {
 
 
     return true;
+  }
+
+  Future<void> googleSignin(AppProvider provider) async {
+    try {
+      final googleUser = await authService.signInWithGoogle();
+      if (googleUser== null) {
+        return;
+      }
+      else {
+        if(await auth.checkEmailExists("${googleUser.email}") && auth.isverifiedUser){
+    Navigator.pushReplacement(
+    context,
+    MaterialPageRoute(
+    builder: (context) =>
+    AllShifts(),
+    ),
+    );
+    }
+    else if(! await auth.checkEmailExists("${googleUser.email}")){
+    await authService.saveGoogleUserToDatabase(googleUser);
+    Navigator.pushReplacement(
+    context,
+    MaterialPageRoute(
+    builder: (context) =>
+    HomeScreen(title: "1625 Relief"),
+    ),
+    );
+    }
+    }
+    }
+    catch (e) {
+    provider.showMessage(context: context,
+    message: "Google sign in failed",
+    type: ToastificationType.error,
+    bgColor: Colors.red,
+    icon: Icons.cancel);
+    }
+    finally {
+    setState(() {
+    isFetching = false;
+    });
+    }
   }
 
 

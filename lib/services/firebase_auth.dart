@@ -1,6 +1,10 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:relief_app/viewmodel/provider.dart';
+import 'package:toastification/toastification.dart';
 
 class AuthenticationService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -15,7 +19,8 @@ class AuthenticationService {
         return null;
       }
 
-      final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+      final GoogleSignInAuthentication googleAuth = await googleUser
+          .authentication;
 
       final OAuthCredential credential = GoogleAuthProvider.credential(
         accessToken: googleAuth.accessToken,
@@ -28,11 +33,13 @@ class AuthenticationService {
 
       return userCredential.user;
     } catch (e) {
-      print("Error signing in with Google: $e");
-      return null;
+      Fluttertoast.showToast(msg: "Error signing in with Google");
+      print("$e");
+           return null;
     }
   }
-  Future<void> saveUserToDatabase(User user) async {
+
+  Future<void> saveGoogleUserToDatabase(User user) async {
     String email = user.email!;
     String firstName;
     String lastName;
@@ -61,7 +68,10 @@ class AuthenticationService {
       "Last Name": lastName,
       "Email": email,
       "Password": password,
-      "Account Status": user.emailVerified ? "Verified" : "Awaiting email verification",
+      "Account Status": user.emailVerified
+          ? "Verified"
+          : "Awaiting email verification",
+      "Authentication Type" :"Google"
     });
   }
 

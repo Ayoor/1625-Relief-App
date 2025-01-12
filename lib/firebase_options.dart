@@ -17,10 +17,7 @@ import 'package:flutter/foundation.dart'
 class DefaultFirebaseOptions {
   static FirebaseOptions get currentPlatform {
     if (kIsWeb) {
-      throw UnsupportedError(
-        'DefaultFirebaseOptions have not been configured for web - '
-        'you can reconfigure this by running the FlutterFire CLI again.',
-      );
+      return web;
     }
     switch (defaultTargetPlatform) {
       case TargetPlatform.android:
@@ -55,7 +52,7 @@ class DefaultFirebaseOptions {
     messagingSenderId: '109576140067',
     projectId: 'relief-513c5',
     databaseURL: 'https://relief-513c5-default-rtdb.europe-west1.firebasedatabase.app',
-    storageBucket: 'relief-513c5.appspot.com',
+    storageBucket: 'relief-513c5.firebasestorage.app',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
@@ -64,7 +61,20 @@ class DefaultFirebaseOptions {
     messagingSenderId: '109576140067',
     projectId: 'relief-513c5',
     databaseURL: 'https://relief-513c5-default-rtdb.europe-west1.firebasedatabase.app',
-    storageBucket: 'relief-513c5.appspot.com',
+    storageBucket: 'relief-513c5.firebasestorage.app',
+    iosClientId: '109576140067-bq242fn63bcc5u16qs4qsk1avm7b7h7n.apps.googleusercontent.com',
     iosBundleId: 'com.ayodele.tech.reliefApp',
   );
+
+  static const FirebaseOptions web = FirebaseOptions(
+    apiKey: 'AIzaSyDzt1MBo7uvm_GOoBx6iOFFZYt6Gp5fMu8',
+    appId: '1:109576140067:web:eab54340b070b2498bc896',
+    messagingSenderId: '109576140067',
+    projectId: 'relief-513c5',
+    authDomain: 'relief-513c5.firebaseapp.com',
+    databaseURL: 'https://relief-513c5-default-rtdb.europe-west1.firebasedatabase.app',
+    storageBucket: 'relief-513c5.firebasestorage.app',
+    measurementId: 'G-6ZGDSDKQM6',
+  );
+
 }

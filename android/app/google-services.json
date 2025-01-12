@@ -15,7 +15,15 @@
       },
       "oauth_client": [
         {
-          "client_id": "109576140067-4tk348780cd3sk4625n2r8uvi05aig8u.apps.googleusercontent.com",
+          "client_id": "109576140067-gg1cg22i69bgl143sgbhu4t4u831jo3v.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.ayodele.tech.relief_app",
+            "certificate_hash": "ccfb74d4ab205c1b3a440dac2de9614bcec7266e"
+          }
+        },
+        {
+          "client_id": "109576140067-b8odakg5og3nnnqba489m21f37cg0g5m.apps.googleusercontent.com",
           "client_type": 3
         }
       ],

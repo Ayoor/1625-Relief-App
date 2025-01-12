@@ -6,8 +6,8 @@ import '../income.dart';
 import '../overview.dart';
 import 'customNav.dart';
 
-class BottomNavigation extends StatelessWidget {
-  const BottomNavigation({super.key, required this.title});
+class HomeScreen extends StatelessWidget {
+  const HomeScreen({super.key, required this.title});
 
   final String title;
 

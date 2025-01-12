@@ -26,6 +26,11 @@ class Authentication extends ChangeNotifier {
       final users = snapshot.value as Map;
       notifyListeners();
       email = email.replaceAll("dot", ".");
+
+      //to check for google auth users
+      if(users["Email"]== email && users["Account Status"] == "Verified") {
+        _isVerifiedUser = true;
+      }
       return users["Email"]== email;
       // return users.values.any((user) => user['Email'] == email);
     }
@@ -47,7 +52,7 @@ class Authentication extends ChangeNotifier {
       "Email": email,
       "Password": password, // Use encrypted password
       "Account Status": "Awaiting email verification",
-      "Account Type" :"Regular"
+      "Authentication Type" :"Email"
     });
 
     sendOTP(email);

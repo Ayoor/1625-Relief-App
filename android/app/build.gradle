@@ -5,6 +5,7 @@ plugins {
     id "com.google.gms.google-services" // Add this line
 }
 
+apply plugin: 'signing'
 android {
     namespace = "com.ayodele.tech.relief_app"
     compileSdk = 34
