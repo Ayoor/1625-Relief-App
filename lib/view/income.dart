@@ -95,7 +95,7 @@ class _IncomeState extends State<Income> with SingleTickerProviderStateMixin {
                         ),
                       ),
                       StripedTable(),
-                      Text("Your total expected income based on allocated shifts from ${provider.getDateRange()} is ${provider.allocatedIncomeText}" ,style: TextStyle(fontWeight: FontWeight.bold, color: Colors.grey),)
+                      Text("Your total expected income based on allocated shifts from ${provider.getDateRange()} is ${provider.allocatedIncomeText}" ,style: TextStyle(fontWeight: FontWeight.bold, color: Colors.grey), textAlign: TextAlign.center,)
                     ],
                   ),
                 ),

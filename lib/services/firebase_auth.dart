@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:relief_app/viewmodel/provider.dart';
@@ -31,6 +32,8 @@ class AuthenticationService {
       UserCredential userCredential =
       await FirebaseAuth.instance.signInWithCredential(credential);
 
+      // save sign in session
+await saveSession("googleEmail", "${userCredential.user!.email}");
       return userCredential.user;
     } catch (e) {
       Fluttertoast.showToast(msg: "Error signing in with Google");
@@ -78,5 +81,22 @@ class AuthenticationService {
   Future<void> signOut() async {
     await GoogleSignIn().signOut();
     await _auth.signOut();
+  }
+
+  final storage = FlutterSecureStorage();
+
+// Save session
+  Future<void> saveSession(String key, String value) async {
+    await storage.write(key: key, value: value);
+  }
+
+// Retrieve session
+  Future<String?> getSession(String key) async {
+    return await storage.read(key: key);
+  }
+
+// Delete session
+  Future<void> clearSession() async {
+    await storage.deleteAll();
   }
 }

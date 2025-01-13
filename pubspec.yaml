@@ -45,6 +45,7 @@ dependencies:
   argon2:
   firebase_auth:
   google_sign_in:
+  flutter_secure_storage:
 
 dev_dependencies:
   flutter_test:

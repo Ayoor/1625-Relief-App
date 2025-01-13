@@ -548,7 +548,7 @@ class _NewShiftState extends State<NewShift> {
     if (shifts.isNotEmpty) {
       showDialog(
         context: context,
-        builder: (context) => AlertDialog(
+        builder: (alertContext) => AlertDialog(
           content: Text(
               "All added shifts will be deleted, do you want to continue?"),
           actions: [
@@ -565,9 +565,8 @@ class _NewShiftState extends State<NewShift> {
                   endTime = null;
                   shifts.clear();
                 });
-                Navigator.of(context).pushReplacement(
-                  MaterialPageRoute(builder: (context) => AllShifts()),
-                );
+                Navigator.of(alertContext).pop();
+                Navigator.of(context).pop();
               },
               child: Text("Yes"),
             ),
@@ -575,9 +574,10 @@ class _NewShiftState extends State<NewShift> {
         ),
       );
     } else {
-      Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (context) => AllShifts()),
-      );
+      Navigator.of(context).pop();
+      // Navigator.of(context).pushReplacement(
+      //   MaterialPageRoute(builder: (context) => AllShifts()),
+      // );
     }
   }
 }

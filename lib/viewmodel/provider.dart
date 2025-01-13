@@ -1,6 +1,7 @@
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:relief_app/services/firebase_auth.dart';
 import 'package:toastification/toastification.dart';
 import 'package:tuple/tuple.dart';
 
@@ -42,6 +43,23 @@ class AppProvider extends ChangeNotifier {
 
   double get woodleazeShiftIncome => _woodleazeShiftIncome;
 
+
+  Future<String> userEmail  () async {
+    final authService = AuthenticationService();
+    String userEmail ="";
+    final googleEmail = await authService.getSession('googleEmail');
+    final email = await authService.getSession('email');
+
+    if (googleEmail != null) {
+      userEmail = googleEmail.replaceAll(".", "dot");
+
+      // Proceed to the home screen
+    } else if (email != null) {
+      userEmail = email.replaceAll(".", "dot");
+    }
+    return userEmail;
+  }
+
   void removeShift(int index, BuildContext context) {
     shifts.removeAt(index);
     showMessage(
@@ -55,13 +73,12 @@ class AppProvider extends ChangeNotifier {
 
   void updateShiftStatus(int index, String key, BuildContext context,
       {String shiftType = "", String endTime = ""}) async {
+    String email = await userEmail();
     try {
-      // Update the status of the shift locally
-      // shifts[index].status = "Cancelled";
 
       // Reference to the specific shift in the Firebase Database
       final DatabaseReference dbRef =
-      FirebaseDatabase.instance.ref().child("Shifts/$key");
+      FirebaseDatabase.instance.ref().child("Users/$email/Shifts/$key");
 
       switch (shiftType) {
         case "Scheduled":
@@ -199,10 +216,11 @@ class AppProvider extends ChangeNotifier {
   }
 
   Future fetchShifts(BuildContext context) async {
+    String email = await userEmail();
     final DatabaseReference dbRef = FirebaseDatabase.instance.ref();
 
     try {
-      final DataSnapshot snapshot = await dbRef.child('Shifts').get();
+      final DataSnapshot snapshot = await dbRef.child('Users/$email/Shifts').get();
 
       if (snapshot.exists) {
         // Check if the value is a Map
@@ -294,18 +312,13 @@ class AppProvider extends ChangeNotifier {
           showMessage(context: context,
               message: "Something failed, please try again later",
               type: ToastificationType.error,
-              bgColor: Colors.red,
+              bgColor: Colors.red.shade300,
               icon: Icons.cancel);
         }
 
         notifyListeners();
       } else {
-        showMessage(context: context,
-            message: "No shifts data found.",
-            type: ToastificationType.error,
-            bgColor: Colors.red,
-            icon: Icons.cancel);
-        notifyListeners();
+
         return [];
       }
     } catch (e) {
@@ -432,12 +445,12 @@ class AppProvider extends ChangeNotifier {
     }
 
     try {
+      String email = await userEmail();
       for (var shift in shifts) {
         // Format the startTime to a date string (e.g., "dd-MM-yyyy")
         final String dateKey = DateFormat('dd-MM-yyyy').format(shift.startTime);
-
         final DatabaseReference dbRef =
-        FirebaseDatabase.instance.ref().child("Shifts/$dateKey");
+        FirebaseDatabase.instance.ref().child("Users/$email/Shifts/$dateKey");
 
         // Save each shift under the date key in "Shifts"
         await dbRef.set(shift.toJson());

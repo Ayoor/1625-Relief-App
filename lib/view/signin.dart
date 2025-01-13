@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:relief_app/view/all_shifts.dart';
 import 'package:relief_app/view/otpverificationscreen.dart';
 import 'package:relief_app/view/signup.dart';
-import 'package:relief_app/view/widgets/bottom_nav.dart';
+import 'package:relief_app/view/widgets/home_Screen.dart';
 import 'package:relief_app/viewmodel/authentication.dart';
 import 'package:relief_app/viewmodel/provider.dart';
 import 'package:toastification/toastification.dart';
@@ -23,15 +23,58 @@ class _SigninState extends State<Signin> {
   String password = "";
   String email = "";
   String errorMsg = "";
+  bool isLoading = true;
+
 
   final Authentication auth = Authentication();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final AuthenticationService authService = AuthenticationService();
 
+  Future<void> checkSession(BuildContext context) async {
+    final googleEmail = await authService.getSession('googleEmail');
+    final email = await authService.getSession('email');
+
+    if (googleEmail != null) {
+
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => HomeScreen(title: "1625 Relief"),
+        ),
+      );
+      // Proceed to the home screen
+    } else if (email != null) {
+
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => HomeScreen(title: "1625 Relief"),
+        ),
+      );
+      // Proceed to the home screen
+    }
+  }
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    checkSession(context);
+  }
+
   @override
   Widget build(BuildContext context) {
     final AppProvider provider = AppProvider();
+    if (isLoading) {
+      return Scaffold(
+        body: Center(
+          child: Text("Loading..."),
+        ),
+      );
+    }
+setState(() {
+  isLoading = false;
+});
     return Scaffold(
       backgroundColor: Colors.white,
       body: SingleChildScrollView(
@@ -134,6 +177,9 @@ class _SigninState extends State<Signin> {
                         await signin(email, password, provider, context);
 
                         if (isSuccess && auth.isverifiedUser) {
+                          // save sign in session
+                         await authService.saveSession("email", email);
+
                           Navigator.pushReplacement(
                             context,
                             MaterialPageRoute(

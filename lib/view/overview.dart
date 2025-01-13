@@ -127,7 +127,7 @@ class _OverviewState extends State<Overview> {
                   Center(
                       child: Text(
                     "Completed shifts per month",
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20, color: Colors.pinkAccent),
                   )),
                   SizedBox(
                     height: 30,
