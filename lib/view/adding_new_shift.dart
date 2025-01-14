@@ -9,6 +9,7 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:relief_app/model/shifts.dart';
 import 'package:relief_app/view/all_shifts.dart';
+import 'package:relief_app/view/widgets/SideBar.dart';
 import 'package:relief_app/viewmodel/provider.dart';
 import 'package:toastification/toastification.dart';
 
@@ -68,7 +69,11 @@ class _NewShiftState extends State<NewShift> {
   Widget build(BuildContext context) {
     return Consumer<AppProvider>(
         builder: (context, provider, child) => Scaffold(
+          drawer: Sidebar(),
             appBar: AppBar(
+              iconTheme: IconThemeData(
+                color: Colors.white, // Set your desired color
+              ),
               backgroundColor: Colors.white,
               automaticallyImplyLeading: false,
               title: Row(

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:relief_app/view/adding_new_shift.dart';
+import 'package:relief_app/view/widgets/SideBar.dart';
 import 'package:relief_app/view/widgets/shift_tile.dart';
 import '../viewmodel/provider.dart';
 
@@ -29,6 +30,7 @@ class _AllShiftsState extends State<AllShifts>
   Widget build(BuildContext context) {
     return Consumer<AppProvider>(
       builder: (context, provider, child) => Scaffold(
+        drawer: Sidebar(),
         floatingActionButton: SizedBox(
           width: 150,
           child: FloatingActionButton(
@@ -44,6 +46,9 @@ class _AllShiftsState extends State<AllShifts>
           ),
         ),
         appBar: AppBar(
+          iconTheme: IconThemeData(
+            color: Colors.white, // Set your desired color
+          ),
           backgroundColor: Colors.blue,
           title: const Text(
             "Schedule",

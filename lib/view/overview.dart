@@ -2,6 +2,7 @@ import 'package:colour/colour.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import 'package:relief_app/view/widgets/SideBar.dart';
 import 'package:relief_app/view/widgets/animatedBarGrapgh.dart';
 import 'package:relief_app/viewmodel/provider.dart';
 
@@ -88,6 +89,7 @@ class _OverviewState extends State<Overview> {
     ];
 
     return Scaffold(
+      drawer: Sidebar(),
       backgroundColor: Colour("#f2f5fa"),
       appBar: AppBar(
         title: const Text('Overview'),

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:relief_app/view/history.dart';
 import 'package:relief_app/view/timesheet.dart';
+import 'package:relief_app/view/widgets/SideBar.dart';
 import 'package:relief_app/view/widgets/income_pie_chart.dart';
 import 'package:relief_app/view/widgets/striped_table.dart';
 import '../viewmodel/provider.dart';
@@ -28,6 +29,7 @@ class _IncomeState extends State<Income> with SingleTickerProviderStateMixin {
   Widget build(BuildContext context) {
     return Consumer<AppProvider>(
       builder: (context, provider, child) => Scaffold(
+        drawer: Sidebar(),
         appBar: AppBar(
           backgroundColor: Colors.blue,
           title: const Text(

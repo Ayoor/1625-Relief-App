@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:relief_app/view/all_shifts.dart';
 import 'package:relief_app/view/otpverificationscreen.dart';
 import 'package:relief_app/view/signup.dart';
-import 'package:relief_app/view/widgets/home_Screen.dart';
+import 'package:relief_app/view/home_Screen.dart';
 import 'package:relief_app/viewmodel/authentication.dart';
 import 'package:relief_app/viewmodel/provider.dart';
 import 'package:toastification/toastification.dart';
@@ -65,16 +65,19 @@ class _SigninState extends State<Signin> {
   @override
   Widget build(BuildContext context) {
     final AppProvider provider = AppProvider();
-    if (isLoading) {
-      return Scaffold(
-        body: Center(
-          child: Text("Loading..."),
-        ),
-      );
-    }
-setState(() {
-  isLoading = false;
-});
+    // if (isLoading) {
+    //   setState(() {
+    //     isLoading = false;
+    //   });
+    //   return Scaffold(
+    //     body: Center(
+    //       child: Text("Loading..."),
+    //     ),
+    //   );
+    //
+    // }
+
+
     return Scaffold(
       backgroundColor: Colors.white,
       body: SingleChildScrollView(
@@ -364,7 +367,7 @@ setState(() {
     context,
     MaterialPageRoute(
     builder: (context) =>
-    AllShifts(),
+        HomeScreen(title: "1625 Relief"),
     ),
     );
     }
