@@ -89,7 +89,17 @@ class _NewShiftState extends State<NewShift> {
                       color: Colors.blue,
                     ),
                     onPressed: () {
-                      provider.saveNewShifts(context, provider.shifts, startTime!, endTime!);
+                      if (startTime != null) {
+                        provider.saveNewShifts(context, provider.shifts, startTime!, endTime!);
+                      }
+                      else {
+                        Fluttertoast.showToast(
+                              msg: "Please select a start time",
+                              gravity: ToastGravity.BOTTOM,
+                              backgroundColor: Colors.red[300],
+                              textColor: Colors.white,
+                            );
+                      }
                     },
                   ),
                 ],

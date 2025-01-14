@@ -438,7 +438,7 @@ class AppProvider extends ChangeNotifier {
         context: context,
         message: "Shift clash detected, unable to save new shifts",
         type: ToastificationType.warning,
-        bgColor: Colors.red,
+        bgColor: Colors.red.shade300,
         icon: Icons.cancel,
       );
       return;
@@ -476,7 +476,7 @@ class AppProvider extends ChangeNotifier {
           context: context,
           message: "Action failed. Check internet or retry later",
           type: ToastificationType.error,
-          bgColor: Colors.red[400]!,
+          bgColor: Colors.red,
           icon: Icons.clear,
         );
       }
