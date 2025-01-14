@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:relief_app/test.dart';
 
+import '../../services/firebase_auth.dart';
 
 class Sidebar extends StatelessWidget {
   const Sidebar({super.key});
@@ -7,7 +9,10 @@ class Sidebar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Drawer(
-      width: MediaQuery.of(context).size.width,
+      width: MediaQuery
+          .of(context)
+          .size
+          .width,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -21,7 +26,7 @@ class Sidebar extends StatelessWidget {
                 IconButton(
                   onPressed: () => Navigator.pop(context),
                   icon: const Icon(Icons.arrow_back,
-                      size: 25, color: Colors.purple),
+                      size: 25, color: Colors.blue),
                 ),
                 Center(
                   child: Image.asset(
@@ -33,8 +38,11 @@ class Sidebar extends StatelessWidget {
             ),
           ),
           ListTile(
-            leading: const Icon(Icons.search, color: Colors.purple,),
-            title: const Text('IMEI Search'),
+            leading: const Icon(
+              Icons.account_box,
+              color: Colors.blue,
+            ),
+            title: const Text('Account'),
             onTap: () {
               Navigator.pop(context);
               // Navigator.push(context,
@@ -42,8 +50,11 @@ class Sidebar extends StatelessWidget {
             },
           ),
           ListTile(
-            leading: const Icon(Icons.mobile_screen_share_rounded, color: Colors.purple,),
-            title: const Text('Device Search'),
+            leading: const Icon(
+              Icons.settings,
+              color: Colors.blue,
+            ),
+            title: const Text('Settings'),
             onTap: () {
               Navigator.pop(context);
               // Navigator.push(
@@ -52,31 +63,12 @@ class Sidebar extends StatelessWidget {
               //         builder: (context) => const DeviceNameSearch()));
             },
           ),
-
-          const SizedBox(height: 30,),
-          Padding(
-            padding: const EdgeInsets.only(left: 15.0),
-            child: Text("Useful Documents", style: TextStyle(fontSize: 22, color: Colors.grey[600]),),
-          ),
-            const SizedBox(height: 10,),
-
           ListTile(
-            leading: const Icon(Icons.library_books, color: Colors.purple,),
-            title: const Text('Guide for Android'),
-            onTap: () {
-              Navigator.pop(context);
-
-              String doc = 'lib/Assets/Documents/Android_guide.pdf';
-              // Navigator.push(
-              //     context,
-              //     MaterialPageRoute(
-              //         builder: (context) =>  Documents(doc: doc)));
-            },
-          ),
-
-          ListTile(
-            leading: const Icon(Icons.library_books, color: Colors.purple,),
-            title: const Text('Guide for IOS'),
+            leading: const Icon(
+              Icons.check_box,
+              color: Colors.blue,
+            ),
+            title: const Text('Task Checklist'),
             onTap: () {
               Navigator.pop(context);
 
@@ -88,36 +80,53 @@ class Sidebar extends StatelessWidget {
             },
           ),
           ListTile(
-            leading: const Icon(Icons.library_books, color: Colors.purple,),
-            title: const Text('Cyber Glossary'),
+            title: Center(
+                child: Text(
+                  "Log out",
+                  style: TextStyle(fontSize: 16, color: Colors.pinkAccent),
+                )),
             onTap: () {
+              signOutUser(context);
               Navigator.pop(context);
-
-              String doc ='lib/Assets/Documents/Cyber.pdf';
-              // Navigator.push(
-              //     context,
-              //     MaterialPageRoute(
-              //         builder: (context) =>  Documents(doc: doc)));
             },
           ),
-                   const Spacer(),
+          const Spacer(),
           const Center(
             child: Text(
-              "Developed by Ayodele Oduola", textAlign: TextAlign.center,
+              "Developed by Ayodele Oduola",
+              textAlign: TextAlign.center,
               style: TextStyle(
-                  color: Colors.pinkAccent, fontSize: 20, fontWeight: FontWeight.bold),
+                  color: Colors.grey,
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold),
             ),
-          ),  SizedBox(height: 30,) ,       // Pushes the version number to the bottom
+          ),
+          SizedBox(
+            height: 30,
+          ),
           Center(
             child: Text(
               "Version: 1.0.0",
-              style: TextStyle(
-                  color: Colors.grey, fontWeight: FontWeight.bold),
+              style: TextStyle(color: Colors.grey, fontWeight: FontWeight.bold),
             ),
           ),
-          SizedBox(height: 70,)
+          SizedBox(
+            height: 70,
+          )
         ],
       ),
     );
+  }
+
+  Future<void> signOutUser(BuildContext context) async {
+    final AuthenticationService authService = AuthenticationService();
+
+    final googleEmail = await authService.getSession('googleEmail');
+    if (googleEmail != null) {
+      await authService.signOut();
+    }
+    await authService.clearSession();
+
+Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => Signin()));
   }
 }

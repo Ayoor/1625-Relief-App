@@ -52,132 +52,137 @@ class _SignupState extends State<Signup> {
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 40.0),
-          child: Form(
-            key: _formKey,
-            child: Column(children: [
-              SizedBox(height: MediaQuery.of(context).size.height / 10.5),
-              Image.asset(
-                "lib/assets/1625_logo.png",
-                width: 150,
-              ),
-              const SizedBox(height: 20),
-              const Text(
-                "Create Your 1625 Relief App Account",
-                textAlign: TextAlign.center,
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
-              ),
-              const Text(
-                "Sign up to manage your shifts seamlessly",
-                style: TextStyle(color: Colors.grey, fontSize: 15),
-              ),
-              const SizedBox(height: 40),
-              TextFormField(
-                controller: _firstnameController,
-                decoration: const InputDecoration(
-                  labelText: "First Name",
-                  border: OutlineInputBorder(),
-                  prefixIcon: Icon(Icons.person_outlined, size: 20),
-                ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter your name';
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(height: 30),
-              TextFormField(
-                controller: _lastnameController,
-                decoration: const InputDecoration(
-                  labelText: "Last Name",
-                  border: OutlineInputBorder(),
-                  prefixIcon: Icon(Icons.person_outlined, size: 20),
-                ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter your last name';
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(height: 30),
-              TextFormField(
-                controller: _emailController,
-                decoration: InputDecoration(
-                  labelText: "Email",
-                  border: const OutlineInputBorder(),
-                  prefixIcon: const Icon(Icons.email_outlined, size: 20),
-                  errorText: emailError, // Show real-time error
-                ),
-                keyboardType: TextInputType.emailAddress,
-                textInputAction: TextInputAction.next,
-                onChanged: validateEmail,
-              ),
-              const SizedBox(height: 30),
-              TextFormField(
-                controller: _passwordController,
-                obscureText: obscureText,
-                obscuringCharacter: "*",
-                decoration: InputDecoration(
-                  labelText: "Password",
-                  border: const OutlineInputBorder(),
-                  prefixIcon: const Icon(Icons.lock_outline, size: 20),
-                  suffixIcon: IconButton(
-                    icon: Icon(
-                      obscureText ? Icons.visibility_off : Icons.visibility,
+          child: Column(
+            children: [
+              Form(
+                key: _formKey,
+                child: Column(children: [
+                  SizedBox(height: MediaQuery.of(context).size.height / 10.5),
+                  Image.asset(
+                    "lib/assets/1625_logo.png",
+                    width: 150,
+                  ),
+                  const SizedBox(height: 20),
+                  const Text(
+                    "Create Your 1625 Relief App Account",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                  ),
+                  const Text(
+                    "Sign up to manage your shifts seamlessly",
+                    style: TextStyle(color: Colors.grey, fontSize: 15),
+                  ),
+                  const SizedBox(height: 40),
+                  TextFormField(
+                    controller: _firstnameController,
+                    decoration: const InputDecoration(
+                      labelText: "First Name",
+                      border: OutlineInputBorder(),
+                      prefixIcon: Icon(Icons.person_outlined, size: 20),
                     ),
-                    onPressed: () {
-                      setState(() {
-                        obscureText = !obscureText;
-                      });
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter your name';
+                      }
+                      return null;
                     },
                   ),
-                ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter your password';
-                  }
-                  if (value.length < 6) {
-                    return 'Password must be at least 6 characters';
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(height: 30),
-              SizedBox(
-                width: 300,
-                child: ElevatedButton(
-                  style:
-                      ElevatedButton.styleFrom(backgroundColor: Colors.orange),
-                  onPressed: () async {
-                    if (_formKey.currentState!.validate() &&
-                        emailError == null) {
-                      password = _passwordController.text;
-                      firstName = _firstnameController.text.trim();
-                      lastName = _lastnameController.text.trim();
-                      email = _emailController.text.trim();
-                      password =
-                          PasswordHash(password: password).encryptWithArgon2();
-                      auth.createNewUserData(
-                          firstName, lastName, email, password);
-                      auth.sendOTP(email);
-
-                      if (mounted) {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) =>
-                                OtpVerificationScreen(email: email),
-                          ),
-                        );
+                  const SizedBox(height: 30),
+                  TextFormField(
+                    controller: _lastnameController,
+                    decoration: const InputDecoration(
+                      labelText: "Last Name",
+                      border: OutlineInputBorder(),
+                      prefixIcon: Icon(Icons.person_outlined, size: 20),
+                    ),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter your last name';
                       }
-                    }
-                  },
-                  child: const Text(
-                    "Create Account",
-                    style: TextStyle(color: Colors.white),
+                      return null;
+                    },
                   ),
-                ),
+                  const SizedBox(height: 30),
+                  TextFormField(
+                    controller: _emailController,
+                    decoration: InputDecoration(
+                      labelText: "Email",
+                      border: const OutlineInputBorder(),
+                      prefixIcon: const Icon(Icons.email_outlined, size: 20),
+                      errorText: emailError, // Show real-time error
+                    ),
+                    keyboardType: TextInputType.emailAddress,
+                    textInputAction: TextInputAction.next,
+                    onChanged: validateEmail,
+                  ),
+                  const SizedBox(height: 30),
+                  TextFormField(
+                    controller: _passwordController,
+                    obscureText: obscureText,
+                    obscuringCharacter: "*",
+                    decoration: InputDecoration(
+                      labelText: "Password",
+                      border: const OutlineInputBorder(),
+                      prefixIcon: const Icon(Icons.lock_outline, size: 20),
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          obscureText ? Icons.visibility_off : Icons.visibility,
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            obscureText = !obscureText;
+                          });
+                        },
+                      ),
+                    ),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter your password';
+                      }
+                      if (value.length < 6) {
+                        return 'Password must be at least 6 characters';
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 30),
+                  SizedBox(
+                    width: 300,
+                    child: ElevatedButton(
+                      style:
+                          ElevatedButton.styleFrom(backgroundColor: Colors.orange),
+                      onPressed: () async {
+                        if (_formKey.currentState!.validate() &&
+                            emailError == null) {
+                          password = _passwordController.text;
+                          firstName = _firstnameController.text.trim();
+                          lastName = _lastnameController.text.trim();
+                          email = _emailController.text.trim();
+                          password =
+                              PasswordHash(password: password).encryptWithArgon2();
+                          auth.createNewUserData(
+                              firstName, lastName, email, password);
+                          auth.sendOTP(email);
+
+                          if (mounted) {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    OtpVerificationScreen(email: email),
+                              ),
+                            );
+                          }
+                        }
+                      },
+                      child: const Text(
+                        "Create Account",
+                        style: TextStyle(color: Colors.white),
+                      ),
+                    ),
+                  ),
+
+                ]),
               ),
               SizedBox(height: 30),
               Row(
@@ -187,7 +192,7 @@ class _SignupState extends State<Signup> {
                     child: Container(
                       height: 1, // Set the line height
                       decoration:
-                          BoxDecoration(border: Border.all(color: Colors.grey)),
+                      BoxDecoration(border: Border.all(color: Colors.grey)),
                     ),
                   ),
                   Padding(
@@ -198,7 +203,7 @@ class _SignupState extends State<Signup> {
                     child: Container(
                       height: 1, // Set the line height
                       decoration:
-                          BoxDecoration(border: Border.all(color: Colors.grey)),
+                      BoxDecoration(border: Border.all(color: Colors.grey)),
                     ),
                   ),
                 ],
@@ -249,7 +254,7 @@ class _SignupState extends State<Signup> {
                 ],
               ),
               SizedBox(height: 20),
-            ]),
+            ],
           ),
         ),
       ),

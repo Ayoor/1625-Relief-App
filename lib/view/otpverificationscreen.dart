@@ -6,6 +6,8 @@ import 'package:relief_app/viewmodel/authentication.dart';
 import 'package:relief_app/viewmodel/provider.dart';
 import 'package:toastification/toastification.dart';
 
+import '../services/firebase_auth.dart';
+
 class OtpVerificationScreen extends StatefulWidget {
   final String email;
 
@@ -196,6 +198,8 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
 
                       if (snapshot.exists) {
                         dbRef.update({"Account Status": "Verified"});
+                        final AuthenticationService authService = AuthenticationService();
+                        await authService.saveSession("email", widget.email);
                         Navigator.of(context).pushReplacement(
                           MaterialPageRoute(
                             builder: (context) => AccountSuccess(),

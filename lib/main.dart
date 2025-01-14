@@ -1,7 +1,6 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:relief_app/services/firebase_auth.dart';
 import 'package:relief_app/view/signin.dart';
 import 'package:relief_app/viewmodel/provider.dart';
 
