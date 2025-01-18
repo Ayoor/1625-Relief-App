@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:relief_app/test.dart';
 
 import '../../services/firebase_auth.dart';
+import '../signup.dart';
 
 class Sidebar extends StatelessWidget {
   const Sidebar({super.key});
@@ -23,25 +24,50 @@ class Sidebar extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                IconButton(
-                  onPressed: () => Navigator.pop(context),
-                  icon: const Icon(Icons.arrow_back,
-                      size: 25, color: Colors.blue),
+                Stack(
+                  children: [
+            IconButton(
+            onPressed: () => Navigator.pop(context),
+    icon: const Icon(Icons.arrow_back,
+    size: 25, color: Colors.blue),
+    ),                Center(
+    child: Image.asset(
+    "lib/assets/1625_logo.png",
+    width: 80,
+    ),
+    )
+                  ],
                 ),
-                Center(
-                  child: Image.asset(
-                    "lib/assets/1625_logo.png",
-                    width: 150,
-                  ),
+
+                SizedBox(height: 30,),
+                Row(
+                  children: [
+                    Image.asset(
+                      "lib/assets/user.png",
+                      width: 40,
+                    ),
+                    SizedBox(width: 10,),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text("Ayodele Oduoola", style: TextStyle(fontSize: 16),),
+                        Text("gbengajohn4god@gmail.com", style: TextStyle(fontSize: 12, color: Colors.grey)),
+                      ]
+
+                    )
+                  ],
                 ),
               ],
             ),
           ),
+          SizedBox(height: 20,),
           ListTile(
+            minVerticalPadding: 20,
             leading: const Icon(
-              Icons.account_box,
+              Icons.person_2,
               color: Colors.blue,
             ),
+            trailing: Icon(Icons.chevron_right, color: Colors.grey,),
             title: const Text('Account'),
             onTap: () {
               Navigator.pop(context);
@@ -50,10 +76,13 @@ class Sidebar extends StatelessWidget {
             },
           ),
           ListTile(
+            minVerticalPadding: 20,
             leading: const Icon(
               Icons.settings,
               color: Colors.blue,
             ),
+            trailing: Icon(Icons.chevron_right, color: Colors.grey,),
+
             title: const Text('Settings'),
             onTap: () {
               Navigator.pop(context);
@@ -64,30 +93,36 @@ class Sidebar extends StatelessWidget {
             },
           ),
           ListTile(
-            leading: const Icon(
-              Icons.check_box,
-              color: Colors.blue,
-            ),
+            minVerticalPadding: 20,
+            leading: Image.asset("lib/assets/to-do-list.png", width: 25,),
+            trailing: Icon(Icons.chevron_right, color: Colors.grey,),
             title: const Text('Task Checklist'),
             onTap: () {
               Navigator.pop(context);
 
-              String doc = 'lib/Assets/Documents/IOS_guide.pdf';
-              // Navigator.push(
-              //     context,
-              //     MaterialPageRoute(
-              //         builder: (context) =>  Documents(doc: doc)));
+
             },
           ),
           ListTile(
             title: Center(
                 child: Text(
                   "Log out",
-                  style: TextStyle(fontSize: 16, color: Colors.pinkAccent),
+                  style: TextStyle(fontSize: 16, color: Colors.pinkAccent, fontWeight: FontWeight.bold),
                 )),
             onTap: () {
-              signOutUser(context);
-              Navigator.pop(context);
+              showDialog(context: context, builder: (context) => AlertDialog(
+                title: Text("Log out", style: TextStyle(fontWeight: FontWeight.bold),),
+                content: Text("Are you sure you want to log out?"),
+                actions: [
+                  TextButton(
+                      onPressed: () => Navigator.pop(context),
+                      child: Text('Cancel')),
+                  TextButton(
+                      onPressed: () => signOutUser(context),
+                      child: Text('Log out', style: TextStyle(color: Colors.pinkAccent),),),
+                ],
+              ),
+              );
             },
           ),
           const Spacer(),
@@ -127,6 +162,10 @@ class Sidebar extends StatelessWidget {
     }
     await authService.clearSession();
 
-Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => Signin()));
+    Navigator.pushAndRemoveUntil(
+      context,
+      MaterialPageRoute(builder: (context) => Signin()),
+          (route) => false,
+    );
   }
 }

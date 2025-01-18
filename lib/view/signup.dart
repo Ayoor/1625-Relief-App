@@ -1,8 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:relief_app/services/firebase_auth.dart';
 import 'package:relief_app/utils/passwordhash.dart';
 import 'package:relief_app/view/otpverificationscreen.dart';
 import 'package:relief_app/view/signin.dart';
 import 'package:relief_app/viewmodel/authentication.dart';
+import 'package:toastification/toastification.dart';
+
+import '../viewmodel/provider.dart';
+import 'home_Screen.dart';
 
 class Signup extends StatefulWidget {
   const Signup({super.key});
@@ -14,6 +19,7 @@ class Signup extends StatefulWidget {
 class _SignupState extends State<Signup> {
   final _formKey = GlobalKey<FormState>();
   bool obscureText = true;
+  bool isLoading = false;
   String password = "";
   String firstName = "";
   String lastName = "";
@@ -175,7 +181,10 @@ class _SignupState extends State<Signup> {
                           }
                         }
                       },
-                      child: const Text(
+                      child: isLoading? CircularProgressIndicator(
+                        color: Colors.white,
+                        strokeWidth: 2,
+                      ): const Text(
                         "Create Account",
                         style: TextStyle(color: Colors.white),
                       ),
@@ -219,7 +228,10 @@ class _SignupState extends State<Signup> {
                     style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.white,
                         side: BorderSide(width: .5, color: Colors.grey)),
-                    onPressed: () {},
+                    onPressed: () {
+
+                      googleSignin();
+                    },
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
@@ -260,4 +272,44 @@ class _SignupState extends State<Signup> {
       ),
     );
   }
+  Future<void> googleSignin() async {
+    final authService = AuthenticationService();
+    final provider = AppProvider();
+    try {
+      final googleUser = await authService.signInWithGoogle();
+      if (googleUser == null) {
+        return;
+      } else {
+        if (await auth.checkEmailExists("${googleUser.email}") &&
+            auth.isverifiedUser) {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (context) => HomeScreen(title: "1625 Relief"),
+            ),
+          );
+        } else if (!await auth.checkEmailExists("${googleUser.email}")) {
+          await authService.saveGoogleUserToDatabase(googleUser);
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (context) => HomeScreen(title: "1625 Relief"),
+            ),
+          );
+        }
+      }
+    } catch (e) {
+      provider.showMessage(
+          context: context,
+          message: "Google sign in failed",
+          type: ToastificationType.error,
+          bgColor: Colors.red,
+          icon: Icons.cancel);
+    } finally {
+      setState(() {
+        // isFetching = false;
+      });
+    }
+  }
+
 }

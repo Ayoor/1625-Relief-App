@@ -16,7 +16,6 @@ class Income extends StatefulWidget {
 
 class _IncomeState extends State<Income> with SingleTickerProviderStateMixin {
   late TabController _tabController;
-
   @override
   void initState() {
     super.initState();
@@ -24,13 +23,20 @@ class _IncomeState extends State<Income> with SingleTickerProviderStateMixin {
 
 
   }
+  final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
   Widget build(BuildContext context) {
     return Consumer<AppProvider>(
       builder: (context, provider, child) => Scaffold(
-        drawer: Sidebar(),
-        appBar: AppBar(
+
+               appBar: AppBar(
+                 leading: IconButton(
+                   icon: const Icon(Icons.menu),
+                   onPressed: () {
+                     scaffoldKey.currentState?.openDrawer(); // Open the drawer
+                   },
+                 ),
           backgroundColor: Colors.blue,
           title: const Text(
             "Income",

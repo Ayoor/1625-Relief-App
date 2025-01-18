@@ -6,16 +6,18 @@ Overview (
   total shifts remaining to target,n
  )
 
-
+issues
+sidebar cant close when you change bottom bar
 
 Onboarding Screen
 Implement daily tasks checklist
-push notifications
+push notifications for shift and for timesheet.
 create mock up images
 
-implement sign out
 forgot password
 change email to yahoo
+
+settings(theme, delete account, change password)
 
 
 divide all shifts into monthly sections

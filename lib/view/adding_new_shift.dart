@@ -322,12 +322,7 @@ class _NewShiftState extends State<NewShift> {
                             elevation: 0,
                           ),
                           onPressed: () {
-                            // provider.saveNewShifts(
-                            //     "Early",
-                            //     DateTime.now().add(Duration(minutes: 300)),
-                            //     DateTime.now().add(Duration(minutes: 600)),
-                            //     "Woodleaze",
-                            //     context);
+                           
                             if (startTime != null && endTime != null) {
                               provider.addShift(startTime!, endTime!,
                                   selectedLocation, context);
@@ -511,7 +506,7 @@ class _NewShiftState extends State<NewShift> {
                 showDayOfWeek: true,
                 initialDateTime: minDate(timeDetail).add(Duration(minutes: 15)),
                 maximumDate: DateTime.now().add(Duration(days: 40)),
-                minimumDate:  minDate(timeDetail).subtract(Duration(minutes: 15)),
+                minimumDate:  minDate(timeDetail).subtract(Duration(hours: 3)),
               ),
             ),
             SizedBox(height: 10),

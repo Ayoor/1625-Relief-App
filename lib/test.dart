@@ -1,10 +1,19 @@
 import 'package:flutter/material.dart';
+
 import 'package:relief_app/utils/passwordhash.dart';
+
 import 'package:relief_app/view/all_shifts.dart';
+import 'package:relief_app/view/home_Screen.dart';
+
 import 'package:relief_app/view/signup.dart';
+
 import 'package:relief_app/viewmodel/authentication.dart';
+
 import 'package:relief_app/viewmodel/provider.dart';
+
 import 'package:toastification/toastification.dart';
+
+import '../services/firebase_auth.dart';
 
 class Signin extends StatefulWidget {
   const Signin({super.key});
@@ -15,245 +24,334 @@ class Signin extends StatefulWidget {
 
 class _SigninState extends State<Signin> {
   final _formKey = GlobalKey<FormState>();
+
   bool obscureText = true;
+
   String password = "";
+
   String email = "";
+
   String errorMsg = "";
+
   String emailError = "";
+
   bool isFetching = false;
+  bool isLoading = false;
 
   final Authentication auth = Authentication();
+  final AuthenticationService authService = AuthenticationService();
+
   final TextEditingController _emailController = TextEditingController();
+
   final TextEditingController _passwordController = TextEditingController();
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    checkSession(context);
+
+  }
+
+  Future<void> checkSession(BuildContext context) async {
+    setState(() {
+      isLoading = true;
+    });
+    final googleEmail = await authService.getSession('googleEmail');
+    final email = await authService.getSession('email');
+
+    if (googleEmail != null || email != null) {
+      // Navigate directly to HomeScreen
+      Future.microtask(() {
+
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => HomeScreen(title: "1625 Relief"),
+          ),
+        );
+      });
+    } else {
+      // No session found, update isLoading to show the sign-in screen
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     AppProvider provider = AppProvider();
-
-    return Scaffold(
-      backgroundColor: Colors.white,
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 40.0),
-          child: Form(
-            key: _formKey,
-            child: Column(children: [
-              SizedBox(height: MediaQuery
-                  .of(context)
-                  .size
-                  .height / 10),
-              Image.asset(
-                "lib/assets/1625_logo.png",
-                width: 150,
-              ),
-              const SizedBox(height: 20),
-              const Text(
-                "Sign in to your 1625 Relief App Account",
-                textAlign: TextAlign.center,
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
-              ),
-              const Text(
-                "Seamlessly manage your shifts",
-                style: TextStyle(color: Colors.grey, fontSize: 15),
-              ),
-              const SizedBox(height: 40),
-
-              // email
-              TextFormField(
-                validator: (value) {
-                  if (value!.isEmpty) {
-                    setState(() {
-                      emailError = 'Please enter your email';
-                    });
-                    return emailError;
-                  }
-                  if (!RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(value)) {
-                    setState(() {
-                      emailError = 'Please enter a valid email';
-                    });
-                    return emailError;
-                  }
-                  setState(() {
-                    emailError = "";
-                  });
-                  return null;
-                },
-                controller: _emailController,
-                decoration: InputDecoration(
-                  labelText: "Email",
-                  border: const OutlineInputBorder(),
-                  prefixIcon: const Icon(Icons.email_outlined, size: 20),
-                  // errorText: emailError, // Real-time error display
-                ),
-                keyboardType: TextInputType.emailAddress,
-                textInputAction: TextInputAction.next,
-                // Call validation on change
-              ),
-              const SizedBox(height: 30),
-
-              //password
-
-              TextFormField(
-                controller: _passwordController,
-                obscureText: obscureText,
-                obscuringCharacter: "*",
-                decoration: InputDecoration(
-                  labelText: "Password",
-                  border: const OutlineInputBorder(),
-                  prefixIcon: const Icon(Icons.lock_outline, size: 20),
-                  suffixIcon: IconButton(
-                    icon: Icon(
-                      obscureText ? Icons.visibility_off : Icons.visibility,
+    if (isLoading) {
+      return Scaffold(
+        body: Center(
+          child: Text("Loading..."),
+        ),
+      );
+    }
+    else {
+      return Scaffold(
+        backgroundColor: Colors.white,
+        body: SingleChildScrollView(
+          child: ConstrainedBox(
+            constraints: BoxConstraints(
+              minHeight: MediaQuery.of(context).size.height,
+            ),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 40.0),
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    SizedBox(height: MediaQuery.of(context).size.height / 10),
+                    Center(
+                      child: Image.asset(
+                        "lib/assets/1625_logo.png",
+                        width: 150, // Explicitly setting the width
+                        fit: BoxFit.contain, // Ensuring the image maintains its aspect ratio
+                      ),
                     ),
-                    onPressed: () {
-                      setState(() {
-                        obscureText = !obscureText;
-                      });
-                    },
-                  ),
-                ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter your password';
-                  }
-                  if (value.length < 6) {
-                    return 'Password must be at least 6 characters';
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(height: 30),
-              SizedBox(
-                width: 300,
-                child: ElevatedButton(
-                  style:
-                  ElevatedButton.styleFrom(backgroundColor: Colors.orange),
-                  onPressed: () async {
-                    await signin(context, provider);
-                  },
-                  child: isFetching
-                      ? SizedBox(
-                    height: 20,
-                    width: 20,
-                    child: CircularProgressIndicator(
-                      color: Colors.white,
-                      strokeWidth: 2,
+                    const SizedBox(height: 20),
+                    const Text(
+                      "Sign in to your 1625 Relief App Account",
+                      textAlign: TextAlign.center,
+                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
                     ),
-                  )
-                      : const Text(
-                    "Sign in",
-                    style: TextStyle(color: Colors.white),
-                  ),
-                ),
-              ),
-              SizedBox(height: 30),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Expanded(
-                    child: Container(
-                      height: 1, // Set the line height
-                      decoration:
-                      BoxDecoration(border: Border.all(color: Colors.grey)),
+                    const Text(
+                      "Seamlessly manage your shifts",
+                      textAlign: TextAlign.center,
+                      style: TextStyle(color: Colors.grey, fontSize: 15),
                     ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 10),
-                    child: Text("Or Sign in with"),
-                  ),
-                  Expanded(
-                    child: Container(
-                      height: 1, // Set the line height
-                      decoration:
-                      BoxDecoration(border: Border.all(color: Colors.grey)),
-                    ),
-                  ),
-                ],
-              ),
-              SizedBox(
-                height: 30,
-              ),
-              SizedBox(
-                width: 300,
-                child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.white,
-                        side: BorderSide(width: .5, color: Colors.grey)),
-                    onPressed: () async {
-                      setState(() {
-                        isFetching = true;
-                      });
-
-                      try {
-                        await signin(context, provider);
-                      } catch (e) {
-                        provider.showMessage(context: context,
-                            message: "An error occurred while trying to sign in",
-                            type: ToastificationType.error,
-                            bgColor: Colors.red,
-                            icon: Icons.cancel);
-                      } finally {
+                    const SizedBox(height: 40),
+                    TextFormField(
+                      validator: (value) {
+                        if (value!.isEmpty) {
+                          setState(() {
+                            emailError = 'Please enter your email';
+                          });
+                          return emailError;
+                        }
+                        if (!RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(value)) {
+                          setState(() {
+                            emailError = 'Please enter a valid email';
+                          });
+                          return emailError;
+                        }
                         setState(() {
-                          isFetching = false;
+                          emailError = "";
                         });
-                      }
-                    },
-                    child: Row(
+                        return null;
+                      },
+                      controller: _emailController,
+                      decoration: InputDecoration(
+                        labelText: "Email",
+                        border: const OutlineInputBorder(),
+                        prefixIcon: const Icon(Icons.email_outlined, size: 20),
+                      ),
+                      keyboardType: TextInputType.emailAddress,
+                      textInputAction: TextInputAction.next,
+                    ),
+                    const SizedBox(height: 30),
+                    TextFormField(
+                      controller: _passwordController,
+                      obscureText: obscureText,
+                      obscuringCharacter: "*",
+                      decoration: InputDecoration(
+                        labelText: "Password",
+                        border: const OutlineInputBorder(),
+                        prefixIcon: const Icon(Icons.lock_outline, size: 20),
+                        suffixIcon: IconButton(
+                          icon: Icon(
+                            obscureText ? Icons.visibility_off : Icons.visibility,
+                          ),
+                          onPressed: () {
+                            setState(() {
+                              obscureText = !obscureText;
+                            });
+                          },
+                        ),
+                      ),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please enter your password';
+                        }
+                        if (value.length < 6) {
+                          return 'Password must be at least 6 characters';
+                        }
+                        return null;
+                      },
+                    ),
+                    const SizedBox(height: 30),
+                    SizedBox(
+                      width: 300,
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.orange),
+                        onPressed: () async {
+                          await signin(context, provider);
+                        },
+                        child: isFetching
+                            ? SizedBox(
+                          height: 20,
+                          width: 20,
+                          child: CircularProgressIndicator(
+                            color: Colors.white,
+                            strokeWidth: 2,
+                          ),
+                        )
+                            : const Text(
+                          "Sign in",
+                          style: TextStyle(color: Colors.white),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 30),
+                    Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Padding(
-                          padding: const EdgeInsets.only(right: 3.0),
-                          child: Image.asset(
-                            "lib/assets/google_g.png",
-                            width: 30,
-                          ),
+                        Expanded(
+                          child: Divider(color: Colors.grey),
                         ),
-                        Text(
-                          "Google",
-                          style: TextStyle(color: Colors.black87),
+                        const Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 10),
+                          child: Text("Or Sign in with"),
+                        ),
+                        Expanded(
+                          child: Divider(color: Colors.grey),
                         ),
                       ],
-                    )),
-              ),
-              SizedBox(
-                height: 40,
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    "Don't have an account?",
-                    style: TextStyle(fontSize: 16),
-                  ),
-                  TextButton(
-                      onPressed: () =>
-                          Navigator.pushReplacement(context,
-                              MaterialPageRoute(builder: (context) =>
-                                  Signup())),
-                      child: Text(
-                        "Sign up",
-                        style:
-                        TextStyle(color: Colors.pinkAccent, fontSize: 16),
-                      ))
-                ],
-              ),
-              SizedBox(
-                height: 20,
-              ),
-              TextButton(
-                  onPressed: () {},
-                  child: Text("Forgot password?",
-                      style: TextStyle(
+                    ),
+                    const SizedBox(height: 30),
+                    SizedBox(
+                      width: 300,
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.white,
+                          side: BorderSide(width: .5, color: Colors.grey),
+                        ),
+                        onPressed: () async {
+                          setState(() {
+                            isFetching = true;
+                          });
+                          try {
+                            await googleSignin();
+                          } catch (e) {
+                            provider.showMessage(
+                              context: context,
+                              message: "An error occurred while trying to sign in",
+                              type: ToastificationType.error,
+                              bgColor: Colors.red,
+                              icon: Icons.cancel,
+                            );
+                          } finally {
+                            setState(() {
+                              isFetching = false;
+                            });
+                          }
+                        },
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.only(right: 3.0),
+                              child: Image.asset(
+                                "lib/assets/google_g.png",
+                                width: 30,
+                              ),
+                            ),
+                            const Text(
+                              "Google",
+                              style: TextStyle(color: Colors.black87),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 40),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Text(
+                          "Don't have an account?",
+                          style: TextStyle(fontSize: 16),
+                        ),
+                        TextButton(
+                          onPressed: () => Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(builder: (context) => Signup()),
+                          ),
+                          child: const Text(
+                            "Sign up",
+                            style: TextStyle(
+                                color: Colors.pinkAccent, fontSize: 16),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 20),
+                    TextButton(
+                      onPressed: () {},
+                      child: const Text(
+                        "Forgot password?",
+                        style: TextStyle(
                           color: Colors.blue,
                           fontSize: 12,
                           decoration: TextDecoration.underline,
-                          decorationColor: Colors.blue)))
-            ]),
+                          decorationColor: Colors.blue,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
           ),
         ),
-      ),
-    );
+      );
+    }
   }
+
+  Future<void> googleSignin() async {
+    final provider = AppProvider();
+    try {
+      final googleUser = await authService.signInWithGoogle();
+      if (googleUser == null) {
+        return;
+      } else {
+        if (await auth.checkEmailExists("${googleUser.email}") &&
+            auth.isverifiedUser) {
+          await authService.saveSession("googleEmail", "${googleUser.email}");
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (context) => HomeScreen(title: "1625 Relief"),
+            ),
+          );
+        } else if (!await auth.checkEmailExists("${googleUser.email}")) {
+          await authService.saveGoogleUserToDatabase(googleUser);
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (context) => HomeScreen(title: "1625 Relief"),
+            ),
+          );
+        }
+      }
+    } catch (e) {
+      provider.showMessage(
+          context: context,
+          message: "Google sign in failed",
+          type: ToastificationType.error,
+          bgColor: Colors.red,
+          icon: Icons.cancel);
+    } finally {
+      setState(() {
+        isFetching = false;
+      });
+    }
+  }
+
 
   Future<void> signin(BuildContext context, AppProvider provider) async {
     if (_formKey.currentState!.validate() &&
@@ -261,17 +359,20 @@ class _SigninState extends State<Signin> {
       password = _passwordController.text;
 
       email = _emailController.text.trim();
-      password =
-          PasswordHash(password: password).encryptWithArgon2();
+
+      password = PasswordHash(password: password).encryptWithArgon2();
 
       if (mounted) {
         //sign in logic
-        bool isExistingEmail =
-        await auth.checkEmailExists(email);
+
+        bool isExistingEmail = await auth.checkEmailExists(email);
+
         if (isExistingEmail) {
-          bool isValidCredentials = await auth
-              .isValidCredentials(email, password, context);
+          bool isValidCredentials =
+          await auth.isValidCredentials(email, password, context);
+
           if (isValidCredentials) {
+            await authService.saveSession("email", email);
             Navigator.pushReplacement(
               context,
               MaterialPageRoute(
@@ -282,7 +383,9 @@ class _SigninState extends State<Signin> {
             setState(() {
               isFetching = false;
             });
+
             errorMsg = "Incorrect Password";
+
             provider.showMessage(
                 context: context,
                 message: errorMsg,
@@ -294,8 +397,9 @@ class _SigninState extends State<Signin> {
           setState(() {
             isFetching = false;
           });
-          errorMsg =
-          "Sorry, this email has not been registered";
+
+          errorMsg = "Sorry, this email has not been registered";
+
           provider.showMessage(
               context: context,
               message: errorMsg,
@@ -307,3 +411,5 @@ class _SigninState extends State<Signin> {
     }
   }
 }
+
+//test version

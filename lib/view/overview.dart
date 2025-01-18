@@ -31,6 +31,7 @@ class _OverviewState extends State<Overview> {
 
   var formatter =
       NumberFormat.currency(locale: "en_UK", decimalDigits: 2, symbol: "£");
+  final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
   Widget build(BuildContext context) {
@@ -44,6 +45,10 @@ class _OverviewState extends State<Overview> {
       OverviewDetails(
         title: "Allocated",
         value: provider.monthAlocatedShifts,
+      ),
+      OverviewDetails(
+        title: "Uncompleted",
+        value: provider.monthAlocatedShifts - provider.monthCompletedShifts,
       ),
       OverviewDetails(
         title: "Cancelled",
@@ -89,9 +94,15 @@ class _OverviewState extends State<Overview> {
     ];
 
     return Scaffold(
-      drawer: Sidebar(),
+
       backgroundColor: Colour("#f2f5fa"),
       appBar: AppBar(
+          leading: IconButton(
+            icon: const Icon(Icons.menu),
+            onPressed: () {
+              scaffoldKey.currentState?.openDrawer(); // Open the drawer
+            },
+          ),
         title: const Text('Overview'),
       ),
       body: Consumer<AppProvider>(
