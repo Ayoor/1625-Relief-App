@@ -1,6 +1,8 @@
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:relief_app/model/userData.dart';
+import 'package:relief_app/model/users.dart';
 import 'package:relief_app/services/firebase_auth.dart';
 import 'package:toastification/toastification.dart';
 import 'package:tuple/tuple.dart';
@@ -44,9 +46,9 @@ class AppProvider extends ChangeNotifier {
   double get woodleazeShiftIncome => _woodleazeShiftIncome;
 
 
-  Future<String> userEmail  () async {
+  Future<String> userEmail() async {
     final authService = AuthenticationService();
-    String userEmail ="";
+    String userEmail = "";
     final googleEmail = await authService.getSession('googleEmail');
     final email = await authService.getSession('email');
 
@@ -75,7 +77,6 @@ class AppProvider extends ChangeNotifier {
       {String shiftType = "", String endTime = ""}) async {
     String email = await userEmail();
     try {
-
       // Reference to the specific shift in the Firebase Database
       final DatabaseReference dbRef =
       FirebaseDatabase.instance.ref().child("Users/$email/Shifts/$key");
@@ -215,12 +216,56 @@ class AppProvider extends ChangeNotifier {
         duration.toStringAsFixed(2)); // Round to 2 decimal places
   }
 
+  Future<ReliefUser?> fetchUser(BuildContext context) async {
+    String email = await userEmail(); // Function to get the user's email
+    final DatabaseReference dbRef = FirebaseDatabase.instance.ref();
+
+    try {
+      final DataSnapshot snapshot = await dbRef.child('Users/$email').get();
+
+      if (snapshot.exists && snapshot.value is Map<dynamic, dynamic>) {
+        final Map<dynamic, dynamic> userData =
+        snapshot.value as Map<dynamic, dynamic>;
+
+        // Create a ReliefUser instance from the retrieved data
+        return ReliefUser(
+          email: userData['Email'] ?? "",
+          firstname: userData['First Name'] ?? "",
+          lastname: userData['Last Name'] == "N/A" ? "" : userData['Last Name'],
+          target: userData['Target'],
+        );
+      } else {
+        // Show an error message if the user doesn't exist
+        showMessage(
+          context: context,
+          message: "User not found",
+          type: ToastificationType.warning,
+          bgColor: Colors.orange,
+          icon: Icons.info,
+        );
+      }
+    } catch (e) {
+      // Handle any errors during the fetch process
+      showMessage(
+        context: context,
+        message: "Error fetching user: ${e.toString()}",
+        type: ToastificationType.error,
+        bgColor: Colors.red,
+        icon: Icons.cancel,
+      );
+    }
+
+    return null; // Return null if no user is found or an error occurs
+  }
+
+
   Future fetchShifts(BuildContext context) async {
     String email = await userEmail();
     final DatabaseReference dbRef = FirebaseDatabase.instance.ref();
 
     try {
-      final DataSnapshot snapshot = await dbRef.child('Users/$email/Shifts').get();
+      final DataSnapshot snapshot = await dbRef.child('Users/$email/Shifts')
+          .get();
 
       if (snapshot.exists) {
         // Check if the value is a Map
@@ -318,7 +363,6 @@ class AppProvider extends ChangeNotifier {
 
         notifyListeners();
       } else {
-
         return [];
       }
     } catch (e) {

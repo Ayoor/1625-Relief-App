@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:relief_app/test.dart';
+import 'package:relief_app/view/account.dart';
 
 import '../../services/firebase_auth.dart';
 import '../signup.dart';
@@ -71,8 +72,8 @@ class Sidebar extends StatelessWidget {
             title: const Text('Account'),
             onTap: () {
               Navigator.pop(context);
-              // Navigator.push(context,
-              //     MaterialPageRoute(builder: (context) => const ImeiSearch()));
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => const Account()));
             },
           ),
           ListTile(

@@ -26,10 +26,10 @@ class _IncomeState extends State<Income> with SingleTickerProviderStateMixin {
   final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
+
   Widget build(BuildContext context) {
     return Consumer<AppProvider>(
       builder: (context, provider, child) => Scaffold(
-
                appBar: AppBar(
                  leading: IconButton(
                    icon: const Icon(Icons.menu),
