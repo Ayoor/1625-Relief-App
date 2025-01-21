@@ -2,6 +2,7 @@ import 'package:colour/colour.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import 'package:relief_app/model/userData.dart';
 import 'package:relief_app/view/widgets/SideBar.dart';
 import 'package:relief_app/view/widgets/animatedBarGrapgh.dart';
 import 'package:relief_app/viewmodel/provider.dart';
@@ -14,12 +15,15 @@ class Overview extends StatefulWidget {
 }
 
 class _OverviewState extends State<Overview> {
+  int remainingShiftToTarget =15;
   @override
   void initState() {
     super.initState();
 
-    WidgetsBinding.instance.addPostFrameCallback((_) {
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
       final provider = Provider.of<AppProvider>(context, listen: false);
+     await  shiftstoTarget(provider);
+      provider.getIncomeSummary(context);
       provider.getDateRange();
       provider.overviewData(
         context,
@@ -32,6 +36,38 @@ class _OverviewState extends State<Overview> {
   var formatter =
       NumberFormat.currency(locale: "en_UK", decimalDigits: 2, symbol: "£");
   final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
+
+
+  Future<void> shiftstoTarget(AppProvider provider) async {
+    ReliefUser? user = await provider.fetchUser(context);
+    String userTargetString= "";
+    double target =0;
+    if (user != null) {
+      userTargetString = user.target.toString();
+      userTargetString = userTargetString.replaceAll("£", "");
+      userTargetString = userTargetString.replaceAll(",", "");
+      target = double.parse(userTargetString);
+      double currentIncome= (provider.CEHShiftIncome+ provider.SGHShiftIncome + provider.woodleazeShiftIncome);
+      double difference = target - currentIncome;
+      if (difference <= 0) {
+        setState(() {
+          remainingShiftToTarget =0;
+        });
+      }
+      else {
+        setState(() {
+          remainingShiftToTarget = (difference/currentIncome +0.5).toInt();
+          // added one for contingency
+          remainingShiftToTarget = ((target/100 -provider.monthCompletedShifts)+1).round().toInt();
+        });
+      }
+    }
+    else{
+      setState(() {
+        remainingShiftToTarget =0;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -56,7 +92,7 @@ class _OverviewState extends State<Overview> {
       ),
       OverviewDetails(
         title: "Remaining shifts to achieve target",
-        value: 11,
+        value: remainingShiftToTarget,
       ),
       OverviewDetails(
         title: "Total amount earned",
@@ -94,22 +130,21 @@ class _OverviewState extends State<Overview> {
     ];
 
     return Scaffold(
-
       backgroundColor: Colour("#f2f5fa"),
       appBar: AppBar(
-          leading: IconButton(
-            icon: const Icon(Icons.menu),
-            onPressed: () {
-              scaffoldKey.currentState?.openDrawer(); // Open the drawer
-            },
-          ),
+        leading: IconButton(
+          icon: const Icon(Icons.menu),
+          onPressed: () {
+            scaffoldKey.currentState?.openDrawer(); // Open the drawer
+          },
+        ),
         title: const Text('Overview'),
       ),
       body: Consumer<AppProvider>(
         builder: (context, provider, child) => RefreshIndicator(
           color: Colors.blue,
           backgroundColor: Colors.white,
-          onRefresh: () async{
+          onRefresh: () async {
             provider.getDateRange();
             provider.overviewData(
               context,
@@ -140,7 +175,10 @@ class _OverviewState extends State<Overview> {
                   Center(
                       child: Text(
                     "Completed shifts per month",
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20, color: Colors.pinkAccent),
+                    style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 20,
+                        color: Colors.pinkAccent),
                   )),
                   SizedBox(
                     height: 30,
