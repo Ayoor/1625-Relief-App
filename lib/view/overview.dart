@@ -132,15 +132,6 @@ class _OverviewState extends State<Overview> {
 
     return Scaffold(
       backgroundColor: Colour("#f2f5fa"),
-      appBar: AppBar(
-        leading: IconButton(
-          icon: const Icon(Icons.menu),
-          onPressed: () {
-            scaffoldKey.currentState?.openDrawer(); // Open the drawer
-          },
-        ),
-        title: const Text('Overview'),
-      ),
       body: Consumer<AppProvider>(
         builder: (context, provider, child) => RefreshIndicator(
           color: Colors.blue,
@@ -160,9 +151,10 @@ class _OverviewState extends State<Overview> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  SizedBox(height: 10,),
                   const Text(
                     "Summary",
-                    style: TextStyle(fontWeight: FontWeight.bold),
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                   ),
                   const SizedBox(height: 30),
                   SizedBox(

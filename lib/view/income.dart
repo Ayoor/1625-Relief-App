@@ -1,4 +1,6 @@
+import 'package:colour/colour.dart';
 import 'package:flutter/material.dart';
+import 'package:persistent_bottom_nav_bar_v2/persistent_bottom_nav_bar_v2.dart';
 import 'package:provider/provider.dart';
 import 'package:relief_app/view/history.dart';
 import 'package:relief_app/view/timesheet.dart';
@@ -8,7 +10,9 @@ import 'package:relief_app/view/widgets/striped_table.dart';
 import '../viewmodel/provider.dart';
 
 class Income extends StatefulWidget {
-  const Income({super.key});
+ PersistentTabController controller;
+
+  Income({super.key, required this.controller});
 
   @override
   State<Income> createState() => _IncomeState();
@@ -23,7 +27,6 @@ class _IncomeState extends State<Income> with SingleTickerProviderStateMixin {
 
 
   }
-  final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
 
@@ -31,18 +34,10 @@ class _IncomeState extends State<Income> with SingleTickerProviderStateMixin {
     return Consumer<AppProvider>(
       builder: (context, provider, child) => Scaffold(
                appBar: AppBar(
-                 leading: IconButton(
-                   icon: const Icon(Icons.menu),
-                   onPressed: () {
-                     scaffoldKey.currentState?.openDrawer(); // Open the drawer
-                   },
-                 ),
-          backgroundColor: Colors.blue,
-          title: const Text(
-            "Income",
-            style: TextStyle(color: Colors.white),
-          ),
-          bottom: TabBar(
+
+          backgroundColor: Colour("#00334F"),
+
+          title: TabBar(
             indicatorColor: Colors.orange,
             controller: _tabController,
             tabs: const [
@@ -97,7 +92,7 @@ class _IncomeState extends State<Income> with SingleTickerProviderStateMixin {
                       Text(
                         "Income Breakdown",
                         style: TextStyle(
-                          color: Colors.blue,
+                        color: Colors.blueGrey,
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
                         ),

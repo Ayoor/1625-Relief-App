@@ -1,3 +1,4 @@
+import 'package:colour/colour.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -40,30 +41,32 @@ class _StripedTableState extends State<StripedTable> {
                   // Table Header
                   TableRow(
                     decoration: BoxDecoration(
-                      color: Colors.blue.shade100, // Header row background color
+                      // color: Colors.blue.shade100, // Header row background color
+                      color: Colour("#00334F"), // Header row background color
                     ),
-                    children: const [
+                    children: [
                       Padding(
-                        padding: EdgeInsets.all(8.0),
+                        padding: const EdgeInsets.all(8.0),
                         child: Text(
                           "Project",
-                          style: TextStyle(fontWeight: FontWeight.bold),
+                          style: TextStyle( color: Colors.white,fontWeight: FontWeight.bold),
                           textAlign: TextAlign.center,
+
                         ),
                       ),
                       Padding(
-                        padding: EdgeInsets.all(8.0),
+                        padding: const EdgeInsets.all(8.0),
                         child: Text(
                           "Total Hours",
-                          style: TextStyle(fontWeight: FontWeight.bold),
+                          style: TextStyle( color: Colors.white,fontWeight: FontWeight.bold),
                           textAlign: TextAlign.center,
                         ),
                       ),
                       Padding(
-                        padding: EdgeInsets.all(8.0),
+                        padding: const EdgeInsets.all(8.0),
                         child: Text(
                           "Income",
-                          style: TextStyle(fontWeight: FontWeight.bold),
+                          style: TextStyle( color: Colors.white,fontWeight: FontWeight.bold),
                           textAlign: TextAlign.center,
                         ),
                       ),
@@ -90,14 +93,14 @@ double sum(ceh,sgh,woodlease){
       var formatter = NumberFormat.currency(locale: "en_UK", decimalDigits: 2, symbol: "£");
     return TableRow(
               decoration: BoxDecoration(
-                color: isLast
-                    ? Colors.amberAccent // Specific color for the last row
-                    : (isOdd ? Colors.grey.shade200 : Colors.white),
-              ),
+                color: isOdd ? Colors.grey.shade200 : Colors.white),
               children: [
                 Padding(
                   padding: EdgeInsets.all(8.0),
                   child: Text(
+                    style: TextStyle(
+                      fontWeight: isLast? FontWeight.bold : FontWeight.normal
+                    ),
                     projectName,
                     textAlign: TextAlign.center,
                   ),
@@ -105,6 +108,9 @@ double sum(ceh,sgh,woodlease){
                 Padding(
                   padding: EdgeInsets.all(8.0),
                   child: Text(
+                    style: TextStyle(
+                      fontWeight: isLast? FontWeight.bold : FontWeight.normal
+                  ),
                     "$hrs",
                     textAlign: TextAlign.center,
                   ),
@@ -112,6 +118,9 @@ double sum(ceh,sgh,woodlease){
                 Padding(
                   padding: EdgeInsets.all(8.0),
                   child: Text(
+                    style: TextStyle(
+                        fontWeight: isLast? FontWeight.bold : FontWeight.normal
+                    ),
                     formatter.format(income),
                     textAlign: TextAlign.center,
                   ),

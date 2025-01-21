@@ -31,17 +31,19 @@ class _IncomePieChartState extends State<IncomePieChart> {
   ReliefUser?  user = await provider.fetchUser(context);
     var formatter = NumberFormat.currency(
         locale: "en_UK", decimalDigits: 2, symbol: "£");
+if(mounted){ //avoid memory leak
+  if (user!.target == null) {
+    setState(() {
+      centerText = "Total: ${formatter.format(widget.total)}";
+    });
+  }
+  else {
+    setState(() {
+      centerText = "Total ${formatter.format(widget.total)} of ${user.target}";
+    });
+  }
+}
 
-      if (user!.target == null) {
-        setState(() {
-          centerText = "Total: ${formatter.format(widget.total)}";
-        });
-      }
-      else {
-        setState(() {
-          centerText = "Total ${formatter.format(widget.total)} of ${user.target}";
-        });
-      }
     }
 
 
