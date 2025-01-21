@@ -22,7 +22,7 @@ class _OverviewState extends State<Overview> {
 
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       final provider = Provider.of<AppProvider>(context, listen: false);
-     await  shiftstoTarget(provider);
+     await  shiftsToTarget(provider);
       provider.getIncomeSummary(context);
       provider.getDateRange();
       provider.overviewData(
@@ -38,7 +38,7 @@ class _OverviewState extends State<Overview> {
   final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
 
 
-  Future<void> shiftstoTarget(AppProvider provider) async {
+  Future<void> shiftsToTarget(AppProvider provider) async {
     ReliefUser? user = await provider.fetchUser(context);
     String userTargetString= "";
     double target =0;
@@ -74,13 +74,14 @@ class _OverviewState extends State<Overview> {
     final provider = Provider.of<AppProvider>(context, listen: true);
 
     final List<OverviewDetails> overviewTiles = [
-      OverviewDetails(
-        title: "Completed",
-        value: provider.monthCompletedShifts,
-      ),
+
       OverviewDetails(
         title: "Allocated",
         value: provider.monthAlocatedShifts,
+      ),
+      OverviewDetails(
+        title: "Completed",
+        value: provider.monthCompletedShifts,
       ),
       OverviewDetails(
         title: "Uncompleted",

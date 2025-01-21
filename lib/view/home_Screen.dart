@@ -20,6 +20,7 @@ class HomeScreen extends StatelessWidget {
     // adding this here to preload the income pie chart
     final prov = Provider.of<AppProvider>(context, listen: false);
     prov.getIncomeSummary(context);
+    prov.fetchUser(context);
     return Scaffold(
       drawer: Sidebar(),
       body: PersistentTabView(
