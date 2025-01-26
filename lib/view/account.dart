@@ -6,7 +6,7 @@ import 'package:provider/provider.dart';
 import 'package:relief_app/model/userData.dart';
 import 'package:relief_app/view/widgets/SideBar.dart';
 import 'package:relief_app/view/widgets/animatedBarGrapgh.dart';
-import 'package:relief_app/view/widgets/editAccountDetails.dart';
+import 'package:relief_app/view/editAccountDetails.dart';
 import 'package:relief_app/viewmodel/provider.dart';
 
 class Account extends StatefulWidget {
@@ -30,17 +30,20 @@ class _AccountState extends State<Account> {
     final provider = Provider.of<AppProvider>(context, listen: false);
     user = await provider.fetchUser(context);
     if(user!= null){
-      setState(() {
-        firstname = user!.firstname;
-        lastname = user!.lastname;
-        if(user!.target != null){
-          targetText = user!.target!;
-        }
-        else{
-          targetText = "No target set";
-        }
-        email = user!.email;
-      });
+      if(mounted){
+        setState(() {
+          firstname = user!.firstname;
+          lastname = user!.lastname;
+          if(user!.target != null){
+            targetText = user!.target!;
+          }
+          else{
+            targetText = "No target set";
+          }
+          email = user!.email;
+        });
+      }
+
     }
 
 
@@ -72,17 +75,27 @@ class _AccountState extends State<Account> {
             title: Text("Email", style: TextStyle(fontWeight: FontWeight.bold),),
             subtitle: Text(email),
             onTap: () {
-              Navigator.push(context, MaterialPageRoute(builder: (context)=> EditAccount(detail: "Email")));
+              // Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=> EditAccount(detail: "Email")));
             },
           ),
 
           ListTile(
             title: Text("First Name", style: TextStyle(fontWeight: FontWeight.bold),),
             subtitle: Text(firstname),
+            onTap: (){
+              Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=> EditAccount(detail: "First Name")));
+            },
+            trailing: Icon(Icons.chevron_right, color: Colors.grey,),
+
           ),
           ListTile(
             title: Text("Last Name", style: TextStyle(fontWeight: FontWeight.bold),),
             subtitle: Text(lastname),
+            onTap: (){
+              Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=> EditAccount(detail: "Last Name")));
+            },
+            trailing: Icon(Icons.chevron_right, color: Colors.grey,),
+
           ),
 
           ListTile(
@@ -92,7 +105,10 @@ class _AccountState extends State<Account> {
               // Navigate to target setting page
               Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=> EditAccount(detail: "Monthly Target", target: user!.target,)));
             },
+            trailing: Icon(Icons.chevron_right, color: Colors.grey,),
+
           ),
+
         ],
           ),
         ),

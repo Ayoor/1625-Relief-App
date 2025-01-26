@@ -3,6 +3,7 @@
   import 'package:relief_app/utils/passwordhash.dart';
 
   import 'package:relief_app/view/all_shifts.dart';
+import 'package:relief_app/view/resetPassword.dart';
 
   import 'package:relief_app/view/signup.dart';
 
@@ -189,7 +190,25 @@ else {
                     style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.orange),
                     onPressed: () async {
-                      await signin(context, provider);
+                      setState(() {
+                        isFetching = true;
+                      });
+
+                      try {
+                        await signin(context, provider);
+                      } catch (e) {
+                        provider.showMessage(
+                          context: context,
+                          message: "An error occurred while trying to sign in",
+                          type: ToastificationType.error,
+                          bgColor: Colors.red,
+                          icon: Icons.cancel,
+                        );
+                      } finally {
+                        setState(() {
+                          isFetching = false;
+                        });
+                      }
                     },
                     child: isFetching
                         ? SizedBox(
@@ -291,7 +310,10 @@ else {
                 ),
                 const SizedBox(height: 20),
                 TextButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    Navigator.push(context, MaterialPageRoute(builder: (context)=> ResetPassword()));
+
+                  },
                   child: const Text(
                     "Forgot password?",
                     style: TextStyle(

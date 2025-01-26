@@ -1,21 +1,12 @@
 -make bottomsheet cover the bottomnavbar
 
-Income screen (
-Setting a budget,
-Overview (
-  total shifts remaining to target,n
- )
-
 issues
-sidebar cant close when you change bottom bar
-adding shift first morning second evening same day
+
 
 Onboarding Screen
 Implement daily tasks checklist
 push notifications for shift and for timesheet.
-create mock up images
 
-forgot password
 change email to yahoo
 
 settings(light theme, delete account, change password)

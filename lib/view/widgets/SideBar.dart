@@ -14,7 +14,7 @@ class Sidebar extends StatelessWidget {
       width: MediaQuery
           .of(context)
           .size
-          .width,
+          .width *0.8,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -41,23 +41,17 @@ class Sidebar extends StatelessWidget {
                 ),
 
                 SizedBox(height: 30,),
-                Row(
-                  children: [
-                    Image.asset(
-                      "lib/assets/user.png",
-                      width: 40,
-                    ),
-                    SizedBox(width: 10,),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text("Ayodele Oduoola", style: TextStyle(fontSize: 16),),
-                        Text("gbengajohn4god@gmail.com", style: TextStyle(fontSize: 12, color: Colors.grey)),
-                      ]
 
+                    Center(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Text("Ayodele Oduoola", style: TextStyle(fontSize: 16),),
+                          Text("gbengajohn4god@gmail.com", style: TextStyle(fontSize: 12, color: Colors.grey)),
+                        ]
+
+                      ),
                     )
-                  ],
-                ),
               ],
             ),
           ),

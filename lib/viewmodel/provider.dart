@@ -494,7 +494,7 @@ class AppProvider extends ChangeNotifier {
         // Format the startTime to a date string (e.g., "dd-MM-yyyy")
         final String dateKey = DateFormat('dd-MM-yyyy').format(shift.startTime);
         final DatabaseReference dbRef =
-        FirebaseDatabase.instance.ref().child("Users/$email/Shifts/$dateKey");
+        FirebaseDatabase.instance.ref().child("Users/$email/Shifts/${dateKey}: ${shift.shiftType}");
 
         // Save each shift under the date key in "Shifts"
         await dbRef.set(shift.toJson());

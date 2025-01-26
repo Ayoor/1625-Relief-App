@@ -16,7 +16,7 @@ class Authentication extends ChangeNotifier {
   factory Authentication() => _instance;
   late String genOTP;
   late DateTime otpExpiryTime;
-
+bool isEmailVerification = false;
   Future<bool> checkEmailExists(String email) async {
     email = email.replaceAll(".", "dot");
     final DatabaseReference ref = FirebaseDatabase.instance.ref().child("Users/$email");
@@ -31,8 +31,11 @@ class Authentication extends ChangeNotifier {
       if(users["Email"]== email && users["Account Status"] == "Verified") {
         _isVerifiedUser = true;
       }
+      if(users["Authentication Type"]== "Email") {
+        isEmailVerification = true;
+      }
+
       return users["Email"]== email;
-      // return users.values.any((user) => user['Email'] == email);
     }
     notifyListeners();
     return false;
