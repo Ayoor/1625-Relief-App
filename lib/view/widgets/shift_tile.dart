@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:provider/provider.dart';
 import 'package:relief_app/viewmodel/provider.dart';
@@ -39,142 +40,19 @@ class _ShiftTileState extends State<ShiftTile> {
 
     //Scheduled
     if (widget.shiftType == "Scheduled") {
-      shiftTile = RefreshIndicator(
-        color: Colors.blue,
-          backgroundColor: Colors.white,
-          onRefresh: () async {
-            widget.provider.loadData(context);
-            },
-        child: ListView.builder(
-          itemCount: widget.provider.scheduledShifts.length,
-          itemBuilder: (context, index) {
-            final shift = widget.provider.scheduledShifts[index];
 
-            //scheduled
-            return Consumer<AppProvider>( builder: (context, provider, child) => InkWell(
-                splashColor: Colors.transparent,
-                highlightColor: Colors.transparent,
-                onLongPress: (){
-                  canceDeleteShift(index, shift, "Scheduled");
-                },
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(8),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black12,
-                          blurRadius: 10,
-                          offset: Offset(0, 4),
-                        ),
-                      ],
-                    ),
-                    child: ListTile(
-                      leading: Image.asset(
-                        "lib/assets/1625_logo.png",
-                        width: 50,
-                      ),
-                      title: Text(
-                        shift.shiftType,
-                        style: const TextStyle(color: Colors.grey, fontSize: 13),
-                      ),
-                      subtitle: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          SizedBox(height: 10,),
-                          Row(
-                            children: [
-                              const Text("Start time:",
-                                  style: TextStyle(fontWeight: FontWeight.bold)),
-                              Text(
-                                  " ${widget.provider.dateFormater(shift.startTime)}"),
-                            ],
-                          ),
-                          const SizedBox(height: 5),
-                          Row(
-                            children: [
-                              const Text("End time:",
-                                  style: TextStyle(fontWeight: FontWeight.bold)),
-                              Text(
-                                  " ${widget.provider.dateFormater(shift.endTime)}"),
-                            ],
-                          ),
-                          const SizedBox(height: 5),
-                          Row(
-                            children: [
-                              const Text("Location:",
-                                  style: TextStyle(fontWeight: FontWeight.bold)),
-                              Text(" ${shift.location}"),
-                            ],
-                          ),
-                          const SizedBox(height: 5),
-                          Row(
-                            children: [
-                              const Text("Hrs: ",
-                                  style: TextStyle(fontWeight: FontWeight.bold)),
-                              Text(shift.durationText),
-                            ],
-                          ),
-                          const SizedBox(height: 5),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Row(
-                                children: [
-                                  const Text("Rate:",
-                                      style:
-                                          TextStyle(fontWeight: FontWeight.bold)),
-                                  Text("${shift.rate}"),
-                                ],
-                              ),
-                              Column(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Checkbox(
-                                    value: provider.checkboxes()[index],
-                                    onChanged: (value) {
-                                      setState(() {
+      // Group shifts by month
+      Map<String, List<Shifts>> groupedShifts = {};
 
-                                        widget.provider.updateShiftStatus(
-                                            index,
-                                            formatDate(shift.startTime.toString()),
-                                            context,
-                                            shiftType: "Completed", endTime: shift.endTime.toString());
+      for (var shift in widget.provider.scheduledShifts) {
+        String monthYear = DateFormat("MMMM yyyy").format(shift.startTime); // e.g., "January 2025"
 
-                                      });
-                                    },
-                                  ),
-                                  const Text("Mark Completed",
-                                      style: TextStyle(
-                                          color: Colors.grey, fontSize: 12)),
-                                ],
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 30),
-                        ],
-                      ),
-                      contentPadding: const EdgeInsets.all(10),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      tileColor: Colors.white,
-                      selectedTileColor: Colors.grey[100],
-                    ),
-                  ),
-                ),
-              ),
-            );
-          },
-        ),
-      );
-    }
+        if (!groupedShifts.containsKey(monthYear)) {
+          groupedShifts[monthYear] = []; // If the month isn't in the map, create an empty list
+        }
+        groupedShifts[monthYear]!.add(shift);
+      }
 
-//Cancelled
-
-    if (widget.shiftType == "Cancelled") {
       shiftTile = RefreshIndicator(
         color: Colors.blue,
         backgroundColor: Colors.white,
@@ -182,124 +60,302 @@ class _ShiftTileState extends State<ShiftTile> {
           widget.provider.loadData(context);
         },
         child: ListView.builder(
-          itemCount: widget.provider.cancelledShifts.length,
-          itemBuilder: (context, index) {
-            final shift = widget.provider.cancelledShifts[index];
+          itemCount: groupedShifts.length,
+          itemBuilder: (context, groupIndex) {
+            String monthYear = groupedShifts.keys.elementAt(groupIndex);
+            List<Shifts> shifts = groupedShifts[monthYear]!;
 
-            return InkWell(
-              highlightColor: Colors.transparent,
-              splashColor: Colors.transparent,
-              onLongPress: (){
-                canceDeleteShift(index, shift, "Cancelled");
-              },
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(8),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black12,
-                        blurRadius: 10,
-                        offset: Offset(0, 4),
-                      ),
-                    ],
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Month Header
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
+                  child: Text(
+                    monthYear,
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
-                  child: ListTile(
-                    leading: Image.asset(
-                      "lib/assets/1625_logo.png",
-                      width: 50,
+                ),
+
+                // Shifts for this month
+                ...shifts.map((shift) => Consumer<AppProvider>(
+                  builder: (context, provider, child) => InkWell(
+                    splashColor: Colors.transparent,
+                    highlightColor: Colors.transparent,
+                    onLongPress: () {
+                      canceDeleteShift(shifts.indexOf(shift), shift, "Scheduled");
+                    },
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(8),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black12,
+                              blurRadius: 10,
+                              offset: Offset(0, 4),
+                            ),
+                          ],
+                        ),
+                        child: ListTile(
+                          leading: Image.asset(
+                            "lib/assets/1625_logo.png",
+                            width: 50,
+                          ),
+                          title: Text(
+                            shift.shiftType,
+                            style: const TextStyle(color: Colors.grey, fontSize: 13),
+                          ),
+                          subtitle: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              SizedBox(height: 10),
+                              Row(
+                                children: [
+                                  const Text("Start time:",
+                                      style: TextStyle(fontWeight: FontWeight.bold)),
+                                  Text(" ${widget.provider.dateFormater(shift.startTime)}"),
+                                ],
+                              ),
+                              const SizedBox(height: 5),
+                              Row(
+                                children: [
+                                  const Text("End time:",
+                                      style: TextStyle(fontWeight: FontWeight.bold)),
+                                  Text(" ${widget.provider.dateFormater(shift.endTime)}"),
+                                ],
+                              ),
+                              const SizedBox(height: 5),
+                              Row(
+                                children: [
+                                  const Text("Location:",
+                                      style: TextStyle(fontWeight: FontWeight.bold)),
+                                  Text(" ${shift.location}"),
+                                ],
+                              ),
+                              const SizedBox(height: 5),
+                              Row(
+                                children: [
+                                  const Text("Hrs: ",
+                                      style: TextStyle(fontWeight: FontWeight.bold)),
+                                  Text(shift.durationText),
+                                ],
+                              ),
+                              const SizedBox(height: 5),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Row(
+                                    children: [
+                                      const Text("Rate:",
+                                          style: TextStyle(fontWeight: FontWeight.bold)),
+                                      Text("${shift.rate}"),
+                                    ],
+                                  ),
+                                  Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Checkbox(
+                                        value: provider.checkboxes()[shifts.indexOf(shift)],
+                                        onChanged: (value) {
+                                          setState(() {
+                                            widget.provider.updateShiftStatus(
+                                              shifts.indexOf(shift),
+                                              formatDate(shift.startTime.toString()),
+                                              context,
+                                              shiftType: "Completed",
+                                              endTime: shift.endTime.toString(),
+                                            );
+                                          });
+                                        },
+                                      ),
+                                      const Text("Mark Completed",
+                                          style: TextStyle(color: Colors.grey, fontSize: 12)),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 30),
+                            ],
+                          ),
+                          contentPadding: const EdgeInsets.all(10),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          tileColor: Colors.white,
+                          selectedTileColor: Colors.grey[100],
+                        ),
+                      ),
                     ),
-                    title: Text(
-                      shift.shiftType,
-                      style: const TextStyle(
-                          color: Colors.grey,
-                          fontSize: 13,
-                          decoration: TextDecoration.lineThrough),
-                    ),
-                    subtitle: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [SizedBox(height: 10,),
-                            const Text("Start time:",
-                                style: TextStyle(fontWeight: FontWeight.bold)),
-                            Text(
-                                " ${widget.provider.dateFormater(shift.startTime)},",
-                                style: TextStyle(
-                                    color: Colors.grey,
-                                    fontSize: 13,
-                                    decoration: TextDecoration.lineThrough)),
-                          ],
+                  ),
+                ))
+                    .toList(),
+              ],
+            );
+          },
+        ),
+      );
+    }
+
+
+//Cancelled
+
+    if (widget.shiftType == "Cancelled") {
+      // Group shifts by month
+      Map<String, List<Shifts>> groupedShifts = {};
+
+      for (var shift in widget.provider.cancelledShifts) {
+        String monthYear = DateFormat("MMMM yyyy").format(shift.startTime); // e.g., "January 2025"
+
+        if (!groupedShifts.containsKey(monthYear)) {
+          groupedShifts[monthYear] = [];
+        }
+        groupedShifts[monthYear]!.add(shift);
+      }
+
+      shiftTile = RefreshIndicator(
+        color: Colors.blue,
+        backgroundColor: Colors.white,
+        onRefresh: () async {
+          widget.provider.loadData(context);
+        },
+        child: ListView.builder(
+          itemCount: groupedShifts.length,
+          itemBuilder: (context, groupIndex) {
+            String monthYear = groupedShifts.keys.elementAt(groupIndex);
+            List<Shifts> shifts = groupedShifts[monthYear]!;
+
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Month Header
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
+                  child: Text(
+                    monthYear,
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                ),
+
+                // Shifts for this month
+                ...shifts.map((shift) => InkWell(
+                  highlightColor: Colors.transparent,
+                  splashColor: Colors.transparent,
+                  onLongPress: () {
+                    canceDeleteShift(shifts.indexOf(shift), shift, "Cancelled");
+                  },
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(8),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black12,
+                            blurRadius: 10,
+                            offset: Offset(0, 4),
+                          ),
+                        ],
+                      ),
+                      child: ListTile(
+                        leading: Image.asset(
+                          "lib/assets/1625_logo.png",
+                          width: 50,
                         ),
-                        const SizedBox(height: 5),
-                        Row(
-                          children: [
-                            const Text("End time:",
-                                style: TextStyle(fontWeight: FontWeight.bold)),
-                            Text(" ${widget.provider.dateFormater(shift.endTime)}",
-                                style: TextStyle(
-                                    color: Colors.grey,
-                                    fontSize: 13,
-                                    decoration: TextDecoration.lineThrough)),
-                          ],
+                        title: Text(
+                          shift.shiftType,
+                          style: const TextStyle(
+                              color: Colors.grey,
+                              fontSize: 13,
+                              decoration: TextDecoration.lineThrough),
                         ),
-                        const SizedBox(height: 5),
-                        Row(
-                          children: [
-                            const Text("Location:",
-                                style: TextStyle(fontWeight: FontWeight.bold)),
-                            Text(" ${shift.location}",
-                                style: TextStyle(
-                                    color: Colors.grey,
-                                    fontSize: 13,
-                                    decoration: TextDecoration.lineThrough)),
-                          ],
-                        ),
-                        const SizedBox(height: 5),
-                        Row(
-                          children: [
-                            const Text("Hrs:",
-                                style: TextStyle(fontWeight: FontWeight.bold)),
-                            Text(shift.durationText,
-                                style: TextStyle(
-                                    color: Colors.grey,
-                                    fontSize: 13,
-                                    decoration: TextDecoration.lineThrough)),
-                          ],
-                        ),
-                        const SizedBox(height: 5),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        subtitle: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Row(
                               children: [
-                                const Text("Rate:",
+                                const Text("Start time:",
                                     style: TextStyle(fontWeight: FontWeight.bold)),
-                                Text("${shift.rate}",
+                                Text(" ${widget.provider.dateFormater(shift.startTime)},",
                                     style: TextStyle(
                                         color: Colors.grey,
                                         fontSize: 13,
                                         decoration: TextDecoration.lineThrough)),
                               ],
                             ),
-                            const Text("Cancelled",
-                                style: TextStyle(color: Colors.grey)),
+                            const SizedBox(height: 5),
+                            Row(
+                              children: [
+                                const Text("End time:",
+                                    style: TextStyle(fontWeight: FontWeight.bold)),
+                                Text(" ${widget.provider.dateFormater(shift.endTime)}",
+                                    style: TextStyle(
+                                        color: Colors.grey,
+                                        fontSize: 13,
+                                        decoration: TextDecoration.lineThrough)),
+                              ],
+                            ),
+                            const SizedBox(height: 5),
+                            Row(
+                              children: [
+                                const Text("Location:",
+                                    style: TextStyle(fontWeight: FontWeight.bold)),
+                                Text(" ${shift.location}",
+                                    style: TextStyle(
+                                        color: Colors.grey,
+                                        fontSize: 13,
+                                        decoration: TextDecoration.lineThrough)),
+                              ],
+                            ),
+                            const SizedBox(height: 5),
+                            Row(
+                              children: [
+                                const Text("Hrs:",
+                                    style: TextStyle(fontWeight: FontWeight.bold)),
+                                Text(shift.durationText,
+                                    style: TextStyle(
+                                        color: Colors.grey,
+                                        fontSize: 13,
+                                        decoration: TextDecoration.lineThrough)),
+                              ],
+                            ),
+                            const SizedBox(height: 5),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Row(
+                                  children: [
+                                    const Text("Rate:",
+                                        style: TextStyle(fontWeight: FontWeight.bold)),
+                                    Text("${shift.rate}",
+                                        style: TextStyle(
+                                            color: Colors.grey,
+                                            fontSize: 13,
+                                            decoration: TextDecoration.lineThrough)),
+                                  ],
+                                ),
+                                const Text("Cancelled",
+                                    style: TextStyle(color: Colors.grey)),
+                              ],
+                            ),
+                            const SizedBox(height: 30),
                           ],
                         ),
-                        const SizedBox(height: 30),
-                      ],
+                        contentPadding: const EdgeInsets.all(10),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        tileColor: Colors.white,
+                        selectedTileColor: Colors.grey[100],
+                      ),
                     ),
-                    contentPadding: const EdgeInsets.all(10),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    tileColor: Colors.white,
-                    selectedTileColor: Colors.grey[100],
                   ),
-                ),
-              ),
+                ))
+                    .toList(),
+              ],
             );
           },
         ),
@@ -309,6 +365,19 @@ class _ShiftTileState extends State<ShiftTile> {
 //Completed
     if (widget.shiftType == "Completed") {
       widget.provider.loadData(context);
+
+      // Group shifts by month
+      Map<String, List<Shifts>> groupedShifts = {};
+
+      for (var shift in widget.provider.completedShifts) {
+        String monthYear = DateFormat("MMMM yyyy").format(shift.startTime); // e.g., "January 2025"
+
+        if (!groupedShifts.containsKey(monthYear)) {
+          groupedShifts[monthYear] = [];
+        }
+        groupedShifts[monthYear]!.add(shift);
+      }
+
       shiftTile = RefreshIndicator(
         color: Colors.blue,
         backgroundColor: Colors.white,
@@ -316,112 +385,126 @@ class _ShiftTileState extends State<ShiftTile> {
           widget.provider.loadData(context);
         },
         child: ListView.builder(
-          itemCount: widget.provider.completedShifts.length,
-          itemBuilder: (context, index) {
-            final shift = widget.provider.completedShifts[index];
+          itemCount: groupedShifts.length,
+          itemBuilder: (context, groupIndex) {
+            String monthYear = groupedShifts.keys.elementAt(groupIndex);
+            List<Shifts> shifts = groupedShifts[monthYear]!;
 
-            return InkWell(
-              highlightColor: Colors.transparent,
-              splashColor: Colors.transparent,
-              onLongPress: (){
-                canceDeleteShift(index, shift, "Completed");
-
-              },
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(8),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black12,
-                        blurRadius: 10,
-                        offset: Offset(0, 4),
-                      ),
-                    ],
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Month Header
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
+                  child: Text(
+                    monthYear,
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
-                  child: ListTile(
-                    leading: Image.asset(
-                      "lib/assets/1625_logo.png",
-                      width: 50,
-                    ),
-                    title: Text(
-                      shift.shiftType,
-                      style: const TextStyle(color: Colors.grey, fontSize: 13),
-                    ),
-                    subtitle: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [SizedBox(height: 10,),
-                            const Text("Start time:",
-                                style: TextStyle(fontWeight: FontWeight.bold)),
-                            Text(
-                                " ${widget.provider.dateFormater(shift.startTime)}"),
-                          ],
+                ),
+
+                // Shifts for this month
+                ...shifts.map((shift) => InkWell(
+                  highlightColor: Colors.transparent,
+                  splashColor: Colors.transparent,
+                  onLongPress: () {
+                    canceDeleteShift(shifts.indexOf(shift), shift, "Completed");
+                  },
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(8),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black12,
+                            blurRadius: 10,
+                            offset: Offset(0, 4),
+                          ),
+                        ],
+                      ),
+                      child: ListTile(
+                        leading: Image.asset(
+                          "lib/assets/1625_logo.png",
+                          width: 50,
                         ),
-                        const SizedBox(height: 5),
-                        Row(
-                          children: [
-                            const Text("End time:",
-                                style: TextStyle(fontWeight: FontWeight.bold)),
-                            Text(" ${widget.provider.dateFormater(shift.endTime)}"),
-                          ],
+                        title: Text(
+                          shift.shiftType,
+                          style: const TextStyle(color: Colors.grey, fontSize: 13),
                         ),
-                        const SizedBox(height: 5),
-                        Row(
-                          children: [
-                            const Text("Location:",
-                                style: TextStyle(fontWeight: FontWeight.bold)),
-                            Text(" ${shift.location}"),
-                          ],
-                        ),
-                        const SizedBox(height: 5),
-                        Row(
-                          children: [
-                            const Text("Hrs:",
-                                style: TextStyle(fontWeight: FontWeight.bold)),
-                            Text(shift.durationText),
-                          ],
-                        ),
-                        const SizedBox(height: 5),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        subtitle: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Row(
                               children: [
-                                const Text("Rate:",
+                                const Text("Start time:",
                                     style: TextStyle(fontWeight: FontWeight.bold)),
-                                Text("${shift.rate}"),
+                                Text(" ${widget.provider.dateFormater(shift.startTime)}"),
                               ],
                             ),
-                            Column(
-                              mainAxisSize: MainAxisSize.min,
+                            const SizedBox(height: 5),
+                            Row(
                               children: [
-                                Icon(
-                                  Icons.check,
-                                  color: Colors.green,
-                                ),
-                                const Text("Completed",
-                                    style: TextStyle(
-                                        color: Colors.grey, fontSize: 12)),
+                                const Text("End time:",
+                                    style: TextStyle(fontWeight: FontWeight.bold)),
+                                Text(" ${widget.provider.dateFormater(shift.endTime)}"),
                               ],
                             ),
+                            const SizedBox(height: 5),
+                            Row(
+                              children: [
+                                const Text("Location:",
+                                    style: TextStyle(fontWeight: FontWeight.bold)),
+                                Text(" ${shift.location}"),
+                              ],
+                            ),
+                            const SizedBox(height: 5),
+                            Row(
+                              children: [
+                                const Text("Hrs:",
+                                    style: TextStyle(fontWeight: FontWeight.bold)),
+                                Text(shift.durationText),
+                              ],
+                            ),
+                            const SizedBox(height: 5),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Row(
+                                  children: [
+                                    const Text("Rate:",
+                                        style: TextStyle(fontWeight: FontWeight.bold)),
+                                    Text("${shift.rate}"),
+                                  ],
+                                ),
+                                Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Icon(
+                                      Icons.check,
+                                      color: Colors.green,
+                                    ),
+                                    const Text("Completed",
+                                        style: TextStyle(color: Colors.grey, fontSize: 12)),
+                                  ],
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 30),
                           ],
                         ),
-                        const SizedBox(height: 30),
-                      ],
+                        contentPadding: const EdgeInsets.all(10),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        tileColor: Colors.white,
+                        selectedTileColor: Colors.grey[100],
+                      ),
                     ),
-                    contentPadding: const EdgeInsets.all(10),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    tileColor: Colors.white,
-                    selectedTileColor: Colors.grey[100],
                   ),
-                ),
-              ),
+                ))
+                    .toList(),
+              ],
             );
           },
         ),

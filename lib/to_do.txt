@@ -1,7 +1,10 @@
 -make bottomsheet cover the bottomnavbar
 
-issues
+###
+create new screen shot
 
+issues
+check if google auth works if that email has been registered
 
 Onboarding Screen
 Implement daily tasks checklist
@@ -14,6 +17,5 @@ activity log
 
 
 divide all shifts into monthly sections
-use fingerprint
 
 

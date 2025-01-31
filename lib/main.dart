@@ -1,13 +1,14 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:relief_app/services/notifications.dart';
 import 'package:relief_app/view/signin.dart';
 import 'package:relief_app/viewmodel/provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
-
+  await Notifications().initNotifications();
   runApp(ChangeNotifierProvider(
     create: (context) => AppProvider(),
     child: const MyApp(),
