@@ -18,7 +18,7 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Preloading income pie chart and fetching user data
+
     final prov = Provider.of<AppProvider>(context, listen: false);
     prov.getIncomeSummary(context);
     prov.fetchUser(context);

@@ -1,20 +1,65 @@
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:provider/provider.dart';
 import 'package:relief_app/test.dart';
 import 'package:relief_app/view/account.dart';
+import 'package:relief_app/view/settings.dart';
 
 import '../../services/firebase_auth.dart';
+import '../../viewmodel/provider.dart';
+import '../signin.dart';
 import '../signup.dart';
 
-class Sidebar extends StatelessWidget {
-  const Sidebar({super.key});
+class Sidebar extends StatefulWidget {
+   Sidebar({super.key});
+
+  @override
+  State<Sidebar> createState() => _SidebarState();
+}
+
+class _SidebarState extends State<Sidebar> {
+  setUser() async{
+    final provider = AppProvider();
+    final user = await provider.fetchUser(context);
+    if(user!= null){
+      if(mounted){
+        setState(() {
+          firstname = user.firstname;
+          lastname = user.lastname;
+          if(user.target != null){
+            targetText = user.target!;
+          }
+          else{
+            targetText = "No target set";
+          }
+          email = user.email;
+        });
+      }
+
+    }
+
+
+  }
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    setUser();
+  }
+
+  String firstname ="-";
+
+  String lastname ="-";
+
+  String targetText ="";
+
+  String email ="-";
 
   @override
   Widget build(BuildContext context) {
+
     return Drawer(
-      width: MediaQuery
-          .of(context)
-          .size
-          .width *0.8,
+      width: MediaQuery.of(context).size.width * 0.8,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -27,42 +72,50 @@ class Sidebar extends StatelessWidget {
               children: [
                 Stack(
                   children: [
-            IconButton(
-            onPressed: () => Navigator.pop(context),
-    icon: const Icon(Icons.arrow_back,
-    size: 25, color: Colors.blue),
-    ),                Center(
-    child: Image.asset(
-    "lib/assets/1625_logo.png",
-    width: 80,
-    ),
-    )
-                  ],
-                ),
-
-                SizedBox(height: 30,),
-
+                    IconButton(
+                      onPressed: () => Navigator.pop(context),
+                      icon: const Icon(Icons.arrow_back,
+                          size: 25, color: Colors.blue),
+                    ),
                     Center(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Text("Ayodele Oduoola", style: TextStyle(fontSize: 16),),
-                          Text("gbengajohn4god@gmail.com", style: TextStyle(fontSize: 12, color: Colors.grey)),
-                        ]
-
+                      child: Image.asset(
+                        "lib/assets/1625_logo.png",
+                        width: 80,
                       ),
                     )
+                  ],
+                ),
+                SizedBox(
+                  height: 30,
+                ),
+                Center(
+                  child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Text(
+                          "$firstname ${lastname == "-" ? "" : lastname}",
+                          style: TextStyle(fontSize: 16),
+                        ),
+                        Text(email,
+                            style: TextStyle(fontSize: 12, color: Colors.grey)),
+                      ]),
+                )
               ],
             ),
           ),
-          SizedBox(height: 20,),
+          SizedBox(
+            height: 20,
+          ),
           ListTile(
             minVerticalPadding: 20,
             leading: const Icon(
               Icons.person_2,
               color: Colors.blue,
             ),
-            trailing: Icon(Icons.chevron_right, color: Colors.grey,),
+            trailing: Icon(
+              Icons.chevron_right,
+              color: Colors.grey,
+            ),
             title: const Text('Account'),
             onTap: () {
               Navigator.pop(context);
@@ -76,47 +129,71 @@ class Sidebar extends StatelessWidget {
               Icons.settings,
               color: Colors.blue,
             ),
-            trailing: Icon(Icons.chevron_right, color: Colors.grey,),
-
+            trailing: Icon(
+              Icons.chevron_right,
+              color: Colors.grey,
+            ),
             title: const Text('Settings'),
             onTap: () {
               Navigator.pop(context);
-              // Navigator.push(
-              //     context,
-              //     MaterialPageRoute(
-              //         builder: (context) => const DeviceNameSearch()));
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => const Settings()));
             },
           ),
           ListTile(
             minVerticalPadding: 20,
-            leading: Image.asset("lib/assets/to-do-list.png", width: 25,),
-            trailing: Icon(Icons.chevron_right, color: Colors.grey,),
+            leading: Image.asset(
+              "lib/assets/to-do-list.png",
+              width: 25,
+            ),
+            trailing: Icon(
+              Icons.chevron_right,
+              color: Colors.grey,
+            ),
             title: const Text('Task Checklist'),
             onTap: () {
               Navigator.pop(context);
-
-
             },
           ),
           ListTile(
             title: Center(
                 child: Text(
-                  "Log out",
-                  style: TextStyle(fontSize: 16, color: Colors.pinkAccent, fontWeight: FontWeight.bold),
-                )),
+              "Log out",
+              style: TextStyle(
+                  fontSize: 16,
+                  color: Colors.pinkAccent,
+                  fontWeight: FontWeight.bold),
+            )),
             onTap: () {
-              showDialog(context: context, builder: (context) => AlertDialog(
-                title: Text("Log out", style: TextStyle(fontWeight: FontWeight.bold),),
-                content: Text("Are you sure you want to log out?"),
-                actions: [
-                  TextButton(
-                      onPressed: () => Navigator.pop(context),
-                      child: Text('Cancel')),
-                  TextButton(
-                      onPressed: () => signOutUser(context),
-                      child: Text('Log out', style: TextStyle(color: Colors.pinkAccent),),),
-                ],
-              ),
+              showDialog(
+                context: context,
+                builder: (context) => AlertDialog(
+                  title: Text(
+                    "Log out",
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  content: Text("Are you sure you want to log out?"),
+                  actions: [
+                    TextButton(
+                        onPressed: () => Navigator.pop(context),
+                        child: Text('Cancel')),
+                    TextButton(
+                      onPressed: () async {
+                       await  AppProvider().signOutUser(context);
+                        Navigator.pushAndRemoveUntil(
+                          context,
+                          MaterialPageRoute(builder: (context) => Signin()),
+                              (route) => false,
+                        );
+                        Fluttertoast.showToast(msg: "Signed out");
+                      },
+                      child: Text(
+                        'Log out',
+                        style: TextStyle(color: Colors.pinkAccent),
+                      ),
+                    ),
+                  ],
+                ),
               );
             },
           ),
@@ -145,22 +222,6 @@ class Sidebar extends StatelessWidget {
           )
         ],
       ),
-    );
-  }
-
-  Future<void> signOutUser(BuildContext context) async {
-    final AuthenticationService authService = AuthenticationService();
-
-    final googleEmail = await authService.getSession('googleEmail');
-    if (googleEmail != null) {
-      await authService.signOut();
-    }
-    await authService.clearSession();
-
-    Navigator.pushAndRemoveUntil(
-      context,
-      MaterialPageRoute(builder: (context) => Signin()),
-          (route) => false,
     );
   }
 }

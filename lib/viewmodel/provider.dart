@@ -9,6 +9,7 @@ import 'package:tuple/tuple.dart';
 
 import '../model/shiftData.dart';
 import '../model/shifts.dart';
+import '../test.dart';
 import '../utils/dateformat.dart';
 import '../utils/location.dart';
 
@@ -163,6 +164,28 @@ class AppProvider extends ChangeNotifier {
     );
   }
 
+  Future<void> deleteUser(BuildContext context) async {
+    String email = await userEmail();
+
+      DatabaseReference userRef = FirebaseDatabase.instance.ref("Users/$email");
+      await userRef.remove();
+  }
+
+  Future<void> signOutUser(BuildContext context) async {
+    _completedShifts.clear();
+    _scheduledShifts.clear();
+    _cancelledShifts.clear();
+    final AuthenticationService authService = AuthenticationService();
+
+    final googleEmail = await authService.getSession('googleEmail');
+    final email = await authService.getSession('email');
+    if (googleEmail != null || email != null) {
+      await authService.signOut();
+    }
+    await authService.clearSession();
+  }
+
+
   void addShift(DateTime start, DateTime end, String location,
       BuildContext context) {
     fetchShifts(context);
@@ -258,8 +281,11 @@ class AppProvider extends ChangeNotifier {
     return null; // Return null if no user is found or an error occurs
   }
 
-
+//shifts are being duplicated in the loop
   Future fetchShifts(BuildContext context) async {
+    _completedShifts.clear();
+    _scheduledShifts.clear();
+    _cancelledShifts.clear();
     String email = await userEmail();
     final DatabaseReference dbRef = FirebaseDatabase.instance.ref();
 
@@ -272,10 +298,6 @@ class AppProvider extends ChangeNotifier {
         if (snapshot.value is Map<dynamic, dynamic>) {
           final Map<dynamic, dynamic> dateMap =
           snapshot.value as Map<dynamic, dynamic>;
-          _completedShifts.clear();
-          _scheduledShifts.clear();
-          _cancelledShifts.clear();
-
           dateMap.forEach((dateKey, shiftData) {
             if (shiftData['status'] == 'Scheduled') {
               try {
@@ -290,8 +312,8 @@ class AppProvider extends ChangeNotifier {
                   dateofAction: shiftData['dateofAction'],
                   duration: shiftData['duration'].toDouble(),
                 );
-
                 _scheduledShifts.add(shift);
+
               } catch (e) {
                 showMessage(context: context,
                     message: "Error parsing shift data for date $dateKey",
@@ -347,7 +369,12 @@ class AppProvider extends ChangeNotifier {
               }
             }
           });
+
           _scheduledShifts.sort((a, b) => a.startTime.compareTo(b.startTime));
+          print(
+            "length- ${_scheduledShifts.length}"
+          );
+
           _cancelledShifts.sort((a, b) => a.startTime.compareTo(b.startTime));
           _completedShifts.sort((a, b) => a.startTime.compareTo(b.startTime));
           _completedShifts = _completedShifts.reversed.toList();
@@ -457,6 +484,7 @@ class AppProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+
 // Function to add new shift and save it to Firebase Realtime Database// For date formatting
 
   Future<void> saveNewShifts(BuildContext context,
@@ -494,7 +522,8 @@ class AppProvider extends ChangeNotifier {
         // Format the startTime to a date string (e.g., "dd-MM-yyyy")
         final String dateKey = DateFormat('dd-MM-yyyy').format(shift.startTime);
         final DatabaseReference dbRef =
-        FirebaseDatabase.instance.ref().child("Users/$email/Shifts/${dateKey}: ${shift.shiftType}");
+        FirebaseDatabase.instance.ref().child(
+            "Users/$email/Shifts/${dateKey}: ${shift.shiftType}");
 
         // Save each shift under the date key in "Shifts"
         await dbRef.set(shift.toJson());
@@ -661,8 +690,8 @@ class AppProvider extends ChangeNotifier {
     if (_completedShifts.isNotEmpty) {
       _filteredShifts = _completedShifts
           .where((shift) =>
-      shift.startTime.isAfter(start.subtract(Duration(days: 1))) &&
-          shift.startTime.isBefore(end.add(Duration(days: 1))) &&
+      shift.startTime.isAfter(start) &&
+          shift.startTime.isBefore(end) &&
           shift.location == location)
           .toList();
     } else {
@@ -737,7 +766,7 @@ class AppProvider extends ChangeNotifier {
 
   Future overviewData(BuildContext context, DateTime start,
       DateTime end) async {
-    await fetchShifts(context);
+    await loadData(context);
     _compJan = _compFeb = _compMar = _compMay = _compApr = _compJun =
         _compJul = _compAug = _compSep = _compOct = _compNov = _compDec = 0;
 

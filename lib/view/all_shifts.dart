@@ -22,13 +22,14 @@ class _AllShiftsState extends State<AllShifts>
     super.initState();
     _tabController = TabController(length: 3, vsync: this);
 
-    Provider.of<AppProvider>(context, listen: false)
-        .loadData(context);
   }
 
 
   @override
   Widget build(BuildContext context) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Provider.of<AppProvider>(context, listen: false).shiftHistory(context);
+    });
     return Consumer<AppProvider>(
       builder: (context, provider, child) => Scaffold(
         // drawer: Sidebar(),
@@ -91,6 +92,8 @@ class _AllShiftsState extends State<AllShifts>
                     SizedBox(height: 10,),Text("Fetching shifts", style: TextStyle(fontWeight: FontWeight.bold),)
                   ],
                 ),
+
+              //completed shifts not showing!!!!!!!!!!!!
 
               // Tab 2 - Completed Shifts
               provider.completedShifts.isEmpty

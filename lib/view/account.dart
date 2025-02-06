@@ -95,7 +95,6 @@ class _AccountState extends State<Account> {
               Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=> EditAccount(detail: "Last Name")));
             },
             trailing: Icon(Icons.chevron_right, color: Colors.grey,),
-
           ),
 
           ListTile(

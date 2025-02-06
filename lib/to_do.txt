@@ -5,6 +5,7 @@ create new screen shot
 
 issues
 check if google auth works if that email has been registered
+duplicate shifts until refresh
 
 Onboarding Screen
 Implement daily tasks checklist
@@ -12,10 +13,8 @@ push notifications for shift and for timesheet.
 
 change email to yahoo
 
-settings(light theme, delete account, change password)
+settings(light theme,  change password)
 activity log
 
-
-divide all shifts into monthly sections
 
 

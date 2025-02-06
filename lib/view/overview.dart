@@ -46,7 +46,7 @@ class _OverviewState extends State<Overview> {
       userTargetString = user.target.toString();
       userTargetString = userTargetString.replaceAll("£", "");
       userTargetString = userTargetString.replaceAll(",", "");
-      target = double.parse(userTargetString);
+      target =  double.tryParse(userTargetString) ?? 0.0;
       double currentIncome= (provider.CEHShiftIncome+ provider.SGHShiftIncome + provider.woodleazeShiftIncome);
       double difference = target - currentIncome;
       if (difference <= 0) {

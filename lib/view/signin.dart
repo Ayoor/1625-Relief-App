@@ -1,4 +1,5 @@
   import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
   import 'package:relief_app/utils/passwordhash.dart';
 
@@ -350,6 +351,8 @@ else {
                 builder: (context) => HomeScreen(title: "1625 Relief"),
               ),
             );
+            Fluttertoast.showToast(msg: "Welcome back!");
+
           } else if (!await auth.checkEmailExists("${googleUser.email}")) {
             await authService.saveGoogleUserToDatabase(googleUser);
             Navigator.pushReplacement(
@@ -382,8 +385,6 @@ else {
 
         email = _emailController.text.trim();
 
-        password = PasswordHash(password: password).encryptWithArgon2();
-
         if (mounted) {
           //sign in logic
 
@@ -398,9 +399,10 @@ else {
               Navigator.pushReplacement(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => AllShifts(),
+                  builder: (context) => HomeScreen(title: "1625 Relief"),
                 ),
               );
+              Fluttertoast.showToast(msg: "Welcome back!");
             } else {
               setState(() {
                 isFetching = false;
