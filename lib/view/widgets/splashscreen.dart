@@ -39,33 +39,38 @@ class _SplashscreenState extends State<Splashscreen> with SingleTickerProviderSt
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(10),
-      child: Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Image.asset(
-              "lib/assets/1625_logo.png",
-              width: MediaQuery.of(context).size.width / 1.7,
-            ),
-            const SizedBox(
-              height: 20,
-            ),
-            FadeTransition(
-              opacity: _animation,
-              child: const Text(
-                "Relief",
-                style: TextStyle(
-                  fontSize: 25,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.pink,
-                ),
-                textAlign: TextAlign.center,
+    return Scaffold(
+      body: Container(
+        decoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.surface,
+        ),
+        padding: const EdgeInsets.all(10),
+        child: Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Image.asset(
+                "lib/assets/1625_logo.png",
+                width: MediaQuery.of(context).size.width / 1.7,
               ),
-            ),
-          ],
+              const SizedBox(
+                height: 20,
+              ),
+              FadeTransition(
+                opacity: _animation,
+                child: const Text(
+                  "Relief",
+                  style: TextStyle(
+                    fontSize: 25,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.pink,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

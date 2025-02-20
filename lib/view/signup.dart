@@ -54,7 +54,7 @@ class _SignupState extends State<Signup> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Theme.of(context).colorScheme.onSurface,
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 40.0),
@@ -182,11 +182,11 @@ class _SignupState extends State<Signup> {
                         }
                       },
                       child: isLoading? CircularProgressIndicator(
-                        color: Colors.white,
+                        color: Theme.of(context).colorScheme.onSurface,
                         strokeWidth: 2,
-                      ): const Text(
+                      ): Text(
                         "Create Account",
-                        style: TextStyle(color: Colors.white),
+                        style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
                       ),
                     ),
                   ),
@@ -226,7 +226,7 @@ class _SignupState extends State<Signup> {
                 width: 300,
                 child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.white,
+                        backgroundColor: Theme.of(context).colorScheme.surface,
                         side: BorderSide(width: .5, color: Colors.grey)),
                     onPressed: () {
 

@@ -188,12 +188,12 @@ class _EditAccountState extends State<EditAccount> {
               },
               child: isLoading
                   ? CircularProgressIndicator(
-                      color: Colors.white,
+                      color: Theme.of(context).colorScheme.onSurface,
                       strokeWidth: 2,
                     )
-                  : const Text(
+                  : Text(
                       "Set Monthly Target",
-                      style: TextStyle(color: Colors.white),
+                      style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
                     ),
             ),
           ),
@@ -259,12 +259,12 @@ class _EditAccountState extends State<EditAccount> {
                 },
               child: isLoading
                   ? CircularProgressIndicator(
-                color: Colors.white,
+                color: Theme.of(context).colorScheme.onSurface,
                 strokeWidth: 2,
               )
-                  : const Text(
+                  :  Text(
                 "Update",
-                style: TextStyle(color: Colors.white),
+                style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
               ),
             ),
           ),
@@ -327,12 +327,12 @@ class _EditAccountState extends State<EditAccount> {
               },
               child: isLoading
                   ? CircularProgressIndicator(
-                      color: Colors.white,
+                      color: Theme.of(context).colorScheme.onSurface,
                       strokeWidth: 2,
                     )
-                  : const Text(
+                  : Text(
                       "Update Email",
-                      style: TextStyle(color: Colors.white),
+                      style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
                     ),
             ),
           ),

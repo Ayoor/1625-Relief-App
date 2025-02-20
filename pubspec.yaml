@@ -47,6 +47,7 @@ dependencies:
   google_sign_in:
   flutter_secure_storage:
   firebase_messaging:
+  shared_preferences:
 
 dev_dependencies:
   flutter_test:

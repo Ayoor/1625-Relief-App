@@ -34,13 +34,15 @@ class _IncomeState extends State<Income> with SingleTickerProviderStateMixin {
     return Consumer<AppProvider>(
       builder: (context, provider, child) => Scaffold(
                appBar: AppBar(
-
-          backgroundColor: Colour("#00334F"),
+                   backgroundColor: Theme.of(context).brightness == Brightness.dark
+                       ? Colors.white10 // Softer white shadow in dark mode
+                       : Colour("#00334F"),
+          // backgroundColor: Colour("#00334F"),
 
           title: TabBar(
             indicatorColor: Colors.orange,
             controller: _tabController,
-            tabs: const [
+            tabs:  [
               Tab(child: Text("Income", style: TextStyle(color: Colors.white))),
               Tab(
                   child:
@@ -58,7 +60,7 @@ class _IncomeState extends State<Income> with SingleTickerProviderStateMixin {
             children: [
               // Tab 1 - Income
               RefreshIndicator(
-                backgroundColor: Colors.white,
+                backgroundColor: Theme.of(context).colorScheme.surface,
                 color: Colors.blue,
                 onRefresh: () async {
                   provider.getIncomeSummary(context);

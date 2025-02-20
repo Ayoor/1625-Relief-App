@@ -114,7 +114,6 @@ class AppProvider extends ChangeNotifier {
       notifyListeners();
 
       // Show success message if the context is still mounted
-      if (context.mounted) {
         showMessage(
           context: context,
           message: "Shift status updated successfully.",
@@ -124,7 +123,7 @@ class AppProvider extends ChangeNotifier {
         );
         fetchShifts(context);
         notifyListeners();
-      }
+
     } catch (e) {
       // Show error message if the update fails
       if (context.mounted) {
@@ -148,14 +147,14 @@ class AppProvider extends ChangeNotifier {
 
       context: context,
       description: Text(message,
-        style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),),
+        style: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontWeight: FontWeight.bold),),
       alignment: Alignment.topCenter,
       type: type,
       backgroundColor: bgColor,
-      foregroundColor: Colors.white,
+      foregroundColor: Theme.of(context).colorScheme.onSurface,
       icon: Icon(
         icon,
-        color: Colors.white,
+        color: Theme.of(context).colorScheme.onSurface,
       ),
       style: ToastificationStyle.flatColored,
       autoCloseDuration: const Duration(seconds: 5),
@@ -371,10 +370,6 @@ class AppProvider extends ChangeNotifier {
           });
 
           _scheduledShifts.sort((a, b) => a.startTime.compareTo(b.startTime));
-          print(
-            "length- ${_scheduledShifts.length}"
-          );
-
           _cancelledShifts.sort((a, b) => a.startTime.compareTo(b.startTime));
           _completedShifts.sort((a, b) => a.startTime.compareTo(b.startTime));
           _completedShifts = _completedShifts.reversed.toList();
@@ -459,7 +454,6 @@ class AppProvider extends ChangeNotifier {
     _allocatedIncome =
         _CEHShiftIncome + _SGHShiftIncome + _woodleazeShiftIncome;
     double remainingIncome = 0;
-    int i = 1;
 
     for (Shifts shift in _scheduledShifts) {
       if (!shift.startTime.isBefore(monthStart!) &&
@@ -542,6 +536,7 @@ class AppProvider extends ChangeNotifier {
         );
       }
       checkboxes();
+      fetchShifts(context);
     } catch (e) {
       // Show error notification if saving shifts fails
       if (context.mounted) {
@@ -880,6 +875,11 @@ class AppProvider extends ChangeNotifier {
     return "${monthStart!.day}/${monthStart!.month}/${monthStart!
         .year} to ${monthEnd!.day}/${monthEnd!.month}/${monthEnd!.year}";
   }
+
+  bool isDarkMode(BuildContext context) {
+    return Theme.of(context).brightness == Brightness.dark;
+  }
+
 
   // }
   double _totalHours = 0;

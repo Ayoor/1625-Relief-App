@@ -32,7 +32,7 @@ class DeleteConfirmation extends StatelessWidget {
                   Navigator.pushReplacement(
                       context, MaterialPageRoute(builder: (context) => Signin()));
                 },
-                child: Text("Finish", style: TextStyle(color: Colors.white))),
+                child: Text("Finish", style: TextStyle(color: Theme.of(context).colorScheme.onSurface))),
           )
         ]),
       ),

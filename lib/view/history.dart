@@ -54,7 +54,7 @@ class _HistoryState extends State<History> with SingleTickerProviderStateMixin {
 // Loop through each month and generate the sum expression
 
         return RefreshIndicator(
-          backgroundColor: Colors.white,
+          backgroundColor: Theme.of(context).colorScheme.onSurface,
           color: Colors.blue,
           onRefresh: () async {
             provider.shiftHistory(context);

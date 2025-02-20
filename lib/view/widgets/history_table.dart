@@ -208,8 +208,9 @@ class _HistoryTableState extends State<HistoryTable> {
       rows.add(
         TableRow(
           decoration: BoxDecoration(
-            color: i.isOdd ? Colors.grey.shade200 : Colors
-                .white, // Striped rows
+            color: i. isOdd
+                ? Theme.of(context).colorScheme.surfaceContainerHighest // Light grey in light mode, darker in dark mode
+                : Theme.of(context).colorScheme.surface, // Striped rows
           ),
           children: data[i]
               .map((cell) => _buildCell(cell, isHeader: false))
@@ -221,7 +222,7 @@ class _HistoryTableState extends State<HistoryTable> {
     // Add the footer row (last row)
     rows.add(
       TableRow(
-        decoration: BoxDecoration(color: Colors.amberAccent.shade100),
+        decoration: BoxDecoration(color: Colors.transparent),
         children: data.last
             .map((cell) => _buildCell(cell, isHeader: true))
             .toList(),
@@ -239,6 +240,7 @@ class _HistoryTableState extends State<HistoryTable> {
         content,
         textAlign: TextAlign.center,
         style: TextStyle(
+          color: isHeader ? Colors.blueGrey: Theme.of(context).colorScheme.onSurface,
           fontWeight: isHeader ? FontWeight.bold : FontWeight.normal,
           fontSize: 12,
         ),

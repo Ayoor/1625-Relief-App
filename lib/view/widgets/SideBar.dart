@@ -140,21 +140,23 @@ class _SidebarState extends State<Sidebar> {
                   MaterialPageRoute(builder: (context) => const Settings()));
             },
           ),
-          ListTile(
-            minVerticalPadding: 20,
-            leading: Image.asset(
-              "lib/assets/to-do-list.png",
-              width: 25,
-            ),
-            trailing: Icon(
-              Icons.chevron_right,
-              color: Colors.grey,
-            ),
-            title: const Text('Task Checklist'),
-            onTap: () {
-              Navigator.pop(context);
-            },
-          ),
+
+          //task list
+          // ListTile(
+          //   minVerticalPadding: 20,
+          //   leading: Image.asset(
+          //     "lib/assets/to-do-list.png",
+          //     width: 25,
+          //   ),
+          //   trailing: Icon(
+          //     Icons.chevron_right,
+          //     color: Colors.grey,
+          //   ),
+          //   title: const Text('Task Checklist'),
+          //   onTap: () {
+          //     Navigator.pop(context);
+          //   },
+          // ),
           ListTile(
             title: Center(
                 child: Text(

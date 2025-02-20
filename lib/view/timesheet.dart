@@ -42,6 +42,10 @@ class _TimeSheetState extends State<TimeSheet> {
   DateTime? endTime;
   final controller = BoardDateTimeController();
 
+  bool isDarkMode(BuildContext context) {
+    return Theme.of(context).brightness == Brightness.dark;
+  }
+
   String dateFormater(DateTime? datetime) {
     if (datetime != null) {
       // Define the date format
@@ -64,7 +68,7 @@ String locationShort ="";
                     Text(
                       "Location is",
                       style: TextStyle(
-                          fontWeight: FontWeight.bold, color: Colors.black54),
+                          fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.onSurface),
                     ),
                     SizedBox(
                       height: 5,
@@ -73,31 +77,36 @@ String locationShort ="";
                     // Location dropdown
                     Container(
                       decoration: BoxDecoration(
-                        color: Colors.white,
+                        color: Theme.of(context).colorScheme.surface,
                         // White background
                         borderRadius: BorderRadius.circular(12),
                         // Rounded corners
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.grey.withOpacity(0.5),
+                            color: isDarkMode(context)? Colors.white.withOpacity(0.5): Colors.grey.withOpacity(0.5),
                             // Shadow color
                             spreadRadius: 1,
                             // Spread radius of the shadow
                             blurRadius: 1,
                             // Blur radius
-                            offset: Offset(0, 3), // Offset of the shadow
+                            offset: Offset(0, 1), // Offset of the shadow
                           ),
                         ],
                       ),
                       child: DropdownFlutter<String>(
                         decoration: CustomDropdownDecoration(
+                          closedBorder: Border.all(color: isDarkMode(context)? Colors.grey.withOpacity(0.5): Colors.transparent),
+                          expandedFillColor: Theme.of(context).colorScheme.surface,
+                          closedFillColor: Theme.of(context).colorScheme.surface,
+                          listItemStyle: TextStyle(color: isDarkMode(context)? Colors.white.withOpacity(0.5): Colors.grey.withOpacity(0.5)),
                           prefixIcon: Icon(
                             Icons.house,
-                            color: Colors.grey,
+                            color: isDarkMode(context)? Colors.white.withOpacity(0.5): Colors.grey.withOpacity(0.5),
                             size: 18,
                           ),
                         ),
                         hintText: 'Location',
+
                         initialItem: locations[0],
                         items: locations,
                         onChanged: (value) {
@@ -117,7 +126,7 @@ String locationShort ="";
                     Text(
                       "Choose time frame",
                       style: TextStyle(
-                          fontWeight: FontWeight.bold, color: Colors.black54),
+                          fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.onSurface),
                     ),
                     //start custom time
                     SizedBox(
@@ -125,7 +134,8 @@ String locationShort ="";
                     ),
                     Container(
                       decoration: BoxDecoration(
-                        color: Colors.white,
+                        border: Border.all(color: isDarkMode(context)? Colors.grey: Colors.transparent),
+                        color: Theme.of(context).colorScheme.surface,
                         // White background
                         borderRadius: BorderRadius.circular(12),
                         // Rounded corners
@@ -137,7 +147,7 @@ String locationShort ="";
                             // Spread radius of the shadow
                             blurRadius: 1,
                             // Blur radius
-                            offset: Offset(0, 3), // Offset of the shadow
+                            offset: Offset(0, 1), // Offset of the shadow
                           ),
                         ],
                       ),
@@ -146,9 +156,10 @@ String locationShort ="";
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            const Text(
+                            Text(
                               'From',
                               style: TextStyle(
+                                color: Theme.of(context).colorScheme.onSurface,
                                   fontWeight: FontWeight.bold, fontSize: 14),
                             ),
                             Row(
@@ -183,7 +194,8 @@ String locationShort ="";
 
                     Container(
                       decoration: BoxDecoration(
-                        color: Colors.white,
+                        color: Theme.of(context).colorScheme.surface,
+                        border: Border.all(color: isDarkMode(context)? Colors.grey: Colors.transparent),
                         // White background
                         borderRadius: BorderRadius.circular(12),
                         // Rounded corners
@@ -195,7 +207,7 @@ String locationShort ="";
                             // Spread radius of the shadow
                             blurRadius: 1,
                             // Blur radius
-                            offset: Offset(0, 3), // Offset of the shadow
+                            offset: Offset(0, 1), // Offset of the shadow
                           ),
                         ],
                       ),
@@ -204,9 +216,10 @@ String locationShort ="";
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            const Text(
+                            Text(
                               'To',
                               style: TextStyle(
+                                color: Theme.of(context).colorScheme.onSurface,
                                   fontWeight: FontWeight.bold, fontSize: 14),
                             ),
                             Row(
@@ -245,7 +258,7 @@ String locationShort ="";
                           shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(20),
                               side: BorderSide(color: Colors.orange)),
-                          backgroundColor: Colors.white,
+                          backgroundColor: Theme.of(context).colorScheme.surface,
                           elevation: 0,
                         ),
                         onPressed: () {
@@ -262,10 +275,10 @@ String locationShort ="";
                               alignment: Alignment.bottomCenter,
                               type: ToastificationType.error,
                               backgroundColor: Colors.red[400],
-                              foregroundColor: Colors.white,
+                              foregroundColor: Theme.of(context).colorScheme.onSurface,
                               icon: Icon(
                                 Icons.close,
-                                color: Colors.white,
+                                color: Theme.of(context).colorScheme.onSurface,
                               ),
                               style: ToastificationStyle.flatColored,
                               autoCloseDuration: const Duration(seconds: 3),
@@ -376,8 +389,8 @@ String locationShort ="";
   void showBottomSheet() {
     final provider = Provider.of<AppProvider>(context, listen: false);
     showMaterialModalBottomSheet(
-      backgroundColor: Colors.white,
-      shape: RoundedRectangleBorder(
+      backgroundColor: Theme.of(context).colorScheme.surface,
+      shape: RoundedRectangleBorder(side: BorderSide(color: Colors.white, width: 2.0),
         borderRadius: BorderRadius.circular(
             20.0), // Adjust the radius for desired curvature
       ),

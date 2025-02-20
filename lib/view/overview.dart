@@ -23,13 +23,8 @@ class _OverviewState extends State<Overview> {
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       final provider = Provider.of<AppProvider>(context, listen: false);
      await  shiftsToTarget(provider);
+     provider.getDateRange();
       provider.getIncomeSummary(context);
-      provider.getDateRange();
-      provider.overviewData(
-        context,
-        provider.monthStart!,
-        provider.monthEnd!,
-      );
     });
   }
 
@@ -131,11 +126,13 @@ class _OverviewState extends State<Overview> {
     ];
 
     return Scaffold(
-      backgroundColor: Colour("#f2f5fa"),
+        backgroundColor: Theme.of(context).brightness == Brightness.dark
+            ? Theme.of(context).colorScheme.surface // Softer white shadow in dark mode
+            : Colour("#f2f5fa"),
       body: Consumer<AppProvider>(
         builder: (context, provider, child) => RefreshIndicator(
           color: Colors.blue,
-          backgroundColor: Colors.white,
+          backgroundColor: Theme.of(context).colorScheme.surface,
           onRefresh: () async {
             provider.getDateRange();
             provider.overviewData(
@@ -187,16 +184,23 @@ class _OverviewState extends State<Overview> {
                     Container(
                         decoration: BoxDecoration(
                           borderRadius: BorderRadiusDirectional.circular(5),
-                          color: Colors.white,
+                          color: Theme.of(context).colorScheme.onSurface,
                         ),
                         margin: EdgeInsets.only(
                             bottom:
                                 index == overviewTiles.length - 1 ? 80 : 10),
-                        child: ListTile(
+                        child: Container(
+                          color: Theme.of(context).brightness == Brightness.dark
+                              ? Theme.of(context).colorScheme.surface  // Dark mode background
+                              : Colors.transparent,          // Light mode background
+                          child: ListTile(
                             title: Text(overviewTiles[index].title),
                             trailing: Text(index == overviewTiles.length - 1
                                 ? "${overviewTiles[index].value}"
-                                : "${overviewTiles[index].value}")))
+                                : "${overviewTiles[index].value}"),
+                          ),
+                        ),
+                    )
                 ],
               ),
             ),

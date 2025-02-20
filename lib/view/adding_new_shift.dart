@@ -40,7 +40,6 @@ class _NewShiftState extends State<NewShift> {
   DateTime? endTime;
   final controller = BoardDateTimeController();
 
-
   // List <String> shiftTime(String location){
   //   List <String> timeRange=[];
   //   switch (location){
@@ -68,12 +67,12 @@ class _NewShiftState extends State<NewShift> {
   Widget build(BuildContext context) {
     return Consumer<AppProvider>(
         builder: (context, provider, child) => Scaffold(
-          drawer: Sidebar(),
+            drawer: Sidebar(),
             appBar: AppBar(
               iconTheme: IconThemeData(
-                color: Colors.white, // Set your desired color
+                color: Theme.of(context).colorScheme.onSurface,
               ),
-              backgroundColor: Colors.white,
+              backgroundColor: Theme.of(context).colorScheme.surface,
               automaticallyImplyLeading: false,
               title: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -94,22 +93,24 @@ class _NewShiftState extends State<NewShift> {
                     ),
                     onPressed: () {
                       if (startTime != null) {
-                        provider.saveNewShifts(context, provider.shifts, startTime!, endTime!);
-                      }
-                      else {
+                        provider.saveNewShifts(
+                            context, provider.shifts, startTime!, endTime!);
+                      } else {
                         Fluttertoast.showToast(
-                              msg: "Please select a start time",
-                              gravity: ToastGravity.BOTTOM,
-                              backgroundColor: Colors.red[300],
-                              textColor: Colors.white,
-                            );
+                          msg: "Please select a start time",
+                          gravity: ToastGravity.BOTTOM,
+                          backgroundColor: Colors.red[300],
+                          textColor: Theme.of(context).colorScheme.onSurface,
+                        );
                       }
                     },
                   ),
                 ],
               ),
             ),
-            backgroundColor: Colour("#e8f3fa"),
+            backgroundColor: Theme.of(context).brightness == Brightness.dark
+                ? Theme.of(context).colorScheme.surface // Dark mode background
+                : Colour("#e8f3fa"),
             body: SingleChildScrollView(
               child: Padding(
                 padding: const EdgeInsets.all(25.0),
@@ -120,16 +121,18 @@ class _NewShiftState extends State<NewShift> {
                         height: 10,
                       ),
                       // Shift start time
-                      const Text('Add a new Shift',
-                          style:
-                              TextStyle(fontSize: 22, color: Colors.black45)),
+                      Text('Add a new Shift',
+                          style: TextStyle(
+                              fontSize: 22,
+                              color: Theme.of(context).colorScheme.onSurface)),
                       const SizedBox(height: 10),
 //location
 
                       Text(
                         "Location is",
                         style: TextStyle(
-                            fontWeight: FontWeight.bold, color: Colors.black54),
+                            fontWeight: FontWeight.bold,
+                            color: Theme.of(context).colorScheme.onSurface),
                       ),
                       SizedBox(
                         height: 5,
@@ -138,7 +141,7 @@ class _NewShiftState extends State<NewShift> {
                       // Location dropdown
                       Container(
                         decoration: BoxDecoration(
-                          color: Colors.white,
+                          color: Theme.of(context).colorScheme.surface,
                           // White background
                           borderRadius: BorderRadius.circular(12),
                           // Rounded corners
@@ -156,9 +159,26 @@ class _NewShiftState extends State<NewShift> {
                         ),
                         child: DropdownFlutter<String>(
                           decoration: CustomDropdownDecoration(
+                            expandedFillColor:
+                                Theme.of(context).colorScheme.surface,
+                            expandedBorder: Border.all(
+                                color: Theme.of(context).colorScheme.onSurface),
+                            closedFillColor:
+                                Theme.of(context).colorScheme.surface,
+                            closedShadow: [
+                              BoxShadow(
+                                color: Colors.grey.withOpacity(0.1),
+                                // Shadow color
+                                spreadRadius: .2,
+                                // Spread radius of the shadow
+                                blurRadius: 1,
+                                // Blur radius
+                                offset: Offset(0, 3), // Offset of the shadow
+                              )
+                            ],
                             prefixIcon: Icon(
                               Icons.house,
-                              color: Colors.grey,
+                              color: Theme.of(context).colorScheme.onSurface,
                               size: 18,
                             ),
                           ),
@@ -181,7 +201,7 @@ class _NewShiftState extends State<NewShift> {
                       ),
                       Container(
                         decoration: BoxDecoration(
-                          color: Colors.white,
+                          color: Theme.of(context).colorScheme.surface,
                           // White background
                           borderRadius: BorderRadius.circular(12),
                           // Rounded corners
@@ -206,16 +226,20 @@ class _NewShiftState extends State<NewShift> {
                                 children: [
                                   Padding(
                                     padding: const EdgeInsets.only(right: 15.0),
-                                    child: Icon(Icons.date_range, size: 17, color: Colors.grey,),
+                                    child: Icon(
+                                      Icons.date_range,
+                                      size: 17,
+                                      color: Colors.grey,
+                                    ),
                                   ),
-                          const Text(
-                            'Shift Starts at',
-                            style: TextStyle(
-                                fontWeight: FontWeight.bold, fontSize: 14),
-                          )
+                                  const Text(
+                                    'Shift Starts at',
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 14),
+                                  )
                                 ],
-                              )
-,
+                              ),
                               Row(
                                 children: [
                                   TextButton(
@@ -247,7 +271,7 @@ class _NewShiftState extends State<NewShift> {
                       ),
                       Container(
                         decoration: BoxDecoration(
-                          color: Colors.white,
+                          color: Theme.of(context).colorScheme.surface,
                           // White background
                           borderRadius: BorderRadius.circular(12),
                           // Rounded corners
@@ -269,16 +293,22 @@ class _NewShiftState extends State<NewShift> {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
                                 children: [
                                   Padding(
                                     padding: const EdgeInsets.only(right: 15.0),
-                                    child: Icon(Icons.date_range, size: 17, color: Colors.grey,),
+                                    child: Icon(
+                                      Icons.date_range,
+                                      size: 17,
+                                      color: Colors.grey,
+                                    ),
                                   ),
                                   const Text(
                                     'Shift Closes at',
                                     style: TextStyle(
-                                        fontWeight: FontWeight.bold, fontSize: 14),
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 14),
                                   ),
                                 ],
                               ),
@@ -318,11 +348,11 @@ class _NewShiftState extends State<NewShift> {
                             shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(20),
                                 side: BorderSide(color: Colors.orange)),
-                            backgroundColor: Colors.white,
+                            backgroundColor:
+                                Theme.of(context).colorScheme.surface,
                             elevation: 0,
                           ),
                           onPressed: () {
-                           
                             if (startTime != null && endTime != null) {
                               provider.addShift(startTime!, endTime!,
                                   selectedLocation, context);
@@ -334,10 +364,12 @@ class _NewShiftState extends State<NewShift> {
                                 alignment: Alignment.bottomCenter,
                                 type: ToastificationType.error,
                                 backgroundColor: Colors.red[400],
-                                foregroundColor: Colors.white,
+                                foregroundColor:
+                                    Theme.of(context).colorScheme.onSurface,
                                 icon: Icon(
                                   Icons.close,
-                                  color: Colors.white,
+                                  color:
+                                      Theme.of(context).colorScheme.onSurface,
                                 ),
                                 style: ToastificationStyle.flatColored,
                                 autoCloseDuration: const Duration(seconds: 3),
@@ -368,102 +400,117 @@ class _NewShiftState extends State<NewShift> {
 
                           return Padding(
                             padding: const EdgeInsets.all(8.0),
-                            child: ListTile(
-                              leading: Image.asset(
-                                "lib/assets/1625_logo.png",
-                                width: 50,
+                            child: Container(
+                          decoration: BoxDecoration(
+                          color: Theme.of(context).colorScheme.surface,
+                              borderRadius: BorderRadius.circular(8),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Theme.of(context).brightness == Brightness.dark
+                                      ? Colors.white10  // Softer white shadow in dark mode
+                                      : Colors.black12, // Standard black shadow in light mode
+                                  blurRadius: 10,
+                                  offset: Offset(0, 4),
+                                ),
+                              ]),
+                              child: ListTile(
+                                leading: Image.asset(
+                                  "lib/assets/1625_logo.png",
+                                  width: 50,
+                                ),
+                                title: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text(
+                                      shift.shiftType,
+                                      style: TextStyle(
+                                          color: Colors.grey, fontSize: 13),
+                                    ),
+                                    IconButton(
+                                      icon: Icon(Icons.close,
+                                          color: Colors.red[300]),
+                                      onPressed: () {
+                                        setState(() {
+                                          provider.removeShift(index, context);
+                                        });
+                                      },
+                                    )
+                                  ],
+                                ),
+                                subtitle: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Row(
+                                      children: [
+                                        Text("Start time:",
+                                            style: TextStyle(
+                                                fontWeight: FontWeight.bold)),
+                                        Text(
+                                          " ${dateFormater(shift.startTime)}",
+                                        ),
+                                      ],
+                                    ),
+                                    SizedBox(
+                                      height: 5,
+                                    ),
+                                    Row(
+                                      children: [
+                                        Text("End time:",
+                                            style: TextStyle(
+                                                fontWeight: FontWeight.bold)),
+                                        Text(
+                                          " ${dateFormater(shift.endTime)}",
+                                        ),
+                                      ],
+                                    ),
+                                    SizedBox(
+                                      height: 5,
+                                    ),
+                                    Row(
+                                      children: [
+                                        Text("Location:",
+                                            style: TextStyle(
+                                                fontWeight: FontWeight.bold)),
+                                        Text(
+                                          " ${shift.location}",
+                                        ),
+                                      ],
+                                    ),
+                                    SizedBox(
+                                      height: 5,
+                                    ),
+                                    Row(
+                                      children: [
+                                        Text("Hrs: ",
+                                            style: TextStyle(
+                                                fontWeight: FontWeight.bold)),
+                                        Text(shift.durationText),
+                                      ],
+                                    ),
+                                    SizedBox(
+                                      height: 5,
+                                    ),
+                                    Row(
+                                      children: [
+                                        Text("Rate: ",
+                                            style: TextStyle(
+                                                fontWeight: FontWeight.bold)),
+                                        Text(
+                                          "${shift.rate}",
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                                contentPadding: EdgeInsets.all(10),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                tileColor:
+                                    Theme.of(context).colorScheme.onSurface,
+                                selectedTileColor: Colors.grey[100],
                               ),
-                              title: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Text(
-                                    shift.shiftType,
-                                    style: TextStyle(
-                                        color: Colors.grey, fontSize: 13),
-                                  ),
-                                  IconButton(
-                                    icon: Icon(Icons.close,
-                                        color: Colors.red[300]),
-                                    onPressed: () {
-                                      setState(() {
-                                        provider.removeShift(index, context);
-                                      });
-                                    },
-                                  )
-                                ],
-                              ),
-                              subtitle: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Row(
-                                    children: [
-                                      Text("Start time:",
-                                          style: TextStyle(
-                                              fontWeight: FontWeight.bold)),
-                                      Text(
-                                        " ${dateFormater(shift.startTime)}",
-                                      ),
-                                    ],
-                                  ),
-                                  SizedBox(
-                                    height: 5,
-                                  ),
-                                  Row(
-                                    children: [
-                                      Text("End time:",
-                                          style: TextStyle(
-                                              fontWeight: FontWeight.bold)),
-                                      Text(
-                                        " ${dateFormater(shift.endTime)}",
-                                      ),
-                                    ],
-                                  ),
-                                  SizedBox(
-                                    height: 5,
-                                  ),
-                                  Row(
-                                    children: [
-                                      Text("Location:",
-                                          style: TextStyle(
-                                              fontWeight: FontWeight.bold)),
-                                      Text(
-                                        " ${shift.location}",
-                                      ),
-                                    ],
-                                  ),
-                                  SizedBox(
-                                    height: 5,
-                                  ),
-                                  Row(
-                                    children: [
-                                      Text("Hrs: ",
-                                          style: TextStyle(
-                                              fontWeight: FontWeight.bold)),
-                                      Text(shift.durationText),
-                                    ],
-                                  ),
-                                  SizedBox(
-                                    height: 5,
-                                  ),
-                                  Row(
-                                    children: [
-                                      Text("Rate: ",
-                                          style: TextStyle(
-                                              fontWeight: FontWeight.bold)),
-                                      Text(
-                                        "${shift.rate}",
-                                      ),
-                                    ],
-                                  ),
-                                ],
-                              ),
-                              contentPadding: EdgeInsets.all(10),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              tileColor: Colors.white,
-                              selectedTileColor: Colors.grey[100],
                             ),
                           );
                         },
@@ -506,7 +553,7 @@ class _NewShiftState extends State<NewShift> {
                 showDayOfWeek: true,
                 initialDateTime: minDate(timeDetail).add(Duration(minutes: 15)),
                 maximumDate: DateTime.now().add(Duration(days: 40)),
-                minimumDate:  minDate(timeDetail).subtract(Duration(hours: 3)),
+                minimumDate: minDate(timeDetail).subtract(Duration(hours: 3)),
               ),
             ),
             SizedBox(height: 10),
@@ -551,7 +598,6 @@ class _NewShiftState extends State<NewShift> {
       return DateTime(now.year, now.month, now.day, now.hour, roundedMinutes);
     }
   }
-
 
   void reset(BuildContext context, List<Shifts> shifts) {
     if (shifts.isNotEmpty) {

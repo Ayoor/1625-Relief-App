@@ -54,7 +54,7 @@ class _ShiftTileState extends State<ShiftTile> {
 
       shiftTile = RefreshIndicator(
         color: Colors.blue,
-        backgroundColor: Colors.white,
+        backgroundColor: Theme.of(context).colorScheme.surface,
         onRefresh: () async {
           widget.provider.loadData(context);
         },
@@ -82,17 +82,19 @@ class _ShiftTileState extends State<ShiftTile> {
                     splashColor: Colors.transparent,
                     highlightColor: Colors.transparent,
                     onLongPress: () {
-                      canceDeleteShift(shifts.indexOf(shift), shift, "Scheduled");
+                      cancelDeleteShift(shifts.indexOf(shift), shift, "Scheduled");
                     },
                     child: Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: Container(
                         decoration: BoxDecoration(
-                          color: Colors.white,
+                          color: Theme.of(context).colorScheme.surface,
                           borderRadius: BorderRadius.circular(8),
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.black12,
+                              color: Theme.of(context).brightness == Brightness.dark
+                                  ? Colors.white10  // Softer white shadow in dark mode
+                                  : Colors.black12, // Standard black shadow in light mode
                               blurRadius: 10,
                               offset: Offset(0, 4),
                             ),
@@ -162,7 +164,7 @@ class _ShiftTileState extends State<ShiftTile> {
                                           setState(() {
                                             widget.provider.updateShiftStatus(
                                               shifts.indexOf(shift),
-                                              formatDate(shift.startTime.toString()),
+                                                "${formatDate(shift.startTime.toString())}: ${shift.shiftType}",
                                               context,
                                               shiftType: "Completed",
                                               endTime: shift.endTime.toString(),
@@ -183,7 +185,7 @@ class _ShiftTileState extends State<ShiftTile> {
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(8),
                           ),
-                          tileColor: Colors.white,
+                          tileColor: Theme.of(context).colorScheme.surface,
                           selectedTileColor: Colors.grey[100],
                         ),
                       ),
@@ -214,7 +216,7 @@ class _ShiftTileState extends State<ShiftTile> {
 
       shiftTile = RefreshIndicator(
         color: Colors.blue,
-        backgroundColor: Colors.white,
+        backgroundColor: Theme.of(context).colorScheme.surface,
         onRefresh: () async {
           widget.provider.loadData(context);
         },
@@ -241,17 +243,19 @@ class _ShiftTileState extends State<ShiftTile> {
                   highlightColor: Colors.transparent,
                   splashColor: Colors.transparent,
                   onLongPress: () {
-                    canceDeleteShift(shifts.indexOf(shift), shift, "Completed");
+                    cancelDeleteShift(shifts.indexOf(shift), shift, "Completed");
                   },
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Container(
                       decoration: BoxDecoration(
-                        color: Colors.white,
+                        color: Theme.of(context).colorScheme.surface,
                         borderRadius: BorderRadius.circular(8),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black12,
+                            color: Theme.of(context).brightness == Brightness.dark
+                                ? Colors.white10  // Softer white shadow in dark mode
+                                : Colors.black12, // Standard black shadow in light mode
                             blurRadius: 10,
                             offset: Offset(0, 4),
                           ),
@@ -331,7 +335,7 @@ class _ShiftTileState extends State<ShiftTile> {
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8),
                         ),
-                        tileColor: Colors.white,
+                        tileColor: Theme.of(context).colorScheme.surface,
                         selectedTileColor: Colors.grey[100],
                       ),
                     ),
@@ -363,7 +367,7 @@ class _ShiftTileState extends State<ShiftTile> {
 
       shiftTile = RefreshIndicator(
         color: Colors.blue,
-        backgroundColor: Colors.white,
+        backgroundColor: Theme.of(context).colorScheme.surface,
         onRefresh: () async {
           widget.provider.loadData(context);
         },
@@ -390,17 +394,19 @@ class _ShiftTileState extends State<ShiftTile> {
                   highlightColor: Colors.transparent,
                   splashColor: Colors.transparent,
                   onLongPress: () {
-                    canceDeleteShift(shifts.indexOf(shift), shift, "Cancelled");
+                    cancelDeleteShift(shifts.indexOf(shift), shift, "Cancelled");
                   },
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Container(
                       decoration: BoxDecoration(
-                        color: Colors.white,
+                        color: Theme.of(context).colorScheme.surface,
                         borderRadius: BorderRadius.circular(8),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black12,
+                            color: Theme.of(context).brightness == Brightness.dark
+                                ? Colors.white10  // Softer white shadow in dark mode
+                                : Colors.black12, // Standard black shadow in light mode
                             blurRadius: 10,
                             offset: Offset(0, 4),
                           ),
@@ -500,7 +506,7 @@ class _ShiftTileState extends State<ShiftTile> {
                     ),
                   ),
                 ))
-                    .toList(),
+                    ,
               ],
             );
           },
@@ -508,158 +514,9 @@ class _ShiftTileState extends State<ShiftTile> {
       );
     }
 
-//Completed
-//     if (widget.shiftType == "Completed") {
-//       widget.provider.loadData(context);
-//
-//       // Group shifts by month
-//       Map<String, List<Shifts>> groupedShifts = {};
-//
-//       for (var shift in widget.provider.completedShifts) {
-//         String monthYear = DateFormat("MMMM yyyy").format(shift.startTime); // e.g., "January 2025"
-//
-//         if (!groupedShifts.containsKey(monthYear)) {
-//           groupedShifts[monthYear] = [];
-//         }
-//         groupedShifts[monthYear]!.add(shift);
-//       }
-//
-//       shiftTile = RefreshIndicator(
-//         color: Colors.blue,
-//         backgroundColor: Colors.white,
-//         onRefresh: () async {
-//           widget.provider.loadData(context);
-//         },
-//         child: ListView.builder(
-//           itemCount: groupedShifts.length,
-//           itemBuilder: (context, groupIndex) {
-//             String monthYear = groupedShifts.keys.elementAt(groupIndex);
-//             List<Shifts> shifts = groupedShifts[monthYear]!;
-//
-//             return Column(
-//               crossAxisAlignment: CrossAxisAlignment.start,
-//               children: [
-//                 // Month Header
-//                 Padding(
-//                   padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
-//                   child: Text(
-//                     monthYear,
-//                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-//                   ),
-//                 ),
-//
-//                 // Shifts for this month
-//                 ...shifts.map((shift) => InkWell(
-//                   highlightColor: Colors.transparent,
-//                   splashColor: Colors.transparent,
-//                   onLongPress: () {
-//                     canceDeleteShift(shifts.indexOf(shift), shift, "Completed");
-//                   },
-//                   child: Padding(
-//                     padding: const EdgeInsets.all(8.0),
-//                     child: Container(
-//                       decoration: BoxDecoration(
-//                         color: Colors.white,
-//                         borderRadius: BorderRadius.circular(8),
-//                         boxShadow: [
-//                           BoxShadow(
-//                             color: Colors.black12,
-//                             blurRadius: 10,
-//                             offset: Offset(0, 4),
-//                           ),
-//                         ],
-//                       ),
-//                       child: ListTile(
-//                         leading: Image.asset(
-//                           "lib/assets/1625_logo.png",
-//                           width: 50,
-//                         ),
-//                         title: Text(
-//                           shift.shiftType,
-//                           style: const TextStyle(color: Colors.grey, fontSize: 13),
-//                         ),
-//                         subtitle: Column(
-//                           crossAxisAlignment: CrossAxisAlignment.start,
-//                           children: [
-//                             Row(
-//                               children: [
-//                                 const Text("Start time:",
-//                                     style: TextStyle(fontWeight: FontWeight.bold)),
-//                                 Text(" ${widget.provider.dateFormater(shift.startTime)}"),
-//                               ],
-//                             ),
-//                             const SizedBox(height: 5),
-//                             Row(
-//                               children: [
-//                                 const Text("End time:",
-//                                     style: TextStyle(fontWeight: FontWeight.bold)),
-//                                 Text(" ${widget.provider.dateFormater(shift.endTime)}"),
-//                               ],
-//                             ),
-//                             const SizedBox(height: 5),
-//                             Row(
-//                               children: [
-//                                 const Text("Location:",
-//                                     style: TextStyle(fontWeight: FontWeight.bold)),
-//                                 Text(" ${shift.location}"),
-//                               ],
-//                             ),
-//                             const SizedBox(height: 5),
-//                             Row(
-//                               children: [
-//                                 const Text("Hrs:",
-//                                     style: TextStyle(fontWeight: FontWeight.bold)),
-//                                 Text(shift.durationText),
-//                               ],
-//                             ),
-//                             const SizedBox(height: 5),
-//                             Row(
-//                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-//                               children: [
-//                                 Row(
-//                                   children: [
-//                                     const Text("Rate:",
-//                                         style: TextStyle(fontWeight: FontWeight.bold)),
-//                                     Text("${shift.rate}"),
-//                                   ],
-//                                 ),
-//                                 Column(
-//                                   mainAxisSize: MainAxisSize.min,
-//                                   children: [
-//                                     Icon(
-//                                       Icons.check,
-//                                       color: Colors.green,
-//                                     ),
-//                                     const Text("Completed",
-//                                         style: TextStyle(color: Colors.grey, fontSize: 12)),
-//                                   ],
-//                                 ),
-//                               ],
-//                             ),
-//                             const SizedBox(height: 30),
-//                           ],
-//                         ),
-//                         contentPadding: const EdgeInsets.all(10),
-//                         shape: RoundedRectangleBorder(
-//                           borderRadius: BorderRadius.circular(8),
-//                         ),
-//                         tileColor: Colors.white,
-//                         selectedTileColor: Colors.grey[100],
-//                       ),
-//                     ),
-//                   ),
-//                 ))
-//                     .toList(),
-//               ],
-//             );
-//           },
-//         ),
-//       );
-//     }
-
     return shiftTile;
   }
-  void canceDeleteShift(int index, Shifts shift, String shiftType) {
+  void cancelDeleteShift(int index, Shifts shift, String shiftType) {
     showMaterialModalBottomSheet(
       backgroundColor: Colors.white,
       shape: RoundedRectangleBorder(
@@ -711,9 +568,7 @@ class _ShiftTileState extends State<ShiftTile> {
                                   widget.provider
                                       .updateShiftStatus(
                                       index,
-                                      formatDate(shift
-                                          .startTime
-                                          .toString()),
+                                      "${formatDate(shift.startTime.toString())}: ${shift.shiftType}",
                                       context, shiftType: "Deleted");
                                   Navigator.pop(bottomSheetContext);
                                   Navigator.pop(context);
@@ -785,9 +640,7 @@ class _ShiftTileState extends State<ShiftTile> {
                                   widget.provider
                                       .updateShiftStatus(
                                       index,
-                                      formatDate(shift
-                                          .startTime
-                                          .toString()),
+                                      "${formatDate(shift.startTime.toString())}: ${shift.shiftType}",
                                       context, shiftType: "Cancelled");
                                   Navigator.pop(bottomSheetContext);
                                   Navigator.pop(context);
@@ -856,9 +709,7 @@ class _ShiftTileState extends State<ShiftTile> {
                                     widget.provider
                                         .updateShiftStatus(
                                         index,
-                                        formatDate(shift
-                                            .startTime
-                                            .toString()),
+                                        "${formatDate(shift.startTime.toString())}: ${shift.shiftType}",
                                         context, shiftType: "Revert");
                                     Navigator.pop(bottomSheetContext);
                                     Navigator.pop(context);

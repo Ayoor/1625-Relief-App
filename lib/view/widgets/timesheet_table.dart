@@ -102,7 +102,7 @@ class _TimesheetTableState extends State<TimesheetTable> {
         //       ? Colors.amberAccent.shade200 // Specific color for the last row
         //       : (isOdd ? Colors.grey.shade200 : Colors.white),
         // ),
-          color: isOdd ? Colors.grey.shade200 : Colors.white),
+          color: isOdd ? Colors.grey.shade200 : Theme.of(context).colorScheme.onSurface),
         children: [
           Padding(
             padding: EdgeInsets.all(8.0),

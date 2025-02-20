@@ -1,3 +1,4 @@
+import 'package:colour/colour.dart';
 import 'package:flutter/material.dart';
 import 'package:persistent_bottom_nav_bar_v2/persistent_bottom_nav_bar_v2.dart';
 
@@ -48,11 +49,15 @@ class CustomNavBar extends StatelessWidget {
       ],
     );
   }
-
   @override
   Widget build(BuildContext context) {
     return DecoratedNavBar(
-      decoration: navBarDecoration,
+      decoration: NavBarDecoration(
+        color: Theme.of(context).brightness == Brightness.dark
+            ?  Colors.black87// Softer background for dark mode
+            // ? Colour("#00334F") // Softer background for dark mode
+            : Colors.white, // Ensure correct background color
+      ),
       height: navBarConfig.navBarHeight,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -61,7 +66,6 @@ class CustomNavBar extends StatelessWidget {
           for (final (index, item) in navBarConfig.items.indexed)
             Expanded(
               child: InkWell(
-                // This is the most important part. Without this, nothing would happen if you tap on an item.
                 onTap: () => navBarConfig.onItemSelected(index),
                 child: _buildItem(item, navBarConfig.selectedIndex == index),
               ),
@@ -70,4 +74,6 @@ class CustomNavBar extends StatelessWidget {
       ),
     );
   }
+
+
 }

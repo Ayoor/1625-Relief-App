@@ -52,6 +52,8 @@ if(mounted){ //avoid memory leak
     Map<String, double> dataMap = {"CEH": widget.CEH, "SGH": widget.SGH, "Woodleaze":widget.woodleaze};
 getCenterText();
     return PieChart(
+
+      centerTextStyle: TextStyle(color: Theme.of(context).colorScheme.onSurface),
       dataMap: dataMap,
       animationDuration: Duration(milliseconds: 4000),
       chartLegendSpacing: 32,
@@ -70,12 +72,13 @@ getCenterText();
         legendPosition: LegendPosition.left,
         showLegends: true,
         legendShape: BoxShape.circle,
-        legendTextStyle: TextStyle(fontSize: 11
+        legendTextStyle: TextStyle(fontSize: 11, color: Theme.of(context).colorScheme.onSurface
         ),
       ),
       chartValuesOptions: ChartValuesOptions(
+
         showChartValueBackground: false,
-        showChartValues: true,chartValueStyle: TextStyle(fontSize: 11, color: Colors.black, fontWeight: FontWeight.bold),
+        showChartValues: true,chartValueStyle: TextStyle(fontSize: 11, color: Theme.of(context).colorScheme.onSurface, fontWeight: FontWeight.bold),
         showChartValuesInPercentage: false,
         showChartValuesOutside: true,
         decimalPlaces: 2,

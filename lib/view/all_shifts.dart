@@ -21,15 +21,14 @@ class _AllShiftsState extends State<AllShifts>
   void initState() {
     super.initState();
     _tabController = TabController(length: 3, vsync: this);
-
   }
 
 
   @override
   Widget build(BuildContext context) {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      Provider.of<AppProvider>(context, listen: false).shiftHistory(context);
-    });
+    // WidgetsBinding.instance.addPostFrameCallback((_) {
+    //   Provider.of<AppProvider>(context, listen: false).shiftHistory(context);
+    // });
     return Consumer<AppProvider>(
       builder: (context, provider, child) => Scaffold(
         // drawer: Sidebar(),
@@ -41,17 +40,19 @@ class _AllShiftsState extends State<AllShifts>
                   MaterialPageRoute(builder: (context) => const NewShift()));
             },
             backgroundColor: Colors.orange,
-            child: const Text(
+            child:  Text(
               "New Shift",
-              style: TextStyle(color: Colors.white),
+              style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
             ),
           ),
         ),
         appBar: AppBar(
           iconTheme: IconThemeData(
-            color: Colors.white, // Set your desired color
+            color: Colors.white,
           ),
-          backgroundColor: Colour("#00334F"),
+          backgroundColor: Theme.of(context).brightness == Brightness.dark
+              ? Colors.white10 // Softer white shadow in dark mode
+              : Colour("#00334F"),
           // title: const Text(
           //   "Schedule",
           //   style: TextStyle(color: Colors.white),
@@ -59,7 +60,7 @@ class _AllShiftsState extends State<AllShifts>
           title: TabBar(
             indicatorColor: Colors.orange,
             controller: _tabController,
-            tabs: const [
+            tabs:  [
               Tab(
                   child:
                       Text("Scheduled", style: TextStyle(color: Colors.white))),

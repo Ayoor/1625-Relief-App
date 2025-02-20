@@ -9,7 +9,7 @@ class AccountSuccess extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Theme.of(context).colorScheme.surface,
       body: Center(
         child: Padding(
           padding: const EdgeInsets.all(20.0),
@@ -36,8 +36,8 @@ class AccountSuccess extends StatelessWidget {
                     Navigator.pushReplacement(context,
                         MaterialPageRoute(builder: (context) => Signin()));
                   },
-                  child: const Text('Continue',
-                      style: TextStyle(color: Colors.white)),
+                  child:  Text('Continue',
+                      style: TextStyle(color: Theme.of(context).colorScheme.onSurface)),
                 ),
               ),
             ],

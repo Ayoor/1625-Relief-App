@@ -93,7 +93,7 @@ if (isLoading) {
 }
 else {
   return Scaffold(
-    backgroundColor: Colors.white,
+    backgroundColor: Theme.of(context).colorScheme.surface,
     body: SingleChildScrollView(
       child: ConstrainedBox(
         constraints: BoxConstraints(
@@ -216,13 +216,13 @@ else {
                       height: 20,
                       width: 20,
                       child: CircularProgressIndicator(
-                        color: Colors.white,
+                        color: Theme.of(context).colorScheme.onSurface,
                         strokeWidth: 2,
                       ),
                     )
-                        : const Text(
+                        :  Text(
                       "Sign in",
-                      style: TextStyle(color: Colors.white),
+                      style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
                     ),
                   ),
                 ),
@@ -247,7 +247,7 @@ else {
                   width: 300,
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.white,
+                      backgroundColor: Theme.of(context).colorScheme.surface,
                       side: BorderSide(width: .5, color: Colors.grey),
                     ),
                     onPressed: () async {

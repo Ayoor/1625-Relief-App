@@ -114,13 +114,13 @@ class _ResetPasswordState extends State<ResetPassword> {
                                   height: 20,
                                   width: 20,
                                   child: CircularProgressIndicator(
-                                    color: Colors.white,
+                                    color: Theme.of(context).colorScheme.onSurface,
                                     strokeWidth: 2,
                                   ),
                                 )
-                              : const Text(
+                              :  Text(
                                   "Reset Password",
-                                  style: TextStyle(color: Colors.white),
+                                  style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
                                 ),
                         )
                       : ElevatedButton(
@@ -143,13 +143,13 @@ class _ResetPasswordState extends State<ResetPassword> {
                                   height: 20,
                                   width: 20,
                                   child: CircularProgressIndicator(
-                                    color: Colors.white,
+                                    color: Theme.of(context).colorScheme.onSurface,
                                     strokeWidth: 2,
                                   ),
                                 )
-                              : const Text(
+                              : Text(
                                   "Reset",
-                                  style: TextStyle(color: Colors.white),
+                                  style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
                                 ),
                         ),
                 ),
