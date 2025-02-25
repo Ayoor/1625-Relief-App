@@ -94,7 +94,6 @@ class _AllShiftsState extends State<AllShifts>
                   ],
                 ),
 
-              //completed shifts not showing!!!!!!!!!!!!
 
               // Tab 2 - Completed Shifts
               provider.completedShifts.isEmpty

@@ -31,16 +31,21 @@ class HomeScreen extends StatelessWidget {
             ? Colors.white10 // Softer white shadow in dark mode
             : Colour("#00334F"),
         centerTitle: true,
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
+        title: Column(
           children: [
-            Image.asset(
-              "lib/assets/1625_logo.png",
-              width: 150,
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Image.asset(
+                  "lib/assets/1625_logo.png",
+                  width: 150,
+                ),
+                SizedBox(
+                  width: 50,
+                )
+              ],
             ),
-            SizedBox(
-              width: 50,
-            )
+            SizedBox(height: 2,)
           ],
         ),
       ),

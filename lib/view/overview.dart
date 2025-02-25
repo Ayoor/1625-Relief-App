@@ -184,7 +184,9 @@ class _OverviewState extends State<Overview> {
                     Container(
                         decoration: BoxDecoration(
                           borderRadius: BorderRadiusDirectional.circular(5),
-                          color: Theme.of(context).colorScheme.onSurface,
+                          color: Theme.of(context).brightness == Brightness.dark?
+                          Theme.of(context).colorScheme.surface:
+                          Colour("#f2f5fa"),
                         ),
                         margin: EdgeInsets.only(
                             bottom:

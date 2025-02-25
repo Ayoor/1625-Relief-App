@@ -14,6 +14,8 @@ class Settings extends StatefulWidget {
 }
 
 class _SettingsState extends State<Settings> {
+  GlobalKey passwordFormKey = GlobalKey<FormState>();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -28,7 +30,8 @@ class _SettingsState extends State<Settings> {
         ),
       ),
       body: Consumer2<ThemeProvider, AppProvider>(
-        builder: (context, themeProvider, appProvider, child) => SingleChildScrollView(
+        builder: (context, themeProvider, appProvider, child) =>
+            SingleChildScrollView(
           physics: const AlwaysScrollableScrollPhysics(),
           child: Padding(
             padding: const EdgeInsets.all(10.0),
@@ -43,7 +46,9 @@ class _SettingsState extends State<Settings> {
                     style: TextStyle(fontWeight: FontWeight.bold),
                   ),
                   subtitle: Text(
-                    themeProvider.themeMode == ThemeMode.dark ? "Dark" : "Light",
+                    themeProvider.themeMode == ThemeMode.dark
+                        ? "Dark"
+                        : "Light",
                   ),
                   trailing: Icon(
                     themeProvider.themeMode == ThemeMode.dark
@@ -62,7 +67,105 @@ class _SettingsState extends State<Settings> {
                     "Change Password",
                     style: TextStyle(fontWeight: FontWeight.bold),
                   ),
-                  onTap: () {},
+                  onTap: () {
+                    TextEditingController currentPasswordController =
+                        TextEditingController();
+                    TextEditingController newPasswordController =
+                        TextEditingController();
+                    TextEditingController confirmPasswordController =
+                        TextEditingController();
+                    showDialog(
+                        context: context,
+                        builder: (context) => AlertDialog(
+                              title: Text("Change Password"),
+                              content: SizedBox(
+                                height: 310,
+                                width: 300,
+                                child: Form(
+                                  key: passwordFormKey,
+                                  child: Column(
+                                    children: [
+                                      TextFormField(
+                                        controller: currentPasswordController,
+                                        decoration: InputDecoration(
+                                          labelText: "Current password",
+                                          border: const OutlineInputBorder(),
+                                          prefixIcon: const Icon(
+                                              Icons.lock_outline,
+                                              size: 20),
+                                        ),
+                                        validator: (value) {
+                                          if (value == null || value.isEmpty) {
+                                            return 'Please enter your password';
+                                          }
+                                          if (value.length < 6) {
+                                            return 'Password must be at least 6 characters';
+                                          }
+                                          return null;
+                                        },
+                                      ),
+                                      SizedBox(height: 20),
+                                      TextFormField(
+                                        controller: newPasswordController,
+                                        decoration: InputDecoration(
+                                          labelText: "New password",
+                                          border: const OutlineInputBorder(),
+                                          prefixIcon: const Icon(
+                                              Icons.lock_outline,
+                                              size: 20),
+                                        ),
+                                        validator: (value) {
+                                          if (value == null || value.isEmpty) {
+                                            return 'Please enter your password';
+                                          }
+                                          if (value.length < 6) {
+                                            return 'Password must be at least 6 characters';
+                                          }
+                                          return null;
+                                        },
+                                      ),
+                                      SizedBox(height: 20),
+                                      TextFormField(
+                                        controller: confirmPasswordController,
+                                        decoration: InputDecoration(
+                                          labelText: "Re-enter new password",
+                                          border: const OutlineInputBorder(),
+                                          prefixIcon: const Icon(
+                                              Icons.lock_outline,
+                                              size: 20),
+                                        ),
+                                        validator: (value) {
+                                          if (value == null || value.isEmpty) {
+                                            return 'Please enter your password';
+                                          }
+                                          if (value.length < 6) {
+                                            return 'Password must be at least 6 characters';
+                                          }
+                                          return null;
+                                        },
+                                      ),
+                                      SizedBox(
+                                        height: 30,
+                                      ),
+                                      ElevatedButton(
+                                          style: ElevatedButton.styleFrom(
+                                              backgroundColor:
+                                                  Colors.transparent),
+                                          onPressed: () {},
+                                          child: Text(
+                                            "Update Password",
+                                            style: TextStyle(
+                                              color: Theme.of(context)
+                                                  .colorScheme
+                                                  .onSurface,
+                                            ),
+                                          ))
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ));
+                  },
                 ),
                 // Delete Account
                 ListTile(
@@ -76,19 +179,25 @@ class _SettingsState extends State<Settings> {
                       context: context,
                       builder: (context) => AlertDialog(
                         backgroundColor: Colors.red,
-                        title:  Text(
+                        title: Text(
                           "Delete Account",
-                          style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
+                          style: TextStyle(
+                              color: Theme.of(context).colorScheme.onSurface),
                         ),
-                        content:  Text(
+                        content: Text(
                           "Please note that deleting this account means you will lose all your data including your logged shifts and every other thing.\nThis is an irreversible action.\n\n"
-                              "Are you sure you want to delete your account?",
-                          style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
+                          "Are you sure you want to delete your account?",
+                          style: TextStyle(
+                              color: Theme.of(context).colorScheme.onSurface),
                         ),
                         actions: [
                           TextButton(
                             onPressed: () => Navigator.pop(context),
-                            child: Text("Cancel", style: TextStyle(color: Theme.of(context).colorScheme.onSurface)),
+                            child: Text("Cancel",
+                                style: TextStyle(
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .onSurface)),
                           ),
                           TextButton(
                             onPressed: () {
@@ -97,20 +206,27 @@ class _SettingsState extends State<Settings> {
                                 appProvider.signOutUser(context);
                                 Navigator.pushAndRemoveUntil(
                                   context,
-                                  MaterialPageRoute(builder: (context) => const DeleteConfirmation()),
-                                      (route) => false,
+                                  MaterialPageRoute(
+                                      builder: (context) =>
+                                          const DeleteConfirmation()),
+                                  (route) => false,
                                 );
                               } catch (e) {
                                 appProvider.showMessage(
                                   context: context,
-                                  message: "Action failed. Check internet or retry later.",
+                                  message:
+                                      "Action failed. Check internet or retry later.",
                                   type: ToastificationType.error,
                                   bgColor: Colors.red.shade200,
                                   icon: Icons.cancel,
                                 );
                               }
                             },
-                            child: Text("Delete", style: TextStyle(color: Theme.of(context).colorScheme.onSurface)),
+                            child: Text("Delete",
+                                style: TextStyle(
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .onSurface)),
                           ),
                         ],
                       ),

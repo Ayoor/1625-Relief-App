@@ -4,7 +4,6 @@
 create new screen shot
 
 issues
-check if google auth works if that email has been registered
 duplicate shifts until refresh
 
 Onboarding Screen
@@ -13,7 +12,7 @@ push notifications for shift and for timesheet.
 
 change email to yahoo
 
-settings(light theme,  change password)
+settings(change password)
 activity log
 
 

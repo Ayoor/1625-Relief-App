@@ -20,16 +20,25 @@ class EditAccount extends StatefulWidget {
 }
 
 class _EditAccountState extends State<EditAccount> {
-  String targetText ="";
+  String targetText = "";
+
+  // Declare GlobalKeys
+  final GlobalKey<FormFieldState> emailKey = GlobalKey<FormFieldState>();
+  final GlobalKey<FormFieldState> targetKey = GlobalKey<FormFieldState>();
+  final GlobalKey<FormFieldState> nameKey = GlobalKey<FormFieldState>();
+
+  bool isLoading = false;
+  String? errorText;
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController targetController = TextEditingController();
+  final TextEditingController nameController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     setState(() {
-      if(widget.target==null){
+      if (widget.target == null) {
         targetText = "Your current target has not been set";
-      }
-      else{
-
-
+      } else {
         targetText = "Your current target is ${widget.target}";
       }
     });
@@ -55,38 +64,31 @@ class _EditAccountState extends State<EditAccount> {
     );
   }
 
-  bool isLoading = false;
-  String? errorText;
-
   Widget detailToEdit(String detail) {
     switch (detail) {
       //email
       case "Email":
-        final TextEditingController emailController = TextEditingController();
-
         return Padding(
           padding: const EdgeInsets.all(20.0),
-          child: email(detail, emailController),
+          child: email(detail),
         );
       //monthly target
       case "Monthly Target":
-        final TextEditingController _targetController = TextEditingController();
         return Padding(
           padding: const EdgeInsets.all(20.0),
-          child: monthlyTarget(detail, _targetController),
+          child: monthlyTarget(detail),
         );
 
-        case "First Name":
-          final TextEditingController nameController = TextEditingController();
+      case "First Name":
         return Padding(
           padding: const EdgeInsets.all(20.0),
-          child: name(detail, nameController),
+          child: name(detail),
         );
-        case "Last Name":
-          final TextEditingController nameController = TextEditingController();
+      case "Last Name":
+        final TextEditingController nameController = TextEditingController();
         return Padding(
           padding: const EdgeInsets.all(20.0),
-          child: name(detail, nameController),
+          child: name(detail),
         );
       // Add more cases as needed for other details
       default:
@@ -99,7 +101,11 @@ class _EditAccountState extends State<EditAccount> {
     }
   }
 
-  Column monthlyTarget(String detail, TextEditingController controller) {
+  Column monthlyTarget(String detail) {
+    FocusNode focusNode = FocusNode();
+    Future.delayed(Duration(milliseconds: 100), () {
+      focusNode.requestFocus();
+    });
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -108,7 +114,8 @@ class _EditAccountState extends State<EditAccount> {
           style: TextStyle(fontWeight: FontWeight.bold, fontSize: 25),
         ),
         Text(
-          targetText, style: TextStyle(fontSize: 12, color: Colors.grey),
+          targetText,
+          style: TextStyle(fontSize: 12, color: Colors.grey),
         ),
         const SizedBox(height: 25),
         Center(
@@ -122,7 +129,9 @@ class _EditAccountState extends State<EditAccount> {
           child: SizedBox(
             width: 400,
             child: TextFormField(
-              controller: controller,
+              focusNode: focusNode,
+              key: targetKey,
+              controller: targetController,
               decoration: InputDecoration(
                 labelText: "Your target",
                 border: const OutlineInputBorder(),
@@ -157,14 +166,14 @@ class _EditAccountState extends State<EditAccount> {
                 setState(() {
                   isLoading = true;
                 });
-                if (controller.text.isEmpty) {
+                if (targetController.text.isEmpty) {
                   setState(() {
                     errorText = "You need to enter a target first";
                     isLoading = false;
                     return;
                   });
                 }
-                double value = double.parse(controller.text);
+                double value = double.parse(targetController.text);
                 if (value < 50) {
                   setState(() {
                     errorText = "Minimum monthly target is 50";
@@ -193,7 +202,8 @@ class _EditAccountState extends State<EditAccount> {
                     )
                   : Text(
                       "Set Monthly Target",
-                      style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
+                      style: TextStyle(
+                          color: Theme.of(context).colorScheme.onSurface),
                     ),
             ),
           ),
@@ -202,7 +212,11 @@ class _EditAccountState extends State<EditAccount> {
     );
   }
 
-  Column name(String detail, TextEditingController controller) {
+  Column name(String detail) {
+    FocusNode focusNode = FocusNode();
+    Future.delayed(Duration(milliseconds: 100), () {
+      focusNode.requestFocus();
+    });
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -210,22 +224,24 @@ class _EditAccountState extends State<EditAccount> {
           "Update $detail",
           style: TextStyle(fontWeight: FontWeight.bold, fontSize: 25),
         ),
-
         const SizedBox(height: 25),
-
         Center(
           child: SizedBox(
             width: 400,
             child: TextFormField(
-              controller: controller,
+              focusNode: focusNode,
+              key: nameKey,
+              controller: nameController,
               decoration: InputDecoration(
                 labelText: detail,
                 border: const OutlineInputBorder(),
-                prefixIcon: Icon(Icons.person, color: Colors.grey,),
+                prefixIcon: Icon(
+                  Icons.person,
+                  color: Colors.grey,
+                ),
                 errorText: errorText, // Show real-time error
               ),
-              keyboardType:
-              TextInputType.name,
+              keyboardType: TextInputType.name,
               textInputAction: TextInputAction.done,
             ),
           ),
@@ -242,30 +258,32 @@ class _EditAccountState extends State<EditAccount> {
                 setState(() {
                   isLoading = true;
                 });
-                if (controller.text.isEmpty) {
+                if (nameController.text.isEmpty) {
                   setState(() {
                     errorText = "Enter your first name";
                     isLoading = false;
                   });
                   return;
                 }
-                  await changeUserName(controller.text.trim(), detail, context);
-                  Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => Account(),
-                    ),
-                  );
-                },
+                await changeUserName(
+                    nameController.text.trim(), detail, context);
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => Account(),
+                  ),
+                );
+              },
               child: isLoading
                   ? CircularProgressIndicator(
-                color: Theme.of(context).colorScheme.onSurface,
-                strokeWidth: 2,
-              )
-                  :  Text(
-                "Update",
-                style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
-              ),
+                      color: Theme.of(context).colorScheme.onSurface,
+                      strokeWidth: 2,
+                    )
+                  : Text(
+                      "Update",
+                      style: TextStyle(
+                          color: Theme.of(context).colorScheme.onSurface),
+                    ),
             ),
           ),
         )
@@ -273,9 +291,13 @@ class _EditAccountState extends State<EditAccount> {
     );
   }
 
-
   //email
-  Column email(String detail, TextEditingController _emailController) {
+  Column email(String detail) {
+    //did this because the keyboard was closing immediately you tap on the text field
+    FocusNode focusNode = FocusNode();
+    Future.delayed(Duration(milliseconds: 100), () {
+      focusNode.requestFocus();
+    });
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -290,7 +312,9 @@ class _EditAccountState extends State<EditAccount> {
         ),
         const SizedBox(height: 25),
         TextFormField(
-          controller: _emailController,
+          focusNode: focusNode,
+          key: emailKey,
+          controller: emailController,
           decoration: InputDecoration(
             labelText: "New Email",
             border: const OutlineInputBorder(),
@@ -312,7 +336,7 @@ class _EditAccountState extends State<EditAccount> {
                 setState(() {
                   isLoading = true;
                 });
-                validateEmail(_emailController.text);
+                validateEmail(emailController.text);
                 if (errorText == null) {
                   setState(() {
                     isLoading = false;
@@ -332,7 +356,8 @@ class _EditAccountState extends State<EditAccount> {
                     )
                   : Text(
                       "Update Email",
-                      style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
+                      style: TextStyle(
+                          color: Theme.of(context).colorScheme.onSurface),
                     ),
             ),
           ),
@@ -401,25 +426,23 @@ Future<void> setMonthlyTarget(String target, BuildContext context) async {
   }
 }
 
-Future<void> changeUserName(String name, String detail, BuildContext context) async {
+Future<void> changeUserName(
+    String name, String detail, BuildContext context) async {
   var email = await AppProvider().userEmail();
 
   final DatabaseReference dbRef =
-  FirebaseDatabase.instance.ref().child("Users/$email/");
+      FirebaseDatabase.instance.ref().child("Users/$email/");
   final DataSnapshot snapshot = await dbRef.get();
   try {
     if (snapshot.exists) {
-      if(detail=="First Name") {
+      if (detail == "First Name") {
         await dbRef.child("First Name").set(name);
-      }
-      else if(detail=="Last Name") {
+      } else if (detail == "Last Name") {
         await dbRef.child("Last Name").set(name);
-      }
-      else{
+      } else {
         return;
       }
-    }
-    else{
+    } else {
       AppProvider().showMessage(
           context: context,
           message: "Invalid email",
@@ -439,7 +462,6 @@ Future<void> changeUserName(String name, String detail, BuildContext context) as
     Fluttertoast.showToast(msg: "An error occurred try again later");
   }
 }
-
 
 class CustomNumberInputFormatter extends TextInputFormatter {
   @override

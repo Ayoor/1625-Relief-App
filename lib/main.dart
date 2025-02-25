@@ -36,6 +36,7 @@ class MyApp extends StatelessWidget {
         theme: ThemeData.light(),  // Light Theme
         darkTheme: ThemeData.dark(),  // Dark Theme
         themeMode: themeProvider.themeMode, // Apply Theme Mode
+
         home: AnimatedSplashScreen(
           splashIconSize: MediaQuery.of(context).size.height,
           splash: const Splashscreen(),

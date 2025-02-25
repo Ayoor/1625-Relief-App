@@ -10,9 +10,9 @@ await firebaseMessaging.requestPermission();
 
     // fetch firebase token
     final token = await firebaseMessaging.getToken();
-    if (token!= null) {
-      print('FCM Token:\n $token \n');
-    }
+    // if (token!= null) {
+    //   print('FCM Token:\n $token \n');
+    // }
 
     // listen for notifications
 

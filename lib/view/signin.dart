@@ -280,9 +280,9 @@ else {
                             width: 30,
                           ),
                         ),
-                        const Text(
+                         Text(
                           "Google",
-                          style: TextStyle(color: Colors.black87),
+                          style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
                         ),
                       ],
                     ),
