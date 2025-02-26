@@ -18,13 +18,11 @@ dependencies:
   animated_splash_screen:
   persistent_bottom_nav_bar_v2:
   provider:
-  table_calendar:
   firebase_database:
   firebase_core:
   board_datetime_picker:
   animated_custom_dropdown:
   modal_bottom_sheet:
-  drop_down_list: ^0.0.8
   dropdown_flutter: 1.0.1
   toastification:
   calendar_date_picker2:
@@ -45,7 +43,7 @@ dependencies:
   argon2:
   firebase_auth:
   google_sign_in:
-  flutter_secure_storage:
+  flutter_secure_storage: ^9.0.0
   firebase_messaging:
   shared_preferences:
 

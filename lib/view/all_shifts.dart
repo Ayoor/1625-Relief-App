@@ -1,6 +1,7 @@
 import 'package:colour/colour.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:relief_app/test.dart';
 import 'package:relief_app/view/adding_new_shift.dart';
 import 'package:relief_app/view/widgets/SideBar.dart';
 import 'package:relief_app/view/widgets/shift_tile.dart';
@@ -36,9 +37,12 @@ class _AllShiftsState extends State<AllShifts>
           width: 150,
           child: FloatingActionButton(
             onPressed: () async {
+              // Navigator.push(context,
+              //     MaterialPageRoute(builder: (context) => const NewShift()));
               Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => const NewShift()));
+                  MaterialPageRoute(builder: (context) => const Testme()));
             },
+
             backgroundColor: Colors.orange,
             child:  Text(
               "New Shift",

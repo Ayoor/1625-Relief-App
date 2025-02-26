@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:relief_app/view/changepassword.dart';
 import 'package:relief_app/viewmodel/provider.dart';
 import 'package:toastification/toastification.dart';
 import 'package:relief_app/view/widgets/delete_confirmation.dart';
@@ -15,6 +16,18 @@ class Settings extends StatefulWidget {
 
 class _SettingsState extends State<Settings> {
   GlobalKey passwordFormKey = GlobalKey<FormState>();
+  TextEditingController currentPasswordController = TextEditingController();
+  TextEditingController newPasswordController = TextEditingController();
+  TextEditingController confirmPasswordController = TextEditingController();
+
+  @override
+  void dispose() {
+    // Dispose the controller when the widget is removed from the widget tree
+    confirmPasswordController.dispose();
+    newPasswordController.dispose();
+    currentPasswordController.dispose();
+    super.dispose(); // Call super.dispose() after disposing the controller
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -68,103 +81,10 @@ class _SettingsState extends State<Settings> {
                     style: TextStyle(fontWeight: FontWeight.bold),
                   ),
                   onTap: () {
-                    TextEditingController currentPasswordController =
-                        TextEditingController();
-                    TextEditingController newPasswordController =
-                        TextEditingController();
-                    TextEditingController confirmPasswordController =
-                        TextEditingController();
-                    showDialog(
-                        context: context,
-                        builder: (context) => AlertDialog(
-                              title: Text("Change Password"),
-                              content: SizedBox(
-                                height: 310,
-                                width: 300,
-                                child: Form(
-                                  key: passwordFormKey,
-                                  child: Column(
-                                    children: [
-                                      TextFormField(
-                                        controller: currentPasswordController,
-                                        decoration: InputDecoration(
-                                          labelText: "Current password",
-                                          border: const OutlineInputBorder(),
-                                          prefixIcon: const Icon(
-                                              Icons.lock_outline,
-                                              size: 20),
-                                        ),
-                                        validator: (value) {
-                                          if (value == null || value.isEmpty) {
-                                            return 'Please enter your password';
-                                          }
-                                          if (value.length < 6) {
-                                            return 'Password must be at least 6 characters';
-                                          }
-                                          return null;
-                                        },
-                                      ),
-                                      SizedBox(height: 20),
-                                      TextFormField(
-                                        controller: newPasswordController,
-                                        decoration: InputDecoration(
-                                          labelText: "New password",
-                                          border: const OutlineInputBorder(),
-                                          prefixIcon: const Icon(
-                                              Icons.lock_outline,
-                                              size: 20),
-                                        ),
-                                        validator: (value) {
-                                          if (value == null || value.isEmpty) {
-                                            return 'Please enter your password';
-                                          }
-                                          if (value.length < 6) {
-                                            return 'Password must be at least 6 characters';
-                                          }
-                                          return null;
-                                        },
-                                      ),
-                                      SizedBox(height: 20),
-                                      TextFormField(
-                                        controller: confirmPasswordController,
-                                        decoration: InputDecoration(
-                                          labelText: "Re-enter new password",
-                                          border: const OutlineInputBorder(),
-                                          prefixIcon: const Icon(
-                                              Icons.lock_outline,
-                                              size: 20),
-                                        ),
-                                        validator: (value) {
-                                          if (value == null || value.isEmpty) {
-                                            return 'Please enter your password';
-                                          }
-                                          if (value.length < 6) {
-                                            return 'Password must be at least 6 characters';
-                                          }
-                                          return null;
-                                        },
-                                      ),
-                                      SizedBox(
-                                        height: 30,
-                                      ),
-                                      ElevatedButton(
-                                          style: ElevatedButton.styleFrom(
-                                              backgroundColor:
-                                                  Colors.transparent),
-                                          onPressed: () {},
-                                          child: Text(
-                                            "Update Password",
-                                            style: TextStyle(
-                                              color: Theme.of(context)
-                                                  .colorScheme
-                                                  .onSurface,
-                                            ),
-                                          ))
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ));
+                    Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const ChangePassword()));
                   },
                 ),
                 // Delete Account
