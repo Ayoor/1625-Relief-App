@@ -3,9 +3,14 @@ import 'package:relief_app/test.dart';
 
 import '../signin.dart';
 
-class DeleteConfirmation extends StatelessWidget {
+class DeleteConfirmation extends StatefulWidget {
   const DeleteConfirmation({super.key});
 
+  @override
+  State<DeleteConfirmation> createState() => _DeleteConfirmationState();
+}
+
+class _DeleteConfirmationState extends State<DeleteConfirmation> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(

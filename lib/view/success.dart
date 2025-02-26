@@ -3,9 +3,14 @@ import 'package:relief_app/view/signin.dart';
 
 import '../services/firebase_auth.dart';
 
-class AccountSuccess extends StatelessWidget {
+class AccountSuccess extends StatefulWidget {
   const AccountSuccess({super.key});
 
+  @override
+  State<AccountSuccess> createState() => _AccountSuccessState();
+}
+
+class _AccountSuccessState extends State<AccountSuccess> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(

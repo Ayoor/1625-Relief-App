@@ -9,11 +9,18 @@ import 'income.dart';
 import 'overview.dart';
 import 'widgets/customNav.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   HomeScreen({super.key, required this.title});
 
   final String title;
+
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
   final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
+
   final PersistentTabController controller =
       PersistentTabController(initialIndex: 0);
 
@@ -64,7 +71,6 @@ class HomeScreen extends StatelessWidget {
   }
 
   //bottom navigation
-
   List<PersistentTabConfig> _buildTabConfigs(
       PersistentTabController controller) {
     return [

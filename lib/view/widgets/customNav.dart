@@ -2,7 +2,7 @@ import 'package:colour/colour.dart';
 import 'package:flutter/material.dart';
 import 'package:persistent_bottom_nav_bar_v2/persistent_bottom_nav_bar_v2.dart';
 
-class CustomNavBar extends StatelessWidget {
+class CustomNavBar extends StatefulWidget {
   final NavBarConfig navBarConfig;
   final NavBarDecoration navBarDecoration;
 
@@ -12,6 +12,11 @@ class CustomNavBar extends StatelessWidget {
     this.navBarDecoration = const NavBarDecoration(),
   });
 
+  @override
+  State<CustomNavBar> createState() => _CustomNavBarState();
+}
+
+class _CustomNavBarState extends State<CustomNavBar> {
   Widget _buildItem(ItemConfig item, bool isSelected) {
     final title = item.title;
     return Column(
@@ -49,6 +54,7 @@ class CustomNavBar extends StatelessWidget {
       ],
     );
   }
+
   @override
   Widget build(BuildContext context) {
     return DecoratedNavBar(
@@ -58,22 +64,20 @@ class CustomNavBar extends StatelessWidget {
             // ? Colour("#00334F") // Softer background for dark mode
             : Colors.white, // Ensure correct background color
       ),
-      height: navBarConfig.navBarHeight,
+      height: widget.navBarConfig.navBarHeight,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          for (final (index, item) in navBarConfig.items.indexed)
+          for (final (index, item) in widget.navBarConfig.items.indexed)
             Expanded(
               child: InkWell(
-                onTap: () => navBarConfig.onItemSelected(index),
-                child: _buildItem(item, navBarConfig.selectedIndex == index),
+                onTap: () => widget.navBarConfig.onItemSelected(index),
+                child: _buildItem(item, widget.navBarConfig.selectedIndex == index),
               ),
             ),
         ],
       ),
     );
   }
-
-
 }

@@ -102,10 +102,6 @@ class _EditAccountState extends State<EditAccount> {
   }
 
   Column monthlyTarget(String detail) {
-    FocusNode focusNode = FocusNode();
-    Future.delayed(Duration(milliseconds: 100), () {
-      focusNode.requestFocus();
-    });
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -129,7 +125,6 @@ class _EditAccountState extends State<EditAccount> {
           child: SizedBox(
             width: 400,
             child: TextFormField(
-              focusNode: focusNode,
               key: targetKey,
               controller: targetController,
               decoration: InputDecoration(
@@ -213,10 +208,6 @@ class _EditAccountState extends State<EditAccount> {
   }
 
   Column name(String detail) {
-    FocusNode focusNode = FocusNode();
-    Future.delayed(Duration(milliseconds: 100), () {
-      focusNode.requestFocus();
-    });
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -229,7 +220,6 @@ class _EditAccountState extends State<EditAccount> {
           child: SizedBox(
             width: 400,
             child: TextFormField(
-              focusNode: focusNode,
               key: nameKey,
               controller: nameController,
               decoration: InputDecoration(
@@ -293,11 +283,6 @@ class _EditAccountState extends State<EditAccount> {
 
   //email
   Column email(String detail) {
-    //did this because the keyboard was closing immediately you tap on the text field
-    FocusNode focusNode = FocusNode();
-    Future.delayed(Duration(milliseconds: 100), () {
-      focusNode.requestFocus();
-    });
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -312,7 +297,6 @@ class _EditAccountState extends State<EditAccount> {
         ),
         const SizedBox(height: 25),
         TextFormField(
-          focusNode: focusNode,
           key: emailKey,
           controller: emailController,
           decoration: InputDecoration(
