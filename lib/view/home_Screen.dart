@@ -25,10 +25,19 @@ class _HomeScreenState extends State<HomeScreen> {
       PersistentTabController(initialIndex: 0);
 
   @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final prov = Provider.of<AppProvider>(context, listen: false);
+      prov.getIncomeSummary(context);
+      prov.fetchUser(context);
+    });
+  }
+
+
+  @override
   Widget build(BuildContext context) {
-    final prov = Provider.of<AppProvider>(context, listen: false);
-    prov.getIncomeSummary(context);
-    prov.fetchUser(context);
+
 
     return Scaffold(
       key: scaffoldKey,

@@ -7,10 +7,10 @@ import 'package:relief_app/viewmodel/provider.dart';
 import '../../model/shifts.dart';
 
 class ShiftTile extends StatefulWidget {
-  final AppProvider provider;
+  
   final String shiftType;
 
-  const ShiftTile({super.key, required this.provider, required this.shiftType});
+  const ShiftTile({super.key, required this.shiftType});
 
   @override
   State<ShiftTile> createState() => _ShiftTileState();
@@ -32,9 +32,9 @@ class _ShiftTileState extends State<ShiftTile> {
 
     return formattedDate;
   }
-
   @override
   Widget build(BuildContext context) {
+    final provider = Provider.of<AppProvider>(context, listen: false);
     Widget shiftTile = Placeholder();
 
     //Scheduled
@@ -43,7 +43,7 @@ class _ShiftTileState extends State<ShiftTile> {
       // Group shifts by month
       Map<String, List<Shifts>> groupedShifts = {};
 
-      for (var shift in widget.provider.scheduledShifts) {
+      for (var shift in provider.scheduledShifts) {
         String monthYear = DateFormat("MMMM yyyy").format(shift.startTime); // e.g., "January 2025"
 
         if (!groupedShifts.containsKey(monthYear)) {
@@ -56,7 +56,7 @@ class _ShiftTileState extends State<ShiftTile> {
         color: Colors.blue,
         backgroundColor: Theme.of(context).colorScheme.surface,
         onRefresh: () async {
-          widget.provider.loadData(context);
+          provider.loadData(context);
         },
         child: ListView.builder(
           itemCount: groupedShifts.length,
@@ -82,7 +82,7 @@ class _ShiftTileState extends State<ShiftTile> {
                     splashColor: Colors.transparent,
                     highlightColor: Colors.transparent,
                     onLongPress: () {
-                      cancelDeleteShift(shifts.indexOf(shift), shift, "Scheduled");
+                      cancelDeleteShift(shifts.indexOf(shift), shift, "Scheduled", provider);
                     },
                     child: Padding(
                       padding: const EdgeInsets.all(8.0),
@@ -117,7 +117,7 @@ class _ShiftTileState extends State<ShiftTile> {
                                 children: [
                                   const Text("Start time:",
                                       style: TextStyle(fontWeight: FontWeight.bold)),
-                                  Text(" ${widget.provider.dateFormater(shift.startTime)}"),
+                                  Text(" ${provider.dateFormater(shift.startTime)}"),
                                 ],
                               ),
                               const SizedBox(height: 5),
@@ -125,7 +125,7 @@ class _ShiftTileState extends State<ShiftTile> {
                                 children: [
                                   const Text("End time:",
                                       style: TextStyle(fontWeight: FontWeight.bold)),
-                                  Text(" ${widget.provider.dateFormater(shift.endTime)}"),
+                                  Text(" ${provider.dateFormater(shift.endTime)}"),
                                 ],
                               ),
                               const SizedBox(height: 5),
@@ -162,7 +162,7 @@ class _ShiftTileState extends State<ShiftTile> {
                                         value: provider.checkboxes()[shifts.indexOf(shift)],
                                         onChanged: (value) {
                                           setState(() {
-                                            widget.provider.updateShiftStatus(
+                                            provider.updateShiftStatus(
                                               shifts.indexOf(shift),
                                                 "${formatDate(shift.startTime.toString())}: ${shift.shiftType}",
                                               context,
@@ -205,7 +205,7 @@ class _ShiftTileState extends State<ShiftTile> {
       // Group shifts by month
       Map<String, List<Shifts>> groupedShifts = {};
 
-      for (var shift in widget.provider.completedShifts) {
+      for (var shift in provider.completedShifts) {
         String monthYear = DateFormat("MMMM yyyy").format(shift.startTime); // e.g., "January 2025"
 
         if (!groupedShifts.containsKey(monthYear)) {
@@ -218,7 +218,7 @@ class _ShiftTileState extends State<ShiftTile> {
         color: Colors.blue,
         backgroundColor: Theme.of(context).colorScheme.surface,
         onRefresh: () async {
-          widget.provider.loadData(context);
+          provider.loadData(context);
         },
         child: ListView.builder(
           itemCount: groupedShifts.length,
@@ -243,7 +243,7 @@ class _ShiftTileState extends State<ShiftTile> {
                   highlightColor: Colors.transparent,
                   splashColor: Colors.transparent,
                   onLongPress: () {
-                    cancelDeleteShift(shifts.indexOf(shift), shift, "Completed");
+                    cancelDeleteShift(shifts.indexOf(shift), shift, "Completed", provider);
                   },
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
@@ -277,7 +277,7 @@ class _ShiftTileState extends State<ShiftTile> {
                               children: [
                                 const Text("Start time:",
                                     style: TextStyle(fontWeight: FontWeight.bold)),
-                                Text(" ${widget.provider.dateFormater(shift.startTime)}"),
+                                Text(" ${provider.dateFormater(shift.startTime)}"),
                               ],
                             ),
                             const SizedBox(height: 5),
@@ -285,7 +285,7 @@ class _ShiftTileState extends State<ShiftTile> {
                               children: [
                                 const Text("End time:",
                                     style: TextStyle(fontWeight: FontWeight.bold)),
-                                Text(" ${widget.provider.dateFormater(shift.endTime)}"),
+                                Text(" ${provider.dateFormater(shift.endTime)}"),
                               ],
                             ),
                             const SizedBox(height: 5),
@@ -356,7 +356,7 @@ class _ShiftTileState extends State<ShiftTile> {
       // Group shifts by month
       Map<String, List<Shifts>> groupedShifts = {};
 
-      for (var shift in widget.provider.cancelledShifts) {
+      for (var shift in provider.cancelledShifts) {
         String monthYear = DateFormat("MMMM yyyy").format(shift.startTime); // e.g., "January 2025"
 
         if (!groupedShifts.containsKey(monthYear)) {
@@ -369,7 +369,7 @@ class _ShiftTileState extends State<ShiftTile> {
         color: Colors.blue,
         backgroundColor: Theme.of(context).colorScheme.surface,
         onRefresh: () async {
-          widget.provider.loadData(context);
+          provider.loadData(context);
         },
         child: ListView.builder(
           itemCount: groupedShifts.length,
@@ -394,7 +394,7 @@ class _ShiftTileState extends State<ShiftTile> {
                   highlightColor: Colors.transparent,
                   splashColor: Colors.transparent,
                   onLongPress: () {
-                    cancelDeleteShift(shifts.indexOf(shift), shift, "Cancelled");
+                    cancelDeleteShift(shifts.indexOf(shift), shift, "Cancelled", provider);
                   },
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
@@ -431,7 +431,7 @@ class _ShiftTileState extends State<ShiftTile> {
                               children: [
                                 const Text("Start time:",
                                     style: TextStyle(fontWeight: FontWeight.bold)),
-                                Text(" ${widget.provider.dateFormater(shift.startTime)},",
+                                Text(" ${provider.dateFormater(shift.startTime)},",
                                     style: TextStyle(
                                         color: Colors.grey,
                                         fontSize: 13,
@@ -443,7 +443,7 @@ class _ShiftTileState extends State<ShiftTile> {
                               children: [
                                 const Text("End time:",
                                     style: TextStyle(fontWeight: FontWeight.bold)),
-                                Text(" ${widget.provider.dateFormater(shift.endTime)}",
+                                Text(" ${provider.dateFormater(shift.endTime)}",
                                     style: TextStyle(
                                         color: Colors.grey,
                                         fontSize: 13,
@@ -516,7 +516,7 @@ class _ShiftTileState extends State<ShiftTile> {
 
     return shiftTile;
   }
-  void cancelDeleteShift(int index, Shifts shift, String shiftType) {
+  void cancelDeleteShift(int index, Shifts shift, String shiftType, AppProvider provider) {
     showMaterialModalBottomSheet(
       backgroundColor: Colors.white,
       shape: RoundedRectangleBorder(
@@ -565,8 +565,7 @@ class _ShiftTileState extends State<ShiftTile> {
                                 splashColor: Colors.transparent,
                                 highlightColor: Colors.transparent,
                                 onTap: () {
-                                  widget.provider
-                                      .updateShiftStatus(
+                                  provider.updateShiftStatus(
                                       index,
                                       "${formatDate(shift.startTime.toString())}: ${shift.shiftType}",
                                       context, shiftType: "Deleted");
@@ -637,7 +636,7 @@ class _ShiftTileState extends State<ShiftTile> {
                                 splashColor: Colors.transparent,
                                 highlightColor: Colors.transparent,
                                 onTap: () {
-                                  widget.provider
+                                  provider
                                       .updateShiftStatus(
                                       index,
                                       "${formatDate(shift.startTime.toString())}: ${shift.shiftType}",
@@ -706,7 +705,7 @@ class _ShiftTileState extends State<ShiftTile> {
                                   splashColor: Colors.transparent,
                                   highlightColor: Colors.transparent,
                                   onTap: () {
-                                    widget.provider
+                                    provider
                                         .updateShiftStatus(
                                         index,
                                         "${formatDate(shift.startTime.toString())}: ${shift.shiftType}",

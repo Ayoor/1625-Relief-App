@@ -1,17 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
-import 'package:relief_app/test.dart';
 import 'package:relief_app/view/account.dart';
 import 'package:relief_app/view/settings.dart';
 
-import '../../services/firebase_auth.dart';
 import '../../viewmodel/provider.dart';
 import '../signin.dart';
-import '../signup.dart';
 
 class Sidebar extends StatefulWidget {
-   Sidebar({super.key});
+   const Sidebar({super.key});
 
   @override
   State<Sidebar> createState() => _SidebarState();
@@ -19,7 +16,7 @@ class Sidebar extends StatefulWidget {
 
 class _SidebarState extends State<Sidebar> {
   setUser() async{
-    final provider = AppProvider();
+    final provider = Provider.of<AppProvider>(context, listen: false);
     final user = await provider.fetchUser(context);
     if(user!= null){
       if(mounted){

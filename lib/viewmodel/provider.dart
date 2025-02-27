@@ -606,15 +606,19 @@ class AppProvider extends ChangeNotifier {
         60)} minutes";
   }
 
-  bool isLoading = true;
+  bool _isLoading = true;
+  bool get isLoading => _isLoading;
+
+  List<bool> get isCheckedList => _isCheckedList;
 
   Future<void> loadData(BuildContext context) async {
+    print("loading data");
     try {
       await fetchShifts(context);
     } catch (e) {
       // Handle error if needed
     } finally {
-      isLoading = false;
+      _isLoading = false;
       notifyListeners();
     }
   }
@@ -919,4 +923,5 @@ class AppProvider extends ChangeNotifier {
   get compDec => _compDec;
 
   String get allocatedIncomeText => _allocatedIncomeText;
+
 } // end of provider class

@@ -27,9 +27,7 @@ class _AllShiftsState extends State<AllShifts>
 
   @override
   Widget build(BuildContext context) {
-    // WidgetsBinding.instance.addPostFrameCallback((_) {
-    //   Provider.of<AppProvider>(context, listen: false).shiftHistory(context);
-    // });
+
     return Consumer<AppProvider>(
       builder: (context, provider, child) => Scaffold(
         // drawer: Sidebar(),
@@ -85,7 +83,7 @@ class _AllShiftsState extends State<AllShifts>
               provider.scheduledShifts.isEmpty
                   ? const Center(child: Text("No shift Scheduled yet"))
                   : ShiftTile(
-                      provider: provider,
+
                       shiftType: "Scheduled",
                     ),
               if(provider.isLoading)
@@ -101,14 +99,13 @@ class _AllShiftsState extends State<AllShifts>
               provider.completedShifts.isEmpty
                   ? const Center(
                       child: Text("You have not completed any shift yet"))
-                  : ShiftTile(provider: provider, shiftType: "Completed"),
+                  : ShiftTile(shiftType: "Completed"),
 
               // Tab 3 - Cancelled Shifts
               provider.cancelledShifts.isEmpty
                   ? const Center(child: Text("No cancelled shift"))
                   : ShiftTile(
-                      provider: provider,
-                      shiftType: "Cancelled",
+                                           shiftType: "Cancelled",
                     ),
             ],
           ),
