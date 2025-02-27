@@ -1,3 +1,4 @@
+import 'package:colour/colour.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
@@ -518,7 +519,7 @@ class _ShiftTileState extends State<ShiftTile> {
   }
   void cancelDeleteShift(int index, Shifts shift, String shiftType, AppProvider provider) {
     showMaterialModalBottomSheet(
-      backgroundColor: Colors.white,
+      backgroundColor: Theme.of(context).colorScheme.surface,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(20.0), // Adjust the radius for desired curvature
       ),

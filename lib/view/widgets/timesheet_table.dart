@@ -1,3 +1,4 @@
+import 'package:colour/colour.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:relief_app/utils/dateformat.dart';
@@ -16,6 +17,7 @@ class _TimesheetTableState extends State<TimesheetTable> {
 
   @override
   Widget build(BuildContext context) {
+
     return  Consumer<AppProvider>(builder: (context, provider, child) => Padding(
         padding: const EdgeInsets.all(8.0),
         child: Container(
@@ -35,14 +37,19 @@ class _TimesheetTableState extends State<TimesheetTable> {
                 // Table Header
                 TableRow(
                   decoration: BoxDecoration(
-                    color: Colors.blue.shade100, // Header row background color
+                    color: Theme.of(context).brightness == Brightness.dark
+                        ? Colors.blue.shade100 // Softer white shadow in dark mode
+                        : Colour("#00334F") ,// Header row background color
                   ),
-                  children: const [
+                  children:  [
                     Padding(
                       padding: EdgeInsets.all(8.0),
                       child: Text(
+
                         "Date",
-                        style: TextStyle(fontWeight: FontWeight.bold),
+                        style: TextStyle(fontWeight: FontWeight.bold, color: Theme.of(context).brightness == Brightness.dark
+                            ? Theme.of(context).colorScheme.surface:
+                              Colors.white,),
                         textAlign: TextAlign.center,
                       ),
                     ),
@@ -50,7 +57,9 @@ class _TimesheetTableState extends State<TimesheetTable> {
                       padding: EdgeInsets.all(8.0),
                       child: Text(
                         "Start Time",
-                        style: TextStyle(fontWeight: FontWeight.bold),
+                        style: TextStyle(fontWeight: FontWeight.bold, color: Theme.of(context).brightness == Brightness.dark
+                            ? Theme.of(context).colorScheme.surface:
+                        Colors.white,),
                         textAlign: TextAlign.center,
                       ),
                     ),
@@ -58,7 +67,9 @@ class _TimesheetTableState extends State<TimesheetTable> {
                       padding: EdgeInsets.all(8.0),
                       child: Text(
                         "End Time",
-                        style: TextStyle(fontWeight: FontWeight.bold),
+                        style: TextStyle(fontWeight: FontWeight.bold, color: Theme.of(context).brightness == Brightness.dark
+                            ? Theme.of(context).colorScheme.surface:
+                        Colors.white,),
                         textAlign: TextAlign.center,
                       ),
                     ),
@@ -66,7 +77,9 @@ class _TimesheetTableState extends State<TimesheetTable> {
                       padding: EdgeInsets.all(8.0),
                       child: Text(
                         "Hours",
-                        style: TextStyle(fontWeight: FontWeight.bold),
+                        style: TextStyle(fontWeight: FontWeight.bold, color: Theme.of(context).brightness == Brightness.dark
+                            ? Theme.of(context).colorScheme.surface:
+                        Colors.white,),
                         textAlign: TextAlign.center,
                       ),
                     ),
@@ -102,7 +115,11 @@ class _TimesheetTableState extends State<TimesheetTable> {
         //       ? Colors.amberAccent.shade200 // Specific color for the last row
         //       : (isOdd ? Colors.grey.shade200 : Colors.white),
         // ),
-          color: isOdd ? Colors.grey.shade200 : Theme.of(context).colorScheme.onSurface),
+          color: isOdd
+              ? Theme.of(context)
+              .colorScheme
+              .surfaceContainerHighest // Light grey in light mode, darker in dark mode
+              : Theme.of(context).colorScheme.surface,),
         children: [
           Padding(
             padding: EdgeInsets.all(8.0),

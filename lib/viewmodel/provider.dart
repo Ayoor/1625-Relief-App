@@ -612,7 +612,7 @@ class AppProvider extends ChangeNotifier {
   List<bool> get isCheckedList => _isCheckedList;
 
   Future<void> loadData(BuildContext context) async {
-    print("loading data");
+
     try {
       await fetchShifts(context);
     } catch (e) {
@@ -681,7 +681,8 @@ class AppProvider extends ChangeNotifier {
   final List<List<dynamic>> _exportData = [];
 
   List<List<dynamic>> get exportData => _exportData;
-
+bool _showTable = false;
+  bool get showTable => _showTable;
   void generateTimeSheet(DateTime start, DateTime end, String location,
       BuildContext context) {
     _filteredShifts.clear();
@@ -700,6 +701,9 @@ class AppProvider extends ChangeNotifier {
           type: ToastificationType.error,
           bgColor: Colors.red.shade200,
           icon: Icons.cancel_rounded);
+      _showTable = false;
+      notifyListeners();
+      return;
     }
     if (_filteredShifts.isEmpty) {
       showMessage(
@@ -708,30 +712,35 @@ class AppProvider extends ChangeNotifier {
           type: ToastificationType.error,
           bgColor: Colors.red.shade200,
           icon: Icons.cancel_rounded);
+      _showTable = false;
+      notifyListeners();
+      return;
     }
-    _filteredShifts = _filteredShifts.reversed.toList();
-    for (Shifts completedShift in _filteredShifts) {
-      exportData.add([
-        ReadableDate(dateTime: completedShift.startTime).date(),
-        ReadableDate(dateTime: completedShift.startTime).time(),
-        "",
-        ReadableDate(dateTime: completedShift.endTime).time(),
-        completedShift.duration,
-      ]);
-      _totalHours += completedShift.duration;
-    }
-    if (_filteredShifts.length < 15) {
-      for (int i = 0; i < 15 - _filteredShifts.length; i++) {
+    else{
+      _filteredShifts = _filteredShifts.reversed.toList();
+      for (Shifts completedShift in _filteredShifts) {
         exportData.add([
-          "\n",
-          "\n",
-          "\n",
-          "\n",
-          "\n",
+          ReadableDate(dateTime: completedShift.startTime).date(),
+          ReadableDate(dateTime: completedShift.startTime).time(),
+          "",
+          ReadableDate(dateTime: completedShift.endTime).time(),
+          completedShift.duration,
         ]);
+        _totalHours += completedShift.duration;
+      }
+      if (_filteredShifts.length < 15) {
+        for (int i = 0; i < 15 - _filteredShifts.length; i++) {
+          exportData.add([
+            "\n",
+            "\n",
+            "\n",
+            "\n",
+            "\n",
+          ]);
+        }
       }
     }
-
+    _showTable = true;
     notifyListeners();
   }
 

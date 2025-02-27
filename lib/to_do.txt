@@ -1,10 +1,10 @@
--make bottomsheet cover the bottomnavbar
+
 
 ###
 create new screen shot
 
 issues
-duplicate shifts until refresh
+
 
 Onboarding Screen
 Implement daily tasks checklist
@@ -12,7 +12,6 @@ push notifications for shift and for timesheet.
 
 change email to yahoo
 
-settings(change password)
 activity log
 
 

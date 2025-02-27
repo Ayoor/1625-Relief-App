@@ -37,7 +37,11 @@ class _TimeSheetState extends State<TimeSheet> {
     "St. George's House",
     "Woodleaze"
   ]; // Default location
-  Map<String, String> loc = {"Charles England House": "CEH", "St. George's House": "SGH", "Woodleaze": "WL"};
+  Map<String, String> loc = {
+    "Charles England House": "CEH",
+    "St. George's House": "SGH",
+    "Woodleaze": "WL"
+  };
   DateTime? startTime;
   DateTime? endTime;
   final controller = BoardDateTimeController();
@@ -55,7 +59,10 @@ class _TimeSheetState extends State<TimeSheet> {
       return "Choose";
     }
   }
-String locationShort ="";
+
+  String locationShort = "";
+  bool showTable = false;
+
   @override
   Widget build(BuildContext context) {
     return Consumer<AppProvider>(
@@ -68,7 +75,8 @@ String locationShort ="";
                     Text(
                       "Location is",
                       style: TextStyle(
-                          fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.onSurface),
+                          fontWeight: FontWeight.bold,
+                          color: Theme.of(context).colorScheme.onSurface),
                     ),
                     SizedBox(
                       height: 5,
@@ -83,7 +91,9 @@ String locationShort ="";
                         // Rounded corners
                         boxShadow: [
                           BoxShadow(
-                            color: isDarkMode(context)? Colors.white.withOpacity(0.5): Colors.grey.withOpacity(0.5),
+                            color: isDarkMode(context)
+                                ? Colors.white.withOpacity(0.5)
+                                : Colors.grey.withOpacity(0.5),
                             // Shadow color
                             spreadRadius: 1,
                             // Spread radius of the shadow
@@ -95,18 +105,27 @@ String locationShort ="";
                       ),
                       child: DropdownFlutter<String>(
                         decoration: CustomDropdownDecoration(
-                          closedBorder: Border.all(color: isDarkMode(context)? Colors.grey.withOpacity(0.5): Colors.transparent),
-                          expandedFillColor: Theme.of(context).colorScheme.surface,
-                          closedFillColor: Theme.of(context).colorScheme.surface,
-                          listItemStyle: TextStyle(color: isDarkMode(context)? Colors.white.withOpacity(0.5): Colors.grey.withOpacity(0.5)),
+                          closedBorder: Border.all(
+                              color: isDarkMode(context)
+                                  ? Colors.grey.withOpacity(0.5)
+                                  : Colors.transparent),
+                          expandedFillColor:
+                              Theme.of(context).colorScheme.surface,
+                          closedFillColor:
+                              Theme.of(context).colorScheme.surface,
+                          listItemStyle: TextStyle(
+                              color: isDarkMode(context)
+                                  ? Colors.white.withOpacity(0.5)
+                                  : Colors.grey.withOpacity(0.5)),
                           prefixIcon: Icon(
                             Icons.house,
-                            color: isDarkMode(context)? Colors.white.withOpacity(0.5): Colors.grey.withOpacity(0.5),
+                            color: isDarkMode(context)
+                                ? Colors.white.withOpacity(0.5)
+                                : Colors.grey.withOpacity(0.5),
                             size: 18,
                           ),
                         ),
                         hintText: 'Location',
-
                         initialItem: locations[0],
                         items: locations,
                         onChanged: (value) {
@@ -126,7 +145,8 @@ String locationShort ="";
                     Text(
                       "Choose time frame",
                       style: TextStyle(
-                          fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.onSurface),
+                          fontWeight: FontWeight.bold,
+                          color: Theme.of(context).colorScheme.onSurface),
                     ),
                     //start custom time
                     SizedBox(
@@ -134,7 +154,10 @@ String locationShort ="";
                     ),
                     Container(
                       decoration: BoxDecoration(
-                        border: Border.all(color: isDarkMode(context)? Colors.grey: Colors.transparent),
+                        border: Border.all(
+                            color: isDarkMode(context)
+                                ? Colors.grey
+                                : Colors.transparent),
                         color: Theme.of(context).colorScheme.surface,
                         // White background
                         borderRadius: BorderRadius.circular(12),
@@ -159,8 +182,10 @@ String locationShort ="";
                             Text(
                               'From',
                               style: TextStyle(
-                                color: Theme.of(context).colorScheme.onSurface,
-                                  fontWeight: FontWeight.bold, fontSize: 14),
+                                  color:
+                                      Theme.of(context).colorScheme.onSurface,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 14),
                             ),
                             Row(
                               children: [
@@ -195,7 +220,10 @@ String locationShort ="";
                     Container(
                       decoration: BoxDecoration(
                         color: Theme.of(context).colorScheme.surface,
-                        border: Border.all(color: isDarkMode(context)? Colors.grey: Colors.transparent),
+                        border: Border.all(
+                            color: isDarkMode(context)
+                                ? Colors.grey
+                                : Colors.transparent),
                         // White background
                         borderRadius: BorderRadius.circular(12),
                         // Rounded corners
@@ -219,8 +247,10 @@ String locationShort ="";
                             Text(
                               'To',
                               style: TextStyle(
-                                color: Theme.of(context).colorScheme.onSurface,
-                                  fontWeight: FontWeight.bold, fontSize: 14),
+                                  color:
+                                      Theme.of(context).colorScheme.onSurface,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 14),
                             ),
                             Row(
                               children: [
@@ -258,35 +288,20 @@ String locationShort ="";
                           shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(20),
                               side: BorderSide(color: Colors.orange)),
-                          backgroundColor: Theme.of(context).colorScheme.surface,
+                          backgroundColor:
+                              Theme.of(context).colorScheme.surface,
                           elevation: 0,
                         ),
                         onPressed: () {
+                          if (dateFormater(endTime) != "Choose" && startTime != null && endTime != null) {
 
-                          if (startTime != null && endTime != null) {
-                            provider.generateTimeSheet(startTime!, endTime!,
-                                selectedLocation, context);
-                            locationShort = loc[selectedLocation]??"";
-                          } else {
-                            toastification.show(
-                              context: context,
-                              // optional if you use ToastificationWrapper
-                              title: Text("Enter shift start/end date."),
-                              alignment: Alignment.bottomCenter,
-                              type: ToastificationType.error,
-                              backgroundColor: Colors.red[400],
-                              foregroundColor: Theme.of(context).colorScheme.onSurface,
-                              icon: Icon(
-                                Icons.close,
-                                color: Theme.of(context).colorScheme.onSurface,
-                              ),
-                              style: ToastificationStyle.flatColored,
-                              autoCloseDuration: const Duration(seconds: 3),
-                              showProgressBar: false,
-                              dragToClose: true,
-                            );
-                          }
-                        },
+                              provider.generateTimeSheet(startTime!, endTime!,
+                                  selectedLocation, context);
+                              locationShort = loc[selectedLocation] ?? "";
+                            } else {
+Fluttertoast.showToast(msg: "Enter shift start/end date.");
+                            }
+                          },
                         child: Text(
                           "Generate",
                           style: TextStyle(color: Colors.blue),
@@ -297,35 +312,43 @@ String locationShort ="";
                       height: 30,
                     ),
 
-                    if (provider.filteredShifts.isNotEmpty)
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        children: [
-                          Text(
-                            "Your $locationShort shifts from ${dateFormater(startTime)} to ${dateFormater(endTime)}",
-                            style:
-                                TextStyle(fontSize: 14, color: Colors.black45),
-                          ),
-                          GestureDetector(
-                            onTap: () {
-                              showBottomSheet();
-                            },
-                            child: Text(
-                              "Export",
-                              style: TextStyle(
-                                  color: Colors.blue,
-                                  fontSize: 16,
-                                  decoration: TextDecoration.underline),
+                    if (provider.showTable)
+                      SizedBox(
+                        child: Column(
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceAround,
+                              children: [
+                                Text(
+                                  "Your $locationShort shifts from ${dateFormater(startTime)} to ${dateFormater(endTime)}",
+                                  style: TextStyle(
+                                      fontSize: 14,
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .onSurface),
+                                ),
+                                GestureDetector(
+                                  onTap: () {
+                                    showBottomSheet();
+                                  },
+                                  child: Text(
+                                    "Export",
+                                    style: TextStyle(
+                                        color: Colors.blue,
+                                        fontSize: 16,
+                                        decoration: TextDecoration.underline),
+                                  ),
+                                )
+                              ],
                             ),
-                          )
-                        ],
-                      ),
-
-                    if (provider.filteredShifts.isNotEmpty)
-                      Padding(
-                        padding: const EdgeInsets.only(bottom: 30.0),
-                        child: TimesheetTable(),
-                      ),
+                            if (provider.filteredShifts.isNotEmpty)
+                              Padding(
+                                padding: const EdgeInsets.only(bottom: 30.0),
+                                child: TimesheetTable(),
+                              ),
+                          ],
+                        ),
+                      )
                   ]),
             )));
   }
@@ -390,7 +413,8 @@ String locationShort ="";
     final provider = Provider.of<AppProvider>(context, listen: false);
     showMaterialModalBottomSheet(
       backgroundColor: Theme.of(context).colorScheme.surface,
-      shape: RoundedRectangleBorder(side: BorderSide(color: Colors.white, width: 2.0),
+      shape: RoundedRectangleBorder(
+        side: BorderSide(color: Colors.white, width: 2.0),
         borderRadius: BorderRadius.circular(
             20.0), // Adjust the radius for desired curvature
       ),
@@ -410,23 +434,23 @@ String locationShort ="";
                     onTap: () async {
                       Navigator.pop(context);
                       final file = await TimeSheetExporter(
-                          name: "Ayodele Oduola",
-                          range:
-                          "${dateFormater(startTime)} to ${dateFormater(endTime)}",
-                          data: provider.exportData,
-                          total: provider.totalHours)
+                              name: "Ayodele Oduola",
+                              range:
+                                  "${dateFormater(startTime)} to ${dateFormater(endTime)}",
+                              data: provider.exportData,
+                              total: provider.totalHours)
                           .newCEHTimeSheet();
                       SaveandOpenPDF().sendEmailWithAttachment(file);
                       if (mounted) {
                         provider.showMessage(
                             context: context,
-                            message: "Your timesheet has been sent to your email",
+                            message:
+                                "Your timesheet has been sent to your email",
                             type: ToastificationType.success,
                             bgColor: Colors.lightGreen,
                             icon: Icons.email_outlined);
                         // Navigator.pop(bottomSheetContext);
                       }
-
                     },
                     child: Row(
                       children: [
@@ -469,11 +493,12 @@ String locationShort ="";
                             type: ToastificationType.success,
                             bgColor: Colors.lightGreen,
                             icon: Icons.download_outlined);
-
                       }
 
-                      Future.delayed(Duration(seconds: 1), () => SaveandOpenPDF().openPDF(file),);
-
+                      Future.delayed(
+                        Duration(seconds: 1),
+                        () => SaveandOpenPDF().openPDF(file),
+                      );
                     },
 
                     //cancel
