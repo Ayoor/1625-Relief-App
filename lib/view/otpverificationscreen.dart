@@ -210,7 +210,6 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
                       AppProvider().showMessage(context: context,
                           message: "An error occurred please try again later",
                           type: ToastificationType.error,
-                          bgColor: Colors.red,
                           icon: Icons.cancel);
                     }
                     // Navigate to next screen

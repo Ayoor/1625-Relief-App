@@ -69,7 +69,6 @@ class AppProvider extends ChangeNotifier {
         context: context,
         message: "Shift Removed",
         type: ToastificationType.info,
-        bgColor: Colors.blue,
         icon: Icons.info);
     notifyListeners();
   }
@@ -96,7 +95,6 @@ class AppProvider extends ChangeNotifier {
               context: context,
               message: "Oops! Too early to complete shift",
               type: ToastificationType.error,
-              bgColor: Colors.red[400]!,
               icon: Icons.error,
             );
             return;
@@ -118,7 +116,6 @@ class AppProvider extends ChangeNotifier {
           context: context,
           message: "Shift status updated successfully.",
           type: ToastificationType.success,
-          bgColor: Colors.lightGreen,
           icon: Icons.check,
         );
         fetchShifts(context);
@@ -131,7 +128,6 @@ class AppProvider extends ChangeNotifier {
           context: context,
           message: "Action failed. Check internet or retry later.",
           type: ToastificationType.error,
-          bgColor: Colors.red[400]!,
           icon: Icons.clear,
         );
       }
@@ -141,7 +137,6 @@ class AppProvider extends ChangeNotifier {
   void showMessage({required BuildContext context,
     required String message,
     required ToastificationType type,
-    required Color bgColor,
     required IconData icon}) {
     toastification.show(
 
@@ -150,15 +145,14 @@ class AppProvider extends ChangeNotifier {
         style: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontWeight: FontWeight.bold),),
       alignment: Alignment.topCenter,
       type: type,
-      backgroundColor: bgColor,
       foregroundColor: Theme.of(context).colorScheme.onSurface,
       icon: Icon(
         icon,
         color: Theme.of(context).colorScheme.onSurface,
       ),
-      style: ToastificationStyle.flatColored,
-      autoCloseDuration: const Duration(seconds: 5),
-      showProgressBar: false,
+      style: ToastificationStyle.fillColored,
+      autoCloseDuration: const Duration(seconds: 3),
+      showProgressBar: true,
       dragToClose: true,
     );
   }
@@ -203,7 +197,6 @@ class AppProvider extends ChangeNotifier {
           context: context,
           message: "A shift already exists in timeframe",
           type: ToastificationType.warning,
-          bgColor: Colors.orange,
           icon: Icons.warning);
     } else {
       // If not a duplicate, add the shift
@@ -224,7 +217,6 @@ class AppProvider extends ChangeNotifier {
           context: context,
           message: "New shift added",
           type: ToastificationType.info,
-          bgColor: Colors.blueAccent,
           icon: Icons.info_outline);
     }
   }
@@ -262,7 +254,6 @@ class AppProvider extends ChangeNotifier {
           context: context,
           message: "User not found",
           type: ToastificationType.warning,
-          bgColor: Colors.orange,
           icon: Icons.info,
         );
       }
@@ -272,7 +263,6 @@ class AppProvider extends ChangeNotifier {
         context: context,
         message: "Error fetching user: ${e.toString()}",
         type: ToastificationType.error,
-        bgColor: Colors.red,
         icon: Icons.cancel,
       );
     }
@@ -317,7 +307,6 @@ class AppProvider extends ChangeNotifier {
                 showMessage(context: context,
                     message: "Error parsing shift data for date $dateKey",
                     type: ToastificationType.error,
-                    bgColor: Colors.red,
                     icon: Icons.cancel);
               }
             }
@@ -340,7 +329,6 @@ class AppProvider extends ChangeNotifier {
                 showMessage(context: context,
                     message: "Error parsing shift data for date $dateKey",
                     type: ToastificationType.error,
-                    bgColor: Colors.red,
                     icon: Icons.cancel);
               }
             }
@@ -363,7 +351,6 @@ class AppProvider extends ChangeNotifier {
                 showMessage(context: context,
                     message: "Error parsing shift data for date $dateKey",
                     type: ToastificationType.error,
-                    bgColor: Colors.red,
                     icon: Icons.cancel);
               }
             }
@@ -379,7 +366,6 @@ class AppProvider extends ChangeNotifier {
           showMessage(context: context,
               message: "Something failed, please try again later",
               type: ToastificationType.error,
-              bgColor: Colors.red.shade300,
               icon: Icons.cancel);
         }
 
@@ -393,7 +379,6 @@ class AppProvider extends ChangeNotifier {
           context: context,
           message: "An error occurred retrieving shifts",
           type: ToastificationType.error,
-          bgColor: Colors.red[400]!,
           icon: Icons.clear,
         );
       }
@@ -401,7 +386,6 @@ class AppProvider extends ChangeNotifier {
         context: context,
         message: "An error occurred retrieving shifts",
         type: ToastificationType.error,
-        bgColor: Colors.red[400]!,
         icon: Icons.clear,
       );
 
@@ -490,7 +474,6 @@ class AppProvider extends ChangeNotifier {
         context: context,
         message: "You need to add new shifts first",
         type: ToastificationType.warning,
-        bgColor: Colors.red,
         icon: Icons.cancel,
       );
       return;
@@ -504,7 +487,6 @@ class AppProvider extends ChangeNotifier {
         context: context,
         message: "Shift clash detected, unable to save new shifts",
         type: ToastificationType.warning,
-        bgColor: Colors.red.shade300,
         icon: Icons.cancel,
       );
       return;
@@ -531,7 +513,6 @@ class AppProvider extends ChangeNotifier {
           context: context,
           message: "Your shifts have been successfully saved.",
           type: ToastificationType.success,
-          bgColor: Colors.lightGreen,
           icon: Icons.check,
         );
       }
@@ -544,7 +525,6 @@ class AppProvider extends ChangeNotifier {
           context: context,
           message: "Action failed. Check internet or retry later",
           type: ToastificationType.error,
-          bgColor: Colors.red,
           icon: Icons.clear,
         );
       }
@@ -591,7 +571,6 @@ class AppProvider extends ChangeNotifier {
           context: context,
           message: "Shift cannot be more than 16 hrs in a day",
           type: ToastificationType.warning,
-          bgColor: Colors.orange,
           icon: Icons.cancel);
       return;
     }
@@ -683,6 +662,7 @@ class AppProvider extends ChangeNotifier {
   List<List<dynamic>> get exportData => _exportData;
 bool _showTable = false;
   bool get showTable => _showTable;
+
   void generateTimeSheet(DateTime start, DateTime end, String location,
       BuildContext context) {
     _filteredShifts.clear();
@@ -699,7 +679,6 @@ bool _showTable = false;
           context: context,
           message: "No shifts in timeframe",
           type: ToastificationType.error,
-          bgColor: Colors.red.shade200,
           icon: Icons.cancel_rounded);
       _showTable = false;
       notifyListeners();
@@ -710,7 +689,6 @@ bool _showTable = false;
           context: context,
           message: "No shifts in timeframe",
           type: ToastificationType.error,
-          bgColor: Colors.red.shade200,
           icon: Icons.cancel_rounded);
       _showTable = false;
       notifyListeners();

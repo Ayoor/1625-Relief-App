@@ -447,7 +447,6 @@ Fluttertoast.showToast(msg: "Enter shift start/end date.");
                             message:
                                 "Your timesheet has been sent to your email",
                             type: ToastificationType.success,
-                            bgColor: Colors.lightGreen,
                             icon: Icons.email_outlined);
                         // Navigator.pop(bottomSheetContext);
                       }
@@ -491,7 +490,6 @@ Fluttertoast.showToast(msg: "Enter shift start/end date.");
                             context: context,
                             message: "Timesheet downloaded",
                             type: ToastificationType.success,
-                            bgColor: Colors.lightGreen,
                             icon: Icons.download_outlined);
                       }
 

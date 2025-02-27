@@ -202,7 +202,6 @@ else {
                           context: context,
                           message: "An error occurred while trying to sign in",
                           type: ToastificationType.error,
-                          bgColor: Colors.red,
                           icon: Icons.cancel,
                         );
                       } finally {
@@ -261,7 +260,6 @@ else {
                           context: context,
                           message: "An error occurred while trying to sign in",
                           type: ToastificationType.error,
-                          bgColor: Colors.red,
                           icon: Icons.cancel,
                         );
                       } finally {
@@ -368,7 +366,6 @@ else {
             context: context,
             message: "Google sign in failed",
             type: ToastificationType.error,
-            bgColor: Colors.red,
             icon: Icons.cancel);
       } finally {
         setState(() {
@@ -414,7 +411,6 @@ else {
                   context: context,
                   message: errorMsg,
                   type: ToastificationType.error,
-                  bgColor: Colors.red,
                   icon: Icons.cancel);
             }
           } else {
@@ -428,7 +424,6 @@ else {
                 context: context,
                 message: errorMsg,
                 type: ToastificationType.error,
-                bgColor: Colors.red,
                 icon: Icons.cancel);
           }
         }

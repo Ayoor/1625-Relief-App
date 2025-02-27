@@ -98,7 +98,6 @@ class _NewPasswordState extends State<NewPassword> {
                               message:
                                   "Your Password has been successfully Changed",
                               type: ToastificationType.success,
-                              bgColor: Colors.lightGreen,
                               icon: Icons.download_outlined);
 
                           //navigate to signin;

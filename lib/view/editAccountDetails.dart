@@ -403,7 +403,6 @@ Future<void> setMonthlyTarget(String target, BuildContext context) async {
         context: context,
         message: "Your target has now been set to $target",
         type: ToastificationType.success,
-        bgColor: Colors.green,
         icon: Icons.check_circle);
   } catch (e) {
     Fluttertoast.showToast(msg: "An error occurred try again later");
@@ -430,8 +429,7 @@ Future<void> changeUserName(
       AppProvider().showMessage(
           context: context,
           message: "Invalid email",
-          type: ToastificationType.success,
-          bgColor: Colors.red.shade200,
+          type: ToastificationType.error,
           icon: Icons.cancel);
       return;
     }
@@ -440,7 +438,6 @@ Future<void> changeUserName(
         context: context,
         message: "Your $detail has now been updated",
         type: ToastificationType.success,
-        bgColor: Colors.green,
         icon: Icons.check_circle);
   } catch (e) {
     Fluttertoast.showToast(msg: "An error occurred try again later");

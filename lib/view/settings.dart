@@ -137,7 +137,6 @@ class _SettingsState extends State<Settings> {
                                   message:
                                       "Action failed. Check internet or retry later.",
                                   type: ToastificationType.error,
-                                  bgColor: Colors.red.shade200,
                                   icon: Icons.cancel,
                                 );
                               }

@@ -303,7 +303,6 @@ class _SignupState extends State<Signup> {
           context: context,
           message: "Google sign in failed",
           type: ToastificationType.error,
-          bgColor: Colors.red,
           icon: Icons.cancel);
     } finally {
       setState(() {

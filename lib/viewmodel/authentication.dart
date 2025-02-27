@@ -126,7 +126,6 @@ password = PasswordHash(password: password).encryptWithArgon2();
         AppProvider().showMessage(context: context,
             message: "An error occurred please try again later",
             type: ToastificationType.error,
-            bgColor: Colors.red,
             icon: Icons.cancel);
       }
       return false;
