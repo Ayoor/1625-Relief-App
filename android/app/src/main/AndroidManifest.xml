@@ -1,55 +1,64 @@
-    <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:tools="http://schemas.android.com/tools"
-        package="com.ayodele.tech.relief_app"
-        >
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    package="com.ayodele.tech.relief_app">
 
-        <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
-        <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
-        <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE"
-            tools:ignore="ScopedStorage" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission
+        android:name="android.permission.MANAGE_EXTERNAL_STORAGE"
+        tools:ignore="ScopedStorage" />
 
 
-        <application
-            android:label="relief_app"
-            android:name="${applicationName}"
-            android:enableOnBackInvokedCallback="true"
-            android:icon="@mipmap/ic_launcher">
+    <application
+        android:name="${applicationName}"
+        android:enableOnBackInvokedCallback="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="relief_app">
+        <meta-data
+            android:name="com.google.firebase.MESSAGING_EVENT"
+            android:value="com.google.firebase.messaging.FirebaseMessagingService" />
+        <meta-data
+            android:name="com.google.firebase.DATABASE_URL"
+            android:value="https://your-project-id.firebaseio.com" />
+        <meta-data
+            android:name="com.onesignal.NotificationIcon"
+            android:resource="@drawable/app_icon" />
+
+        <activity
+            android:name=".MainActivity"
+            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|layoutDirection"
+            android:exported="true"
+            android:launchMode="singleTop"
+            android:theme="@style/LaunchTheme"
+            android:windowSoftInputMode="adjustResize">  <!-- Try adjustResize or adjustPan -->
             <meta-data
-                android:name="com.google.firebase.MESSAGING_EVENT"
-                android:value="com.google.firebase.messaging.FirebaseMessagingService" />
-            <meta-data
-                android:name="com.google.firebase.DATABASE_URL"
-                android:value="https://your-project-id.firebaseio.com" />
-            <activity
-                android:name=".MainActivity"
-                android:exported="true"
-                android:launchMode="singleTop"
-                android:theme="@style/LaunchTheme"
-                android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|layoutDirection"
-                android:windowSoftInputMode="adjustResize">  <!-- Try adjustResize or adjustPan -->
-                <meta-data
-                    android:name="io.flutter.embedding.android.NormalTheme"
-                    android:resource="@style/NormalTheme" />
-                <intent-filter>
-                    <action android:name="android.intent.action.MAIN"/>
-                    <category android:name="android.intent.category.LAUNCHER"/>
-                </intent-filter>
-            </activity>
-            <!-- Don't delete the meta-data below.
-                This is used by the Flutter tool to generate GeneratedPluginRegistrant.java -->
-            <meta-data
-                android:name="flutterEmbedding"
-                android:value="2" />
-        </application>
-        <!-- Required to query activities that can process text, see:
-            https://developer.android.com/training/package-visibility and
-            https://developer.android.com/reference/android/content/Intent#ACTION_PROCESS_TEXT.
+                android:name="io.flutter.embedding.android.NormalTheme"
+                android:resource="@style/NormalTheme" />
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <!-- Don't delete the meta-data below.
+            This is used by the Flutter tool to generate GeneratedPluginRegistrant.java -->
+        <meta-data
+            android:name="flutterEmbedding"
+            android:value="2" />
+        <service
+            android:name="com.onesignal.NotificationService"
+            android:foregroundServiceType="location|mediaPlayback"></service>
 
-            In particular, this is used by the Flutter engine in io.flutter.plugin.text.ProcessTextPlugin. -->
-        <queries>
-            <intent>
-                <action android:name="android.intent.action.PROCESS_TEXT"/>
-                <data android:mimeType="text/plain"/>
-            </intent>
-        </queries>
-    </manifest>
+    </application>
+    <!-- Required to query activities that can process text, see:
+        https://developer.android.com/training/package-visibility and
+        https://developer.android.com/reference/android/content/Intent#ACTION_PROCESS_TEXT.
+
+        In particular, this is used by the Flutter engine in io.flutter.plugin.text.ProcessTextPlugin. -->
+    <queries>
+        <intent>
+            <action android:name="android.intent.action.PROCESS_TEXT" />
+            <data android:mimeType="text/plain" />
+        </intent>
+    </queries>
+
+</manifest>

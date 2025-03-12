@@ -10,7 +10,7 @@ import 'overview.dart';
 import 'widgets/customNav.dart';
 
 class HomeScreen extends StatefulWidget {
-  HomeScreen({super.key, required this.title});
+  const HomeScreen({super.key, required this.title});
 
   final String title;
 
@@ -27,7 +27,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
       final prov = Provider.of<AppProvider>(context, listen: false);
       prov.getIncomeSummary(context);
       prov.fetchUser(context);

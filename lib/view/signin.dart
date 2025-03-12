@@ -1,5 +1,7 @@
   import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:onesignal_flutter/onesignal_flutter.dart';
+import 'package:provider/provider.dart';
 
   import 'package:relief_app/utils/passwordhash.dart';
 
@@ -51,7 +53,12 @@ import 'home_Screen.dart';
   void initState() {
     // TODO: implement initState
     super.initState();
-   checkSession(context);
+
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+
+    });
+
+    checkSession(context);
 
     }
 
@@ -63,6 +70,10 @@ import 'home_Screen.dart';
       final email = await authService.getSession('email');
 
       if (googleEmail != null || email != null) {
+        String? userEmail = googleEmail ?? email;
+        OneSignal.login(userEmail!);
+
+        print (userEmail);
         // Navigate directly to HomeScreen
         Future.microtask(() {
 

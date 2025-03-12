@@ -2,6 +2,8 @@
 
 ###
 create new screen shot
+require consent for onesignal services
+
 
 issues
 

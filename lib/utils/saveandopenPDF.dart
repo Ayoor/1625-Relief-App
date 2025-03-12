@@ -6,6 +6,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:pdf/widgets.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:relief_app/utils/timesheet_html.dart';
+import 'package:relief_app/viewmodel/provider.dart';
 
 class SaveandOpenPDF {
   Future<File> savePDF(String docName, Document document) async {
@@ -51,15 +52,18 @@ class SaveandOpenPDF {
     await OpenFile.open(file.path);
   }
 
-  Future<void> sendEmailWithAttachment(File attachment) async {
+  Future<void> sendEmailWithAttachment(File attachment, String location, String timeFrame) async {
     String username = 'gbengajohn4god@gmail.com';
     String password = 'kdpe awvy jzaf sexs'; // Use an App Password instead of raw password
+
+    String userEmail = await AppProvider().userEmail();
+    userEmail = userEmail.replaceAll("dot", ".");
 
     final smtpServer = gmail(username, password);
     final message = Message()
       ..from = Address(username, '1625 relief')
-      ..recipients.add('gbengajohn4god@yahoo.com')
-      ..subject = 'Your May 10-Jun 10 CEH Timesheet'
+      ..recipients.add(userEmail)
+      ..subject = 'Your $location Timesheet for $timeFrame'
       ..html = TimeSheetHTML().htmlContent
       ..attachments.add(FileAttachment(attachment));
 
