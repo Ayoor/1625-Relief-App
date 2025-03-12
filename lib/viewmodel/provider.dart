@@ -75,20 +75,30 @@ class AppProvider extends ChangeNotifier {
   }
 
   void updateShiftStatus(int index, String key, BuildContext context,
-      {String updateShiftTo = "", String endTime = ""}) async {
+      {String startDate= "", String updateShiftTo = "", String endTime = "", }) async {
     String email = await userEmail();
+
     try {
       // Reference to the specific shift in the Firebase Database
       final DatabaseReference dbRef =
-          FirebaseDatabase.instance.ref().child("Users/$email/Shifts/$key");
+      FirebaseDatabase.instance.ref().child("Users/$email/Shifts/$key");
+
+      // Retrieve the notification ID from the database
+      final snapshot = await dbRef.child("notificationId").get();
+      String? notificationId = snapshot.value?.toString();
 
       switch (updateShiftTo) {
         case "Scheduled":
           await dbRef.update({"status": "Scheduled"});
           break;
+
         case "Cancelled":
           await dbRef.update({"status": "Cancelled"});
+          if (notificationId != null) {
+            cancelNotification(notificationId);
+          }
           break;
+
         case "Completed":
           DateTime shiftEnd = DateTime.parse(endTime);
           if (shiftEnd.isAfter(DateTime.now())) {
@@ -102,23 +112,32 @@ class AppProvider extends ChangeNotifier {
           }
           await dbRef.update({"status": "Completed"});
           break;
+
         case "Deleted":
           await dbRef.update({"status": "Deleted"});
+          if (notificationId != null) {
+            cancelNotification(notificationId);
+          }
           break;
 
         case "Revert":
           await dbRef.update({"status": "Scheduled"});
+          DateTime scheduledTime = DateTime.parse(startDate).subtract(Duration(hours: 3));
+          scheduleNotification(userId: oneSignalAppId , templateId: templateId, scheduledTime: scheduledTime);
           break;
-      } // Notify listeners to update UI
+      }
+
+      // Notify listeners to update UI
       notifyListeners();
 
-      // Show success message if the context is still mounted
+      // Show success message
       showMessage(
         context: context,
         message: "Shift status updated successfully.",
         type: ToastificationType.success,
         icon: Icons.check,
       );
+
       fetchShifts(context);
       notifyListeners();
     } catch (e) {
@@ -510,11 +529,6 @@ class AppProvider extends ChangeNotifier {
     // OneSignal API Endpoint
     const String oneSignalUrl = "https://onesignal.com/api/v1/notifications";
 
-
-    const String oneSignalAppId = "8110724a-d13e-43f8-a58d-450454c49101";
-    const String oneSignalRestApiKey =
-        "os_v2_app_qeiheswrhzb7rjmniucfjreraeluvmilmkjummejdexh6ui6lp7npq6jkxpv5jobmgzauq4yxpep2ytxydvsyvjeguenepqj2yzrhxq";
-
     // Headers
     Map<String, String> headers = {
       "Content-Type": "application/json; charset=UTF-8",
@@ -554,11 +568,12 @@ class AppProvider extends ChangeNotifier {
       print("❌ Error scheduling notification: $e");
     }
   }
+  final String oneSignalAppId = "8110724a-d13e-43f8-a58d-450454c49101";
+  final String oneSignalRestApiKey =
+      "os_v2_app_qeiheswrhzb7rjmniucfjreraeluvmilmkjummejdexh6ui6lp7npq6jkxpv5jobmgzauq4yxpep2ytxydvsyvjeguenepqj2yzrhxq";
+
 //cancel shift notification
   Future<void> cancelNotification(String notificationId) async {
-    const String oneSignalAppId = "8110724a-d13e-43f8-a58d-450454c49101";
-    const String oneSignalRestApiKey =
-        "os_v2_app_qeiheswrhzb7rjmniucfjreraeluvmilmkjummejdexh6ui6lp7npq6jkxpv5jobmgzauq4yxpep2ytxydvsyvjeguenepqj2yzrhxq";
 
 
     final Uri url = Uri.parse("https://onesignal.com/api/v1/notifications/$notificationId?app_id=$oneSignalAppId");
@@ -631,7 +646,7 @@ class AppProvider extends ChangeNotifier {
         await dbRef.set(shift.toJson());
        await scheduleNotification(
           userId: userId,
-          templateId: "b1b1fae0-45f9-44c0-88f9-af88420700c1",
+          templateId: templateId,
           scheduledTime: shift.startTime.subtract(Duration(hours: 3)),
         );
 
@@ -664,7 +679,7 @@ class AppProvider extends ChangeNotifier {
       }
     }
   }
-
+final templateId = "b1b1fae0-45f9-44c0-88f9-af88420700c1";
   late List<bool> _isCheckedList;
   String _notificationID="";
 
