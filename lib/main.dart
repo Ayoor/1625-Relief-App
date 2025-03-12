@@ -13,30 +13,23 @@ import 'package:firebase_admin/firebase_admin.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
-  WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
 
   OneSignal.Debug.setLogLevel(OSLogLevel.verbose);
+
+  // Initialize OneSignal with the correct App ID
+  OneSignal.initialize("8110724a-d13e-43f8-a58d-450454c49101");
 
   // Set OneSignal to require user consent before collecting data
   OneSignal.consentRequired(true);
 
-  // Check if notification permission has been granted
-  bool hasPermission =  OneSignal.Notifications.permission;
-
+  // Now that OneSignal is initialized, request permission if not granted
+  bool hasPermission = await OneSignal.Notifications.permission;
   if (!hasPermission) {
-    // Request permission from the user if not already given
     await OneSignal.Notifications.requestPermission(true);
   }
 
-  // Now that permission has been handled, give consent
+  // Give consent after initialization
   OneSignal.consentGiven(true);
-
-
-
-
-  // Initialize OneSignal with the correct App ID
-  OneSignal.initialize("8110724a-d13e-43f8-a58d-450454c49101");
 
   runApp(
     MultiProvider(

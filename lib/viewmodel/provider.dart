@@ -207,8 +207,8 @@ class AppProvider extends ChangeNotifier {
         color: Theme.of(context).colorScheme.onSurface,
       ),
       style: ToastificationStyle.fillColored,
-      autoCloseDuration: const Duration(seconds: 3),
-      showProgressBar: true,
+      autoCloseDuration: const Duration(seconds: 2),
+      showProgressBar: false,
       dragToClose: true,
     );
   }
@@ -544,7 +544,8 @@ class AppProvider extends ChangeNotifier {
       // Use the saved template ID from the OneSignal console
       "send_after": scheduledTimeUtc,
       // Schedule time in UTC
-      "small_icon": "app_icon"
+      "small_icon": "app_icon",
+      "large_icon": "app_icon"
     };
 
     try {
@@ -643,15 +644,19 @@ class AppProvider extends ChangeNotifier {
             .child("Users/$email/Shifts/$dateKey: ${shift.shiftType}");
 
         // Save each shift under the date key in "Shifts"
-        await dbRef.set(shift.toJson());
-       await scheduleNotification(
+        // await dbRef.set(shift.toJson());
+       // await scheduleNotification(
+       //    userId: userId,
+       //    templateId: templateId,
+       //    scheduledTime: shift.startTime.subtract(Duration(hours: 3)),
+       //  );
+        await scheduleNotification(
           userId: userId,
           templateId: templateId,
-          scheduledTime: shift.startTime.subtract(Duration(hours: 3)),
+          scheduledTime: DateTime.now().add(Duration(seconds:10)),
         );
 
-
-        dbRef.child("NotificationId").set(_notificationID);
+        // dbRef.child("NotificationId").set(_notificationID);
       }
 
       shifts.clear();
