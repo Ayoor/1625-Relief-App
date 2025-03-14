@@ -4,10 +4,9 @@
 create new screen shot
 
 issues
-
+git has removed all work on notifications
 
 Onboarding Screen
-Implement daily tasks checklist
 push notifications for shift and for timesheet.
 
 change email to yahoo
