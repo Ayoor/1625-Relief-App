@@ -544,7 +544,6 @@ class AppProvider extends ChangeNotifier {
       "send_after": scheduledTimeUtc,
       "small_icon": "app_icon",
       "large_icon": "app_icon",
-      "large_icon": "FFB500"
     };
 
     try {
