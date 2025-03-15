@@ -1,15 +1,17 @@
+import 'dart:convert';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
+import 'package:onesignal_flutter/onesignal_flutter.dart';
 import 'package:relief_app/model/userData.dart';
-import 'package:relief_app/model/users.dart';
 import 'package:relief_app/services/firebase_auth.dart';
 import 'package:toastification/toastification.dart';
 import 'package:tuple/tuple.dart';
 
 import '../model/shiftData.dart';
 import '../model/shifts.dart';
-import '../test.dart';
 import '../utils/dateformat.dart';
 import '../utils/location.dart';
 
@@ -46,7 +48,6 @@ class AppProvider extends ChangeNotifier {
 
   double get woodleazeShiftIncome => _woodleazeShiftIncome;
 
-
   Future<String> userEmail() async {
     final authService = AuthenticationService();
     String userEmail = "";
@@ -74,20 +75,30 @@ class AppProvider extends ChangeNotifier {
   }
 
   void updateShiftStatus(int index, String key, BuildContext context,
-      {String shiftType = "", String endTime = ""}) async {
+      {String startDate= "", String updateShiftTo = "", String endTime = "", }) async {
     String email = await userEmail();
+
     try {
       // Reference to the specific shift in the Firebase Database
       final DatabaseReference dbRef =
       FirebaseDatabase.instance.ref().child("Users/$email/Shifts/$key");
 
-      switch (shiftType) {
+      // Retrieve the notification ID from the database
+      final snapshot = await dbRef.child("notificationId").get();
+      String? notificationId = snapshot.value?.toString();
+
+      switch (updateShiftTo) {
         case "Scheduled":
           await dbRef.update({"status": "Scheduled"});
           break;
+
         case "Cancelled":
           await dbRef.update({"status": "Cancelled"});
+          if (notificationId != null) {
+            cancelNotification(notificationId);
+          }
           break;
+
         case "Completed":
           DateTime shiftEnd = DateTime.parse(endTime);
           if (shiftEnd.isAfter(DateTime.now())) {
@@ -101,26 +112,34 @@ class AppProvider extends ChangeNotifier {
           }
           await dbRef.update({"status": "Completed"});
           break;
+
         case "Deleted":
           await dbRef.update({"status": "Deleted"});
+          if (notificationId != null) {
+            cancelNotification(notificationId);
+          }
           break;
 
         case "Revert":
           await dbRef.update({"status": "Scheduled"});
+          DateTime scheduledTime = DateTime.parse(startDate).subtract(Duration(hours: 3));
+          scheduleNotification(userId: oneSignalAppId , templateId: templateId, scheduledTime: scheduledTime);
           break;
-      } // Notify listeners to update UI
+      }
+
+      // Notify listeners to update UI
       notifyListeners();
 
-      // Show success message if the context is still mounted
-        showMessage(
-          context: context,
-          message: "Shift status updated successfully.",
-          type: ToastificationType.success,
-          icon: Icons.check,
-        );
-        fetchShifts(context);
-        notifyListeners();
+      // Show success message
+      showMessage(
+        context: context,
+        message: "Shift status updated successfully.",
+        type: ToastificationType.success,
+        icon: Icons.check,
+      );
 
+      fetchShifts(context);
+      notifyListeners();
     } catch (e) {
       // Show error message if the update fails
       if (context.mounted) {
@@ -134,15 +153,52 @@ class AppProvider extends ChangeNotifier {
     }
   }
 
-  void showMessage({required BuildContext context,
-    required String message,
-    required ToastificationType type,
-    required IconData icon}) {
-    toastification.show(
+  // Future<void> getFCMToken() async {
+  //   final email =
+  //       await userEmail(); // Assuming you have a method to get the logged-in user's email
+  //   FirebaseMessaging messaging = FirebaseMessaging.instance;
+  //   String? token = await messaging.getToken(); // Get the FCM token
+  //
+  //   if (token != null) {
+  //     print("FCM Token: $token");
+  //
+  //     // Reference to the user's FCM tokens in Firebase
+  //     final dbRef =
+  //         FirebaseDatabase.instance.ref().child("Users/$email/FcmTokens");
+  //
+  //     // Fetch the existing tokens (if any)
+  //     final snapshot = await dbRef.get();
+  //
+  //     List<String> tokens = [];
+  //
+  //     if (snapshot.exists) {
+  //       // Convert the snapshot value into a List<String>
+  //       tokens = List<String>.from(snapshot.value as List);
+  //     }
+  //
+  //     // Add the new token to the list (if it's not already there)
+  //     if (!tokens.contains(token)) {
+  //       tokens.add(token); // Add the new token to the list
+  //     }
+  //
+  //     // Update the FCM tokens list in the database
+  //     await dbRef.set(tokens); // Store the updated list of tokens
+  //   }
+  // }
 
+  void showMessage(
+      {required BuildContext context,
+      required String message,
+      required ToastificationType type,
+      required IconData icon}) {
+    toastification.show(
       context: context,
-      description: Text(message,
-        style: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontWeight: FontWeight.bold),),
+      description: Text(
+        message,
+        style: TextStyle(
+            color: Theme.of(context).colorScheme.onSurface,
+            fontWeight: FontWeight.bold),
+      ),
       alignment: Alignment.topCenter,
       type: type,
       foregroundColor: Theme.of(context).colorScheme.onSurface,
@@ -151,8 +207,8 @@ class AppProvider extends ChangeNotifier {
         color: Theme.of(context).colorScheme.onSurface,
       ),
       style: ToastificationStyle.fillColored,
-      autoCloseDuration: const Duration(seconds: 3),
-      showProgressBar: true,
+      autoCloseDuration: const Duration(seconds: 2),
+      showProgressBar: false,
       dragToClose: true,
     );
   }
@@ -160,8 +216,8 @@ class AppProvider extends ChangeNotifier {
   Future<void> deleteUser(BuildContext context) async {
     String email = await userEmail();
 
-      DatabaseReference userRef = FirebaseDatabase.instance.ref("Users/$email");
-      await userRef.remove();
+    DatabaseReference userRef = FirebaseDatabase.instance.ref("Users/$email");
+    await userRef.remove();
   }
 
   Future<void> signOutUser(BuildContext context) async {
@@ -178,16 +234,15 @@ class AppProvider extends ChangeNotifier {
     await authService.clearSession();
   }
 
-
-  void addShift(DateTime start, DateTime end, String location,
-      BuildContext context) {
+  void addShift(
+      DateTime start, DateTime end, String location, BuildContext context) {
     fetchShifts(context);
 
     // Check if there's already a shift with the same start time
     bool isDuplicate = false;
 
     if (shifts.any((shift) =>
-    (start.isBefore(shift.endTime) && end.isAfter(shift.startTime)))) {
+        (start.isBefore(shift.endTime) && end.isAfter(shift.startTime)))) {
       isDuplicate = true;
     }
 
@@ -223,9 +278,7 @@ class AppProvider extends ChangeNotifier {
 
   double getDuration(DateTime start, DateTime end) {
     // Calculate the duration in hours by dividing the total minutes by 60
-    double duration = end
-        .difference(start)
-        .inMinutes / 60.0;
+    double duration = end.difference(start).inMinutes / 60.0;
     return double.parse(
         duration.toStringAsFixed(2)); // Round to 2 decimal places
   }
@@ -239,7 +292,7 @@ class AppProvider extends ChangeNotifier {
 
       if (snapshot.exists && snapshot.value is Map<dynamic, dynamic>) {
         final Map<dynamic, dynamic> userData =
-        snapshot.value as Map<dynamic, dynamic>;
+            snapshot.value as Map<dynamic, dynamic>;
 
         // Create a ReliefUser instance from the retrieved data
         return ReliefUser(
@@ -279,14 +332,14 @@ class AppProvider extends ChangeNotifier {
     final DatabaseReference dbRef = FirebaseDatabase.instance.ref();
 
     try {
-      final DataSnapshot snapshot = await dbRef.child('Users/$email/Shifts')
-          .get();
+      final DataSnapshot snapshot =
+          await dbRef.child('Users/$email/Shifts').get();
 
       if (snapshot.exists) {
         // Check if the value is a Map
         if (snapshot.value is Map<dynamic, dynamic>) {
           final Map<dynamic, dynamic> dateMap =
-          snapshot.value as Map<dynamic, dynamic>;
+              snapshot.value as Map<dynamic, dynamic>;
           dateMap.forEach((dateKey, shiftData) {
             if (shiftData['status'] == 'Scheduled') {
               try {
@@ -302,9 +355,9 @@ class AppProvider extends ChangeNotifier {
                   duration: shiftData['duration'].toDouble(),
                 );
                 _scheduledShifts.add(shift);
-
               } catch (e) {
-                showMessage(context: context,
+                showMessage(
+                    context: context,
                     message: "Error parsing shift data for date $dateKey",
                     type: ToastificationType.error,
                     icon: Icons.cancel);
@@ -326,7 +379,8 @@ class AppProvider extends ChangeNotifier {
                 );
                 _cancelledShifts.add(shift);
               } catch (e) {
-                showMessage(context: context,
+                showMessage(
+                    context: context,
                     message: "Error parsing shift data for date $dateKey",
                     type: ToastificationType.error,
                     icon: Icons.cancel);
@@ -348,7 +402,8 @@ class AppProvider extends ChangeNotifier {
                 );
                 _completedShifts.add(shift);
               } catch (e) {
-                showMessage(context: context,
+                showMessage(
+                    context: context,
                     message: "Error parsing shift data for date $dateKey",
                     type: ToastificationType.error,
                     icon: Icons.cancel);
@@ -363,7 +418,8 @@ class AppProvider extends ChangeNotifier {
 
           notifyListeners();
         } else {
-          showMessage(context: context,
+          showMessage(
+              context: context,
               message: "Something failed, please try again later",
               type: ToastificationType.error,
               icon: Icons.cancel);
@@ -445,8 +501,8 @@ class AppProvider extends ChangeNotifier {
         remainingIncome += shift.duration.toDouble() * shift.rate;
       }
     }
-    var formatter = NumberFormat.currency(
-        locale: "en_UK", decimalDigits: 2, symbol: "£");
+    var formatter =
+        NumberFormat.currency(locale: "en_UK", decimalDigits: 2, symbol: "£");
     _allocatedIncome += remainingIncome;
     _allocatedIncomeText = formatter.format(_allocatedIncome);
     notifyListeners();
@@ -457,18 +513,96 @@ class AppProvider extends ChangeNotifier {
     return format.parse(date);
   }
 
-  void onDaySelect(DateTime day, DateTime focusedDate) {
-    _today = day;
-    notifyListeners();
-  }
+  //shedule shift reminder notification
 
+  Future<void> scheduleNotification({
+    required String userId,
+    required String templateId, // Add the template ID here
+    required DateTime scheduledTime,
+  }) async {
+    // change to actual time
+
+    // Convert time to UTC format required by OneSignal
+    String scheduledTimeUtc = scheduledTime.toUtc().toIso8601String();
+    // String scheduledTimeUtc = DateTime.now().add(Duration(minutes: 1)).toIso8601String();
+
+    // OneSignal API Endpoint
+    const String oneSignalUrl = "https://onesignal.com/api/v1/notifications";
+
+    // Headers
+    Map<String, String> headers = {
+      "Content-Type": "application/json; charset=UTF-8",
+      "Authorization": "Basic $oneSignalRestApiKey",
+    };
+
+    // Request Body
+    Map<String, dynamic> body = {
+      "app_id": oneSignalAppId,
+      "include_external_user_ids": [userId],
+      "template_id": templateId,
+
+      "send_after": scheduledTimeUtc,
+      "small_icon": "app_icon",
+      "large_icon": "app_icon",
+    };
+
+    try {
+      // Send the request
+      final response = await http.post(
+        Uri.parse(oneSignalUrl),
+        headers: headers,
+        body: jsonEncode(body),
+      );
+
+      // Check response
+      if (response.statusCode == 200) {
+        print("✅ Notification scheduled successfully: ${response.body}");
+        final Map<String, dynamic> responseData = jsonDecode(response.body);
+        String notificationId = responseData['id']; // Extract notification ID
+        _notificationID= notificationId;
+      } else {
+        print("❌ Failed to schedule notification: ${response.body}");
+      }
+    } catch (e) {
+      print("❌ Error scheduling notification: $e");
+    }
+  }
+  final String oneSignalAppId = "8110724a-d13e-43f8-a58d-450454c49101";
+  final String oneSignalRestApiKey =
+      "os_v2_app_qeiheswrhzb7rjmniucfjreraeluvmilmkjummejdexh6ui6lp7npq6jkxpv5jobmgzauq4yxpep2ytxydvsyvjeguenepqj2yzrhxq";
+
+//cancel shift notification
+  Future<void> cancelNotification(String notificationId) async {
+
+
+    final Uri url = Uri.parse("https://onesignal.com/api/v1/notifications/$notificationId?app_id=$oneSignalAppId");
+
+    final Map<String, String> headers = {
+      "Content-Type": "application/json",
+      "Authorization": "Basic $oneSignalRestApiKey",
+    };
+
+    try {
+      final response = await http.delete(url, headers: headers);
+
+      if (response.statusCode == 200) {
+        print("✅ Notification canceled successfully");
+      } else {
+        print("❌ Failed to cancel notification: ${response.body}");
+      }
+    } catch (e) {
+      print("❌ Error canceling notification: $e");
+    }
+  }
 
 // Function to add new shift and save it to Firebase Realtime Database// For date formatting
 
-  Future<void> saveNewShifts(BuildContext context,
-      List<Shifts> shifts,
-      DateTime start,
-      DateTime end,) async {
+  Future<void> saveNewShifts(
+    BuildContext context,
+    List<Shifts> shifts,
+    DateTime start,
+    DateTime end,
+  ) async {
     if (shifts.isEmpty) {
       showMessage(
         context: context,
@@ -480,9 +614,8 @@ class AppProvider extends ChangeNotifier {
     }
     await fetchShifts(context);
 
-
     if (_scheduledShifts.any((shift) =>
-    (start.isBefore(shift.endTime) && end.isAfter(shift.startTime)))) {
+        (start.isBefore(shift.endTime) && end.isAfter(shift.startTime)))) {
       showMessage(
         context: context,
         message: "Shift clash detected, unable to save new shifts",
@@ -491,18 +624,37 @@ class AppProvider extends ChangeNotifier {
       );
       return;
     }
+// Try to get the external user ID (set during login)
+    String? userId = await OneSignal.User.getExternalId();
+
+    if (userId == null) {
+      print("Error: No valid OneSignal user ID found.");
+      return;
+    }
 
     try {
       String email = await userEmail();
       for (var shift in shifts) {
         // Format the startTime to a date string (e.g., "dd-MM-yyyy")
         final String dateKey = DateFormat('dd-MM-yyyy').format(shift.startTime);
-        final DatabaseReference dbRef =
-        FirebaseDatabase.instance.ref().child(
-            "Users/$email/Shifts/${dateKey}: ${shift.shiftType}");
+        final DatabaseReference dbRef = FirebaseDatabase.instance
+            .ref()
+            .child("Users/$email/Shifts/$dateKey: ${shift.shiftType}");
 
         // Save each shift under the date key in "Shifts"
-        await dbRef.set(shift.toJson());
+        // await dbRef.set(shift.toJson());
+       // await scheduleNotification(
+       //    userId: userId,
+       //    templateId: templateId,
+       //    scheduledTime: shift.startTime.subtract(Duration(hours: 3)),
+       //  );
+        await scheduleNotification(
+          userId: userId,
+          templateId: templateId,
+          scheduledTime: DateTime.now().add(Duration(seconds:10)),
+        );
+
+        // dbRef.child("NotificationId").set(_notificationID);
       }
 
       shifts.clear();
@@ -530,17 +682,19 @@ class AppProvider extends ChangeNotifier {
       }
     }
   }
-
+final templateId = "b1b1fae0-45f9-44c0-88f9-af88420700c1";
   late List<bool> _isCheckedList;
+  String _notificationID="";
+
+  String get notificationID => _notificationID;
 
   List<bool> checkboxes() {
-    _isCheckedList =
-    List<bool>.filled(scheduledShifts.length, false);
+    _isCheckedList = List<bool>.filled(scheduledShifts.length, false);
     return _isCheckedList;
   }
 
-  Tuple2<String, double> getShiftTypeAndRate(DateTime startTime,
-      String location) {
+  Tuple2<String, double> getShiftTypeAndRate(
+      DateTime startTime, String location) {
     // DateTime startTime = DateTime.parse(start);
     if (startTime.hour < 12) {
       return Tuple2("Early Shift", 12);
@@ -578,20 +732,18 @@ class AppProvider extends ChangeNotifier {
       return "${duration.inHours} hours";
     }
     if (duration.inMinutes.remainder(60) == 1) {
-      return "${duration.inHours} hours, ${duration.inMinutes.remainder(
-          60)} minute";
+      return "${duration.inHours} hours, ${duration.inMinutes.remainder(60)} minute";
     }
-    return "${duration.inHours} hours, ${duration.inMinutes.remainder(
-        60)} minutes";
+    return "${duration.inHours} hours, ${duration.inMinutes.remainder(60)} minutes";
   }
 
   bool _isLoading = true;
+
   bool get isLoading => _isLoading;
 
   List<bool> get isCheckedList => _isCheckedList;
 
   Future<void> loadData(BuildContext context) async {
-
     try {
       await fetchShifts(context);
     } catch (e) {
@@ -616,9 +768,7 @@ class AppProvider extends ChangeNotifier {
       _completedShifts = _completedShifts.reversed.toList();
 
       // Only process shifts for the current year
-      if (_completedShifts.last.startTime.year == DateTime
-          .now()
-          .year) {
+      if (_completedShifts.last.startTime.year == DateTime.now().year) {
         // Map each location to its respective class
 
         // Reinitialize values to avoid duplication
@@ -633,7 +783,7 @@ class AppProvider extends ChangeNotifier {
           // Update the corresponding month dynamically
           if (locationMap.containsKey(cs.location)) {
             final LocationIncomeHistory locationClass =
-            locationMap[cs.location]!;
+                locationMap[cs.location]!;
             locationClass.accumulateMonthlyValue(
                 monthIndex, cs.duration * cs.rate);
           }
@@ -660,19 +810,21 @@ class AppProvider extends ChangeNotifier {
   final List<List<dynamic>> _exportData = [];
 
   List<List<dynamic>> get exportData => _exportData;
-bool _showTable = false;
+  bool _showTable = false;
+
   bool get showTable => _showTable;
 
-  void generateTimeSheet(DateTime start, DateTime end, String location,
-      BuildContext context) {
+  void generateTimeSheet(
+      DateTime start, DateTime end, String location, BuildContext context) {
     _filteredShifts.clear();
     _exportData.clear();
+    _totalHours = 0;
     if (_completedShifts.isNotEmpty) {
       _filteredShifts = _completedShifts
           .where((shift) =>
-      shift.startTime.isAfter(start) &&
-          shift.startTime.isBefore(end) &&
-          shift.location == location)
+              shift.startTime.isAfter(start) &&
+              shift.startTime.isBefore(end) &&
+              shift.location == location)
           .toList();
     } else {
       showMessage(
@@ -693,9 +845,9 @@ bool _showTable = false;
       _showTable = false;
       notifyListeners();
       return;
-    }
-    else{
+    } else {
       _filteredShifts = _filteredShifts.reversed.toList();
+
       for (Shifts completedShift in _filteredShifts) {
         exportData.add([
           ReadableDate(dateTime: completedShift.startTime).date(),
@@ -750,8 +902,8 @@ bool _showTable = false;
 
   double get compJan => _compJan;
 
-  Future overviewData(BuildContext context, DateTime start,
-      DateTime end) async {
+  Future overviewData(
+      BuildContext context, DateTime start, DateTime end) async {
     await loadData(context);
     _compJan = _compFeb = _compMar = _compMay = _compApr = _compJun =
         _compJul = _compAug = _compSep = _compOct = _compNov = _compDec = 0;
@@ -759,26 +911,26 @@ bool _showTable = false;
     // Filter shifts for the given range
     _monthlycompletedShifts = _completedShifts
         .where((shift) =>
-    (shift.startTime.isAfter(start) ||
-        shift.startTime.isAtSameMomentAs(start)) &&
-        (shift.startTime.isBefore(end) ||
-            shift.startTime.isAtSameMomentAs(end)))
+            (shift.startTime.isAfter(start) ||
+                shift.startTime.isAtSameMomentAs(start)) &&
+            (shift.startTime.isBefore(end) ||
+                shift.startTime.isAtSameMomentAs(end)))
         .toList();
 
     _monthlyScheduledShifts = _scheduledShifts
         .where((shift) =>
-    (shift.startTime.isAfter(start) ||
-        shift.startTime.isAtSameMomentAs(start)) &&
-        (shift.startTime.isBefore(end) ||
-            shift.startTime.isAtSameMomentAs(end)))
+            (shift.startTime.isAfter(start) ||
+                shift.startTime.isAtSameMomentAs(start)) &&
+            (shift.startTime.isBefore(end) ||
+                shift.startTime.isAtSameMomentAs(end)))
         .toList();
 
     _monthlycancelledShifts = _cancelledShifts
         .where((shift) =>
-    (shift.startTime.isAfter(start) ||
-        shift.startTime.isAtSameMomentAs(start)) &&
-        (shift.startTime.isBefore(end) ||
-            shift.startTime.isAtSameMomentAs(end)))
+            (shift.startTime.isAfter(start) ||
+                shift.startTime.isAtSameMomentAs(start)) &&
+            (shift.startTime.isBefore(end) ||
+                shift.startTime.isAtSameMomentAs(end)))
         .toList();
 
     // Calculate shift counts
@@ -795,9 +947,7 @@ bool _showTable = false;
 
     // Process completed shifts by year and month
     for (int i = 0; i < _completedShifts.length; i++) {
-      if (_completedShifts[i].startTime.year != DateTime
-          .now()
-          .year) {
+      if (_completedShifts[i].startTime.year != DateTime.now().year) {
         continue; // Skip shifts not in the current year
       }
 
@@ -863,14 +1013,12 @@ bool _showTable = false;
           DateTime(now.year, now.month + 1, 10); // 10th of the next month
     }
 
-    return "${monthStart!.day}/${monthStart!.month}/${monthStart!
-        .year} to ${monthEnd!.day}/${monthEnd!.month}/${monthEnd!.year}";
+    return "${monthStart!.day}/${monthStart!.month}/${monthStart!.year} to ${monthEnd!.day}/${monthEnd!.month}/${monthEnd!.year}";
   }
 
   bool isDarkMode(BuildContext context) {
     return Theme.of(context).brightness == Brightness.dark;
   }
-
 
   // }
   double _totalHours = 0;
@@ -910,5 +1058,4 @@ bool _showTable = false;
   get compDec => _compDec;
 
   String get allocatedIncomeText => _allocatedIncomeText;
-
 } // end of provider class

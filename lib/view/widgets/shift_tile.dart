@@ -167,7 +167,7 @@ class _ShiftTileState extends State<ShiftTile> {
                                               shifts.indexOf(shift),
                                                 "${formatDate(shift.startTime.toString())}: ${shift.shiftType}",
                                               context,
-                                              shiftType: "Completed",
+                                              updateShiftTo: "Completed",
                                               endTime: shift.endTime.toString(),
                                             );
                                           });
@@ -501,7 +501,7 @@ class _ShiftTileState extends State<ShiftTile> {
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8),
                         ),
-                        tileColor: Colors.white,
+                        tileColor: Theme.of(context).colorScheme.surface,
                         selectedTileColor: Colors.grey[100],
                       ),
                     ),
@@ -569,7 +569,7 @@ class _ShiftTileState extends State<ShiftTile> {
                                   provider.updateShiftStatus(
                                       index,
                                       "${formatDate(shift.startTime.toString())}: ${shift.shiftType}",
-                                      context, shiftType: "Deleted");
+                                      context, updateShiftTo: "Deleted");
                                   Navigator.pop(bottomSheetContext);
                                   Navigator.pop(context);
                                 },
@@ -641,7 +641,7 @@ class _ShiftTileState extends State<ShiftTile> {
                                       .updateShiftStatus(
                                       index,
                                       "${formatDate(shift.startTime.toString())}: ${shift.shiftType}",
-                                      context, shiftType: "Cancelled");
+                                      context, updateShiftTo: "Cancelled");
                                   Navigator.pop(bottomSheetContext);
                                   Navigator.pop(context);
                                 },
@@ -710,7 +710,7 @@ class _ShiftTileState extends State<ShiftTile> {
                                         .updateShiftStatus(
                                         index,
                                         "${formatDate(shift.startTime.toString())}: ${shift.shiftType}",
-                                        context, shiftType: "Revert");
+                                        context, updateShiftTo: "Revert");
                                     Navigator.pop(bottomSheetContext);
                                     Navigator.pop(context);
                                   },

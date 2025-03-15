@@ -2,6 +2,8 @@
 
 ###
 create new screen shot
+require consent for onesignal services
+
 
 issues
 git has removed all work on notifications

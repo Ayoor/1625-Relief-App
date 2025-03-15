@@ -1,17 +1,36 @@
 import 'package:animated_splash_screen/animated_splash_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:onesignal_flutter/onesignal_flutter.dart';
 import 'package:provider/provider.dart';
-import 'package:relief_app/services/notifications.dart';
 import 'package:relief_app/view/signin.dart';
 import 'package:relief_app/view/widgets/splashscreen.dart';
 import 'package:relief_app/viewmodel/provider.dart';
 import 'package:relief_app/viewmodel/theme.dart';
+import 'package:firebase_admin/firebase_admin.dart';
+
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
-  await Notifications().initNotifications();
+
+  OneSignal.Debug.setLogLevel(OSLogLevel.verbose);
+
+  // Initialize OneSignal with the correct App ID
+  OneSignal.initialize("8110724a-d13e-43f8-a58d-450454c49101");
+
+  // Set OneSignal to require user consent before collecting data
+  OneSignal.consentRequired(true);
+
+  // Now that OneSignal is initialized, request permission if not granted
+  bool hasPermission = await OneSignal.Notifications.permission;
+  if (!hasPermission) {
+    await OneSignal.Notifications.requestPermission(true);
+  }
+
+  // Give consent after initialization
+  OneSignal.consentGiven(true);
+
   runApp(
     MultiProvider(
       providers: [

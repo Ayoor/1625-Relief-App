@@ -550,7 +550,7 @@ class _NewShiftState extends State<NewShift> {
                   });
                 },
                 use24hFormat: false,
-                showDayOfWeek: true,
+                showDayOfWeek: false,
                 initialDateTime: minDate(timeDetail).add(Duration(minutes: 15)),
                 maximumDate: DateTime.now().add(Duration(days: 40)),
                 minimumDate: minDate(timeDetail).subtract(Duration(hours: 3)),

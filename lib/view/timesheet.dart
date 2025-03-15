@@ -294,10 +294,9 @@ class _TimeSheetState extends State<TimeSheet> {
                         ),
                         onPressed: () {
                           if (dateFormater(endTime) != "Choose" && startTime != null && endTime != null) {
-
+                            locationShort = loc[selectedLocation] ?? "";
                               provider.generateTimeSheet(startTime!, endTime!,
                                   selectedLocation, context);
-                              locationShort = loc[selectedLocation] ?? "";
                             } else {
 Fluttertoast.showToast(msg: "Enter shift start/end date.");
                             }
@@ -440,7 +439,7 @@ Fluttertoast.showToast(msg: "Enter shift start/end date.");
                               data: provider.exportData,
                               total: provider.totalHours)
                           .newCEHTimeSheet();
-                      SaveandOpenPDF().sendEmailWithAttachment(file);
+                      SaveandOpenPDF().sendEmailWithAttachment(file, locationShort, "${dateFormater(startTime)} to ${dateFormater(endTime)}");
                       if (mounted) {
                         provider.showMessage(
                             context: context,
