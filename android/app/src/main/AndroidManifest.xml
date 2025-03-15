@@ -23,9 +23,9 @@
         <meta-data
             android:name="com.onesignal.NotificationIcon"
             android:resource="@drawable/app_icon" />
-        <meta-data
-            android:name="com.onesignal.NotificationAccentColor"
-            android:value="FABB05" />
+<!--        <meta-data-->
+<!--            android:name="com.onesignal.NotificationAccentColor"-->
+<!--            android:value="FFB500" />-->
         <activity
             android:name=".MainActivity"
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|layoutDirection"

@@ -539,13 +539,12 @@ class AppProvider extends ChangeNotifier {
     Map<String, dynamic> body = {
       "app_id": oneSignalAppId,
       "include_external_user_ids": [userId],
-      // Send notification to the specific user
       "template_id": templateId,
-      // Use the saved template ID from the OneSignal console
+
       "send_after": scheduledTimeUtc,
-      // Schedule time in UTC
       "small_icon": "app_icon",
-      "large_icon": "app_icon"
+      "large_icon": "app_icon",
+      "large_icon": "FFB500"
     };
 
     try {
