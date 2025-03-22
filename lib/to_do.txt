@@ -1,20 +1,20 @@
 
 
-###
-create new screen shot
+### pending
+push notifications to tick completed shifts 30 mins after end of shift, cancel if already ticked.
+check if internet is connected
+cancel circular progressbar if no internet for some seconds
+admin web dashboard
+
+
+##issues
+Notification toggle, doesn't work when turned back on.
+shift not updating after deleting
+
+##later
+create new screen shots
 require consent for onesignal services
-
-
-issues
-
-
 Onboarding Screen
 Implement daily tasks checklist
-push notifications for shift and for timesheet.
-
 change email to yahoo
-
 activity log
-
-
-

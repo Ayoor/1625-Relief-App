@@ -14,7 +14,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
 
-  OneSignal.Debug.setLogLevel(OSLogLevel.verbose);
+  // OneSignal.Debug.setLogLevel(OSLogLevel.verbose);
 
   // Initialize OneSignal with the correct App ID
   OneSignal.initialize("8110724a-d13e-43f8-a58d-450454c49101");
