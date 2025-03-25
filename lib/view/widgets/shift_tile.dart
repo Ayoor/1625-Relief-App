@@ -527,7 +527,7 @@ class _ShiftTileState extends State<ShiftTile> {
       builder: (bottomSheetContext) => Padding(
           padding: const EdgeInsets.all(10),
           child: SizedBox(
-            height: MediaQuery.of(context).size.height / 6,
+            height: 200,
             child: Padding(
               padding: const EdgeInsets.all(8.0),
               child: Column(
@@ -546,13 +546,11 @@ class _ShiftTileState extends State<ShiftTile> {
                             content: Text(
                                 "Are you sure you want to Delete this shift?"),
                             actions: [
-                              InkWell(
-                                onTap: () {
+                              TextButton(
+                                onPressed: () {
                                   Navigator.pop(bottomSheetContext);
                                   Navigator.pop(context);
                                 },
-                                splashColor: Colors.transparent,
-                                highlightColor: Colors.transparent,
                                 child: SizedBox(
                                     width: 50,
                                     child: Center(
@@ -562,18 +560,15 @@ class _ShiftTileState extends State<ShiftTile> {
                                               fontSize: 18),
                                         ))),
                               ),
-                              InkWell(
-                                splashColor: Colors.transparent,
-                                highlightColor: Colors.transparent,
-                                onTap: () {
-                                  provider.updateShiftStatus(
+                              TextButton(
+                                onPressed: () async{
+                                 await provider.updateShiftStatus(
                                       index,
                                       "${formatDate(shift.startTime.toString())}: ${shift.shiftType}",
                                       context, updateShiftTo: "Deleted");
                                   Navigator.pop(bottomSheetContext);
                                   Navigator.pop(context);
                                 },
-                                enableFeedback: false,
                                 child: Text("Yes",
                                     style: TextStyle(
                                         fontSize: 18,
@@ -617,13 +612,11 @@ class _ShiftTileState extends State<ShiftTile> {
                             content: Text(
                                 "Are you sure you want to cancel this shift?"),
                             actions: [
-                              InkWell(
-                                onTap: () {
+                              TextButton(
+                                onPressed: () {
                                   Navigator.pop(bottomSheetContext);
                                   Navigator.pop(context);
                                 },
-                                splashColor: Colors.transparent,
-                                highlightColor: Colors.transparent,
                                 child: SizedBox(
                                     width: 50,
                                     child: Center(
@@ -633,19 +626,15 @@ class _ShiftTileState extends State<ShiftTile> {
                                               fontSize: 18),
                                         ))),
                               ),
-                              InkWell(
-                                splashColor: Colors.transparent,
-                                highlightColor: Colors.transparent,
-                                onTap: () {
-                                  provider
-                                      .updateShiftStatus(
+                              TextButton(
+                                onPressed: () async{
+                                  await provider.updateShiftStatus(
                                       index,
                                       "${formatDate(shift.startTime.toString())}: ${shift.shiftType}",
                                       context, updateShiftTo: "Cancelled");
                                   Navigator.pop(bottomSheetContext);
                                   Navigator.pop(context);
                                 },
-                                enableFeedback: false,
                                 child: Text("Yes",
                                     style: TextStyle(
                                         fontSize: 18,

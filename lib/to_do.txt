@@ -9,7 +9,9 @@ admin web dashboard
 
 ##issues
 Notification toggle, doesn't work when turned back on.
-shift not updating after deleting
+shift not updating after deleting or cancelling
+Notification sounds not changing from default
+
 
 ##later
 create new screen shots

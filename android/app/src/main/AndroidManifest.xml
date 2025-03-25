@@ -24,6 +24,9 @@
             android:name="com.onesignal.NotificationIcon"
             android:resource="@drawable/app_icon" />
         <meta-data
+            android:name="com.onesignal.NotificationServiceExtension"
+            android:value="true"/>
+        <meta-data
             android:name="com.onesignal.NotificationAccentColor"
             android:value="000000" />
         <activity
