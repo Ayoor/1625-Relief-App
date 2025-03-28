@@ -42,7 +42,7 @@ class _AllShiftsState extends State<AllShifts>
             backgroundColor: Colors.orange,
             child:  Text(
               "New Shift",
-              style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
+              style: TextStyle(color: Colors.white),
             ),
           ),
         ),

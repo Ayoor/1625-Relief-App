@@ -56,8 +56,6 @@ class AppProvider extends ChangeNotifier {
 
     if (googleEmail != null) {
       userEmail = googleEmail.replaceAll(".", "dot");
-
-      // Proceed to the home screen
     } else if (email != null) {
       userEmail = email.replaceAll(".", "dot");
     }
@@ -74,29 +72,50 @@ class AppProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void updateShiftStatus(int index, String key, BuildContext context,
-      {String startDate= "", String updateShiftTo = "", String endTime = "", }) async {
+  Future<void> updateShiftStatus(int index, String key, BuildContext context,
+      {String startDate = "",
+      String updateShiftTo = "",
+      String endTime = ""}) async {
     String email = await userEmail();
+    if (email.isEmpty) {
+      print("Error: No valid email found.");
+      return;
+    }
+
+    String? userId = await OneSignal.User.getExternalId();
+    if (userId == null) {
+      print("Error: No valid OneSignal user ID found.");
+      return;
+    }
 
     try {
-      // Reference to the specific shift in the Firebase Database
       final DatabaseReference dbRef =
-      FirebaseDatabase.instance.ref().child("Users/$email/Shifts/$key");
+          FirebaseDatabase.instance.ref().child("Users/$email/Shifts/$key");
 
-      // Retrieve the notification ID from the database
-      final snapshot = await dbRef.child("notificationId").get();
-      String? notificationId = snapshot.value?.toString();
+      // Retrieve notification IDs
+      final snapshot = await dbRef.child("NotificationIdPre").get();
+      String? notificationIdPre = snapshot.value?.toString();
+
+      final snapshot2 = await dbRef.child("NotificationIdPost").get();
+      String? notificationIdPost = snapshot2.value?.toString();
+      print("Notification IDs: $notificationIdPre, $notificationIdPost" );
+
 
       switch (updateShiftTo) {
-        case "Scheduled":
-          await dbRef.update({"status": "Scheduled"});
-          break;
-
         case "Cancelled":
           await dbRef.update({"status": "Cancelled"});
-          if (notificationId != null) {
-            cancelNotification(notificationId);
+          if (notificationIdPre != null) cancelNotification(notificationIdPre);
+          if (notificationIdPost != null) cancelNotification(notificationIdPost);
+          if (context.mounted) {
+            showMessage(
+              context: context,
+              message: "Shift Cancelled.",
+              type: ToastificationType.success,
+              icon: Icons.check,
+            );
+            fetchShifts(context);
           }
+
           break;
 
         case "Completed":
@@ -111,37 +130,66 @@ class AppProvider extends ChangeNotifier {
             return;
           }
           await dbRef.update({"status": "Completed"});
+          if (notificationIdPost != null)
+            cancelNotification(notificationIdPost);
+          if (context.mounted) {
+            showMessage(
+              context: context,
+              message: "Shift status updated successfully.",
+              type: ToastificationType.success,
+              icon: Icons.check,
+            );
+            fetchShifts(context);
+          }
+
           break;
 
         case "Deleted":
           await dbRef.update({"status": "Deleted"});
-          if (notificationId != null) {
-            cancelNotification(notificationId);
+          if (notificationIdPre != null) cancelNotification(notificationIdPre);
+          if (notificationIdPost != null)
+            cancelNotification(notificationIdPost);
+          if (context.mounted) {
+            showMessage(
+              context: context,
+              message: "Shift Deleted.",
+              type: ToastificationType.success,
+              icon: Icons.check,
+            );
+            fetchShifts(context);
           }
+
           break;
 
         case "Revert":
           await dbRef.update({"status": "Scheduled"});
-          DateTime scheduledTime = DateTime.parse(startDate).subtract(Duration(hours: 3));
-          scheduleNotification(userId: oneSignalAppId , templateId: templateId, scheduledTime: scheduledTime);
+          DateTime scheduledTimePre =
+              DateTime.parse(startDate).subtract(Duration(hours: 3));
+          DateTime scheduledTimePost =
+              DateTime.parse(endTime).add(Duration(minutes: 30));
+          scheduleNotification(
+              userId: userId,
+              templateId: templateId,
+              scheduledTime: scheduledTimePre);
+          scheduleNotification(
+              userId: userId,
+              templateId: completedShiftsTemplateId,
+              scheduledTime: scheduledTimePost);
+          if (context.mounted) {
+            showMessage(
+              context: context,
+              message: "Shift Cancellation Reverted.",
+              type: ToastificationType.success,
+              icon: Icons.check,
+            );
+            fetchShifts(context);
+          }
+
           break;
       }
 
-      // Notify listeners to update UI
-      notifyListeners();
-
-      // Show success message
-      showMessage(
-        context: context,
-        message: "Shift status updated successfully.",
-        type: ToastificationType.success,
-        icon: Icons.check,
-      );
-
-      fetchShifts(context);
       notifyListeners();
     } catch (e) {
-      // Show error message if the update fails
       if (context.mounted) {
         showMessage(
           context: context,
@@ -196,7 +244,7 @@ class AppProvider extends ChangeNotifier {
       description: Text(
         message,
         style: TextStyle(
-            color: Theme.of(context).colorScheme.onSurface,
+            color: Colors.white,
             fontWeight: FontWeight.bold),
       ),
       alignment: Alignment.topCenter,
@@ -204,7 +252,7 @@ class AppProvider extends ChangeNotifier {
       foregroundColor: Theme.of(context).colorScheme.onSurface,
       icon: Icon(
         icon,
-        color: Theme.of(context).colorScheme.onSurface,
+        color: Colors.white,
       ),
       style: ToastificationStyle.fillColored,
       autoCloseDuration: const Duration(seconds: 2),
@@ -513,12 +561,13 @@ class AppProvider extends ChangeNotifier {
     return format.parse(date);
   }
 
-  //shedule shift reminder notification
+  //schedule shift reminder notification
 
   Future<void> scheduleNotification({
     required String userId,
     required String templateId, // Add the template ID here
     required DateTime scheduledTime,
+    String? notificationType,
   }) async {
     // change to actual time
 
@@ -540,10 +589,7 @@ class AppProvider extends ChangeNotifier {
       "app_id": oneSignalAppId,
       "include_external_user_ids": [userId],
       "template_id": templateId,
-
       "send_after": scheduledTimeUtc,
-      "small_icon": "app_icon",
-      "large_icon": "app_icon",
     };
 
     try {
@@ -559,7 +605,12 @@ class AppProvider extends ChangeNotifier {
         print("✅ Notification scheduled successfully: ${response.body}");
         final Map<String, dynamic> responseData = jsonDecode(response.body);
         String notificationId = responseData['id']; // Extract notification ID
-        _notificationID= notificationId;
+        if (notificationType == "Pre") {
+          _notificationID = notificationId;
+        }
+        if (notificationType == "Post") {
+          _shiftCompleteNotificationID = notificationId;
+        }
       } else {
         print("❌ Failed to schedule notification: ${response.body}");
       }
@@ -567,15 +618,15 @@ class AppProvider extends ChangeNotifier {
       print("❌ Error scheduling notification: $e");
     }
   }
+
   final String oneSignalAppId = "8110724a-d13e-43f8-a58d-450454c49101";
   final String oneSignalRestApiKey =
       "os_v2_app_qeiheswrhzb7rjmniucfjreraeluvmilmkjummejdexh6ui6lp7npq6jkxpv5jobmgzauq4yxpep2ytxydvsyvjeguenepqj2yzrhxq";
 
-//cancel shift notification
+  //cancel shift notification
   Future<void> cancelNotification(String notificationId) async {
-
-
-    final Uri url = Uri.parse("https://onesignal.com/api/v1/notifications/$notificationId?app_id=$oneSignalAppId");
+    final Uri url = Uri.parse(
+        "https://onesignal.com/api/v1/notifications/$notificationId?app_id=$oneSignalAppId");
 
     final Map<String, String> headers = {
       "Content-Type": "application/json",
@@ -593,6 +644,64 @@ class AppProvider extends ChangeNotifier {
     } catch (e) {
       print("❌ Error canceling notification: $e");
     }
+  }
+
+  void scheduleMonthlyTimeSheetNotification() async {
+    String timeSheetTemplateID = "aa162c41-24a4-4c56-b79b-c0a21449814f";
+    String email = await userEmail();
+    final DatabaseReference dbRef =
+        FirebaseDatabase.instance.ref("Users/$email/Last Login");
+    final DateTime now = DateTime.now();
+    final DateTime? lastLogin = await getLastLogin(dbRef);
+
+    // If user has already logged in this month, do nothing
+    if (lastLogin != null &&
+        lastLogin.year == now.year &&
+        lastLogin.month == now.month) {
+      await updateLastLogin(dbRef, now); // Just update login date
+      return;
+    }
+
+    // Try to get the external user ID (set during login)
+    String? userId = await OneSignal.User.getExternalId();
+
+    if (userId == null) {
+      print("Error: No valid OneSignal user ID found.");
+      return;
+    }
+
+    // Find the correct notification date
+    DateTime notificationDate =
+        DateTime(now.year, now.month + 1, 10, 10, 0); // Next 10th at 10 AM
+    if (notificationDate.weekday == DateTime.saturday) {
+      notificationDate =
+          notificationDate.subtract(Duration(days: 1)); // Move to 9th
+    } else if (notificationDate.weekday == DateTime.sunday) {
+      notificationDate =
+          notificationDate.subtract(Duration(days: 2)); // Move to 8th
+    }
+
+    // Schedule notification
+    await scheduleNotification(
+        userId: userId,
+        templateId: timeSheetTemplateID,
+        scheduledTime: notificationDate);
+
+    // Update last login in database
+    await updateLastLogin(dbRef, now);
+  }
+
+  Future<DateTime?> getLastLogin(DatabaseReference dbRef) async {
+    final snapshot = await dbRef.get();
+    if (snapshot.exists) {
+      return DateTime.parse(snapshot.value.toString());
+    }
+    return null;
+  }
+
+  Future<void> updateLastLogin(
+      DatabaseReference dbRef, DateTime loginTime) async {
+    await dbRef.set(loginTime.toIso8601String());
   }
 
 // Function to add new shift and save it to Firebase Realtime Database// For date formatting
@@ -642,19 +751,23 @@ class AppProvider extends ChangeNotifier {
             .child("Users/$email/Shifts/$dateKey: ${shift.shiftType}");
 
         // Save each shift under the date key in "Shifts"
-        // await dbRef.set(shift.toJson());
-       // await scheduleNotification(
-       //    userId: userId,
-       //    templateId: templateId,
-       //    scheduledTime: shift.startTime.subtract(Duration(hours: 3)),
-       //  );
+        await dbRef.set(shift.toJson());
         await scheduleNotification(
-          userId: userId,
-          templateId: templateId,
-          scheduledTime: DateTime.now().add(Duration(seconds:10)),
-        );
+           userId: userId,
+           templateId: templateId,
+           scheduledTime: shift.startTime.subtract(Duration(hours: 3)),
+          notificationType: "Pre"
+         );
 
-        // dbRef.child("NotificationId").set(_notificationID);
+         await scheduleNotification(
+           userId: userId,
+           templateId: completedShiftsTemplateId,
+           scheduledTime: shift.endTime.add(Duration(minutes: 30)),
+           notificationType: "Post"
+         );
+
+         dbRef.child("NotificationIdPre").set(_notificationID);
+         dbRef.child("NotificationIdPost").set(_shiftCompleteNotificationID);
       }
 
       shifts.clear();
@@ -682,11 +795,17 @@ class AppProvider extends ChangeNotifier {
       }
     }
   }
-final templateId = "b1b1fae0-45f9-44c0-88f9-af88420700c1";
+
+  final templateId = "b1b1fae0-45f9-44c0-88f9-af88420700c1";
+  final completedShiftsTemplateId = "20e7cb0a-4966-4b20-ad6c-f7499cc61f7a";
   late List<bool> _isCheckedList;
-  String _notificationID="";
+  String _notificationID = "";
 
   String get notificationID => _notificationID;
+
+  String _shiftCompleteNotificationID = "";
+
+  String get shiftCompleteNotificationID => _shiftCompleteNotificationID;
 
   List<bool> checkboxes() {
     _isCheckedList = List<bool>.filled(scheduledShifts.length, false);

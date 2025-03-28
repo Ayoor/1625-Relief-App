@@ -8,6 +8,7 @@ import '../viewmodel/provider.dart';
 import 'income.dart';
 import 'overview.dart';
 import 'widgets/customNav.dart';
+import 'package:onesignal_flutter/onesignal_flutter.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key, required this.title});
@@ -31,14 +32,12 @@ class _HomeScreenState extends State<HomeScreen> {
       final prov = Provider.of<AppProvider>(context, listen: false);
       prov.getIncomeSummary(context);
       prov.fetchUser(context);
+      prov.scheduleMonthlyTimeSheetNotification();
     });
   }
 
-
   @override
   Widget build(BuildContext context) {
-
-
     return Scaffold(
       key: scaffoldKey,
       appBar: AppBar(
@@ -61,7 +60,9 @@ class _HomeScreenState extends State<HomeScreen> {
                 )
               ],
             ),
-            SizedBox(height: 2,)
+            SizedBox(
+              height: 2,
+            )
           ],
         ),
       ),

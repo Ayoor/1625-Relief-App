@@ -1,18 +1,20 @@
 
 
-###
-create new screen shot
+### pending
+check if internet is connected
+cancel circular progressbar if no internet for some seconds
+admin web dashboard
+
+
+##issues
+Notification toggle, doesn't work when turned back on.
+Notification sounds not changing from default
+
+
+##later
+create new screen shots
 require consent for onesignal services
-
-
-issues
-
 Onboarding Screen
-push notifications for shift and for timesheet.
-
+Implement daily tasks checklist
 change email to yahoo
-
 activity log
-
-
-
