@@ -93,11 +93,13 @@ class AppProvider extends ChangeNotifier {
           FirebaseDatabase.instance.ref().child("Users/$email/Shifts/$key");
 
       // Retrieve notification IDs
-      final snapshot = await dbRef.child("notificationIdPre").get();
+      final snapshot = await dbRef.child("NotificationIdPre").get();
       String? notificationIdPre = snapshot.value?.toString();
 
-      final snapshot2 = await dbRef.child("notificationIdPost").get();
+      final snapshot2 = await dbRef.child("NotificationIdPost").get();
       String? notificationIdPost = snapshot2.value?.toString();
+      print("Notification IDs: $notificationIdPre, $notificationIdPost" );
+
 
       switch (updateShiftTo) {
         case "Cancelled":
@@ -242,7 +244,7 @@ class AppProvider extends ChangeNotifier {
       description: Text(
         message,
         style: TextStyle(
-            color: Theme.of(context).colorScheme.onSurface,
+            color: Colors.white,
             fontWeight: FontWeight.bold),
       ),
       alignment: Alignment.topCenter,
@@ -250,7 +252,7 @@ class AppProvider extends ChangeNotifier {
       foregroundColor: Theme.of(context).colorScheme.onSurface,
       icon: Icon(
         icon,
-        color: Theme.of(context).colorScheme.onSurface,
+        color: Colors.white,
       ),
       style: ToastificationStyle.fillColored,
       autoCloseDuration: const Duration(seconds: 2),
@@ -750,22 +752,22 @@ class AppProvider extends ChangeNotifier {
 
         // Save each shift under the date key in "Shifts"
         await dbRef.set(shift.toJson());
-        // await scheduleNotification(
-        //    userId: userId,
-        //    templateId: templateId,
-        //    scheduledTime: shift.startTime.subtract(Duration(hours: 3)),
-        //   notificationType: "Pre"
-        //  );
-        //
-        //  await scheduleNotification(
-        //    userId: userId,
-        //    templateId: completedShiftsTemplateId,
-        //    scheduledTime: shift.endTime.add(Duration(minutes: 30)),
-        //    notificationType: "Post"
-        //  );
-        //
-        //  dbRef.child("NotificationIdPre").set(_notificationID);
-        //  dbRef.child("NotificationIdPost").set(_shiftCompleteNotificationID);
+        await scheduleNotification(
+           userId: userId,
+           templateId: templateId,
+           scheduledTime: shift.startTime.subtract(Duration(hours: 3)),
+          notificationType: "Pre"
+         );
+
+         await scheduleNotification(
+           userId: userId,
+           templateId: completedShiftsTemplateId,
+           scheduledTime: shift.endTime.add(Duration(minutes: 30)),
+           notificationType: "Post"
+         );
+
+         dbRef.child("NotificationIdPre").set(_notificationID);
+         dbRef.child("NotificationIdPost").set(_shiftCompleteNotificationID);
       }
 
       shifts.clear();

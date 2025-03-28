@@ -1,7 +1,6 @@
 
 
 ### pending
-push notifications to tick completed shifts 30 mins after end of shift, cancel if already ticked.
 check if internet is connected
 cancel circular progressbar if no internet for some seconds
 admin web dashboard
@@ -9,7 +8,6 @@ admin web dashboard
 
 ##issues
 Notification toggle, doesn't work when turned back on.
-shift not updating after deleting or cancelling
 Notification sounds not changing from default
 
 

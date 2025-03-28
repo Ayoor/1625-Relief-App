@@ -3,6 +3,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import 'package:relief_app/view/changepassword.dart';
 import 'package:relief_app/viewmodel/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:toastification/toastification.dart';
 import 'package:relief_app/view/widgets/delete_confirmation.dart';
 
@@ -21,6 +22,7 @@ class _SettingsState extends State<Settings> {
   TextEditingController currentPasswordController = TextEditingController();
   TextEditingController newPasswordController = TextEditingController();
   TextEditingController confirmPasswordController = TextEditingController();
+  bool _isNotificationsEnabled = false;
 
   @override
   void dispose() {
@@ -35,59 +37,109 @@ class _SettingsState extends State<Settings> {
   void initState() {
     super.initState();
     _checkNotificationPermission();
+    _loadNotificationStatus();
   }
 
-  Future<void> _toggleNotifications(bool enabled) async {
-    if (enabled) {
-      // Check if notification permission is granted
-      PermissionStatus status = await Permission.notification.status;
+  /// Load notification toggle status from SharedPreferences
+  Future<void> _loadNotificationStatus() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _isNotificationsEnabled = prefs.getBool('notifications_enabled') ?? false;
+    });
+    print("Notification status loaded: $_isNotificationsEnabled");
+  }
 
-      if (!status.isGranted) {
-        // If not granted, request permission
-        PermissionStatus newStatus = await Permission.notification.request();
+  /// Save notification toggle status to SharedPreferences
+  Future<void> _saveNotificationStatus(bool enabled) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('notifications_enabled', enabled);
+  }
+  void _toggleNotifications(bool isEnabled) async {
+    setState(() {
+      _isNotificationsEnabled = isEnabled;
+    });
+    // Now that OneSignal is initialized, request permission if not granted
+    bool hasPermission = await OneSignal.Notifications.permission;
+    if (isEnabled==true) {
+      // Set OneSignal to require user consent before collecting data
+      OneSignal.Notifications.requestPermission(isEnabled);
 
-        if (newStatus.isGranted) {
-          // Permission granted, now initialize OneSignal if needed
-          await OneSignal.Notifications.requestPermission(true);
-          OneSignal.consentGiven(true);
-        } else {
-          // Optionally handle the case when the user denies permission
-          print("Permission denied");
-          // Show dialog before opening settings
-          _showPermissionDialog(context);
-        }
-      } else {
-        // Permission already granted, enable notifications
-        await OneSignal.Notifications.requestPermission(true);();
+
+      if (!hasPermission) {
+        await OneSignal.Notifications.requestPermission(true);
       }
-    } else {
-      // Optionally, disable notifications here
-      await OneSignal.Notifications.requestPermission(false);();
-    }
 
-    // Check permission status again
-    _checkNotificationPermission();
+
+      OneSignal.consentGiven(true);
+      await OneSignal.User.pushSubscription.optIn();
+    } else {
+      await OneSignal.User.pushSubscription.optOut();
+      OneSignal.consentGiven(false);
+    }
+    _saveNotificationStatus(_isNotificationsEnabled);
   }
 
-  void _showPermissionDialog(BuildContext context) {
+  /// Toggle notifications on/off
+  // Future<void> _toggleNotifications(bool enabled) async {
+  //   setState(() {
+  //     _isNotificationsEnabled = enabled;
+  //   });
+  //
+  //   if (enabled) {
+  //     // Check if notification permission is granted
+  //       PermissionStatus status = await Permission.notification.status;
+  //
+  //     if (!status.isGranted) {
+  //       // Request permission if not granted
+  //       PermissionStatus newStatus = await Permission.notification.request();
+  //
+  //       if (newStatus.isGranted) {
+  //         // Enable OneSignal notifications
+  //         await OneSignal.Notifications.requestPermission(true);
+  //         OneSignal.consentGiven(true);
+  //         await OneSignal.User.pushSubscription.optIn();
+  //       } else {
+  //         print("Permission denied");
+  //         // Show dialog before opening settings (optional)
+  //         _showPermissionDialog();
+  //         // Reset toggle if permission denied
+  //         setState(() {
+  //           _isNotificationsEnabled = false;
+  //         });
+  //       }
+  //     } else {
+  //       // Enable OneSignal notifications
+  //       await OneSignal.Notifications.requestPermission(true);
+  //       await OneSignal.User.pushSubscription.optIn();
+  //     }
+  //   } else {
+  //     // Disable OneSignal notifications
+  //     await OneSignal.User.pushSubscription.optOut();
+  //   }
+  //
+  //   // Save the toggle status
+  //   _saveNotificationStatus(_isNotificationsEnabled);
+  // }
+
+  /// Show dialog prompting the user to enable notifications in settings
+  void _showPermissionDialog() {
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
           title: Text("Enable Notifications"),
-          content: Text(
-              "Notifications are disabled. Please go to settings and enable them."),
+          content: Text("To receive notifications, please enable them in settings."),
           actions: [
             TextButton(
               onPressed: () {
-                Navigator.of(context).pop(); // Close the dialog
+                Navigator.pop(context);
               },
               child: Text("Cancel"),
             ),
             TextButton(
               onPressed: () {
-                openAppSettings(); // Open settings
-                Navigator.of(context).pop(); // Close the dialog
+                openAppSettings(); // Open app settings
+                Navigator.pop(context);
               },
               child: Text("Open Settings"),
             ),
@@ -102,9 +154,9 @@ class _SettingsState extends State<Settings> {
     setState(() {
       _isNotificationsEnabled = hasPermission;
     });
+    print("Notification permission: $hasPermission");
   }
 
-  bool _isNotificationsEnabled = false;
 
   @override
   Widget build(BuildContext context) {
@@ -150,14 +202,14 @@ class _SettingsState extends State<Settings> {
                         themeProvider.toggleTheme();
                       },
                     ),
-  
+
                     ListTile(
                       title: Text("Notifications", style: TextStyle(fontWeight: FontWeight.bold)),
                       trailing: Container(
                         width: 50,
-                        padding: EdgeInsets.only(left: 30),
+                        padding: EdgeInsets.only(left: 20),
                         child: Transform.scale(
-                          scale: 0.5,
+                          scale: 0.7,
                           child: Switch(
                             value: _isNotificationsEnabled,
                             onChanged: (value) => _toggleNotifications(value),
@@ -201,7 +253,7 @@ class _SettingsState extends State<Settings> {
                               "Please note that deleting this account means you will lose all your data including your logged shifts and every other thing.\nThis is an irreversible action.\n\n"
                                   "Are you sure you want to delete your account?",
                               style: TextStyle(
-                                  color: Theme.of(context).colorScheme.onSurface),
+                                  color: Colors.white),
                             ),
                             actions: [
                               TextButton(
