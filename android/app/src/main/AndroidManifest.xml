@@ -14,7 +14,7 @@
         android:name="${applicationName}"
         android:enableOnBackInvokedCallback="true"
         android:icon="@mipmap/ic_launcher"
-        android:label="relief_app">
+        android:label="1625 Relief">
         <meta-data
             android:name="com.google.firebase.MESSAGING_EVENT"
             android:value="com.google.firebase.messaging.FirebaseMessagingService" />

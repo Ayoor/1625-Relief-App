@@ -1,11 +1,7 @@
   import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:onesignal_flutter/onesignal_flutter.dart';
-import 'package:provider/provider.dart';
-
-  import 'package:relief_app/utils/passwordhash.dart';
-
-  import 'package:relief_app/view/all_shifts.dart';
+i
 import 'package:relief_app/view/resetPassword.dart';
 
   import 'package:relief_app/view/signup.dart';
