@@ -1,14 +1,10 @@
 
 
 ### pending
-check if internet is connected
-cancel circular progressbar if no internet for some seconds
 admin web dashboard
 
 
 ##issues
-Notification toggle, doesn't work when turned back on.
-Notification sounds not changing from default
 
 
 ##later

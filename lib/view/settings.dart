@@ -1,5 +1,7 @@
+
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:permission_handler/permission_handler.dart' as AppSettings;
 import 'package:provider/provider.dart';
 import 'package:relief_app/view/changepassword.dart';
 import 'package:relief_app/viewmodel/provider.dart';
@@ -36,6 +38,7 @@ class _SettingsState extends State<Settings> {
   @override
   void initState() {
     super.initState();
+    OneSignal.initialize("8110724a-d13e-43f8-a58d-450454c49101");
     _checkNotificationPermission();
     _loadNotificationStatus();
   }
@@ -47,6 +50,8 @@ class _SettingsState extends State<Settings> {
       _isNotificationsEnabled = prefs.getBool('notifications_enabled') ?? false;
     });
     print("Notification status loaded: $_isNotificationsEnabled");
+    bool isSubscribed = await OneSignal.User.pushSubscription.optedIn??false;
+    print("Notification subscription: $isSubscribed");
   }
 
   /// Save notification toggle status to SharedPreferences
@@ -54,72 +59,8 @@ class _SettingsState extends State<Settings> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setBool('notifications_enabled', enabled);
   }
-  void _toggleNotifications(bool isEnabled) async {
-    setState(() {
-      _isNotificationsEnabled = isEnabled;
-    });
-    // Now that OneSignal is initialized, request permission if not granted
-    bool hasPermission = await OneSignal.Notifications.permission;
-    if (isEnabled==true) {
-      // Set OneSignal to require user consent before collecting data
-      OneSignal.Notifications.requestPermission(isEnabled);
 
 
-      if (!hasPermission) {
-        await OneSignal.Notifications.requestPermission(true);
-      }
-
-
-      OneSignal.consentGiven(true);
-      await OneSignal.User.pushSubscription.optIn();
-    } else {
-      await OneSignal.User.pushSubscription.optOut();
-      OneSignal.consentGiven(false);
-    }
-    _saveNotificationStatus(_isNotificationsEnabled);
-  }
-
-  /// Toggle notifications on/off
-  // Future<void> _toggleNotifications(bool enabled) async {
-  //   setState(() {
-  //     _isNotificationsEnabled = enabled;
-  //   });
-  //
-  //   if (enabled) {
-  //     // Check if notification permission is granted
-  //       PermissionStatus status = await Permission.notification.status;
-  //
-  //     if (!status.isGranted) {
-  //       // Request permission if not granted
-  //       PermissionStatus newStatus = await Permission.notification.request();
-  //
-  //       if (newStatus.isGranted) {
-  //         // Enable OneSignal notifications
-  //         await OneSignal.Notifications.requestPermission(true);
-  //         OneSignal.consentGiven(true);
-  //         await OneSignal.User.pushSubscription.optIn();
-  //       } else {
-  //         print("Permission denied");
-  //         // Show dialog before opening settings (optional)
-  //         _showPermissionDialog();
-  //         // Reset toggle if permission denied
-  //         setState(() {
-  //           _isNotificationsEnabled = false;
-  //         });
-  //       }
-  //     } else {
-  //       // Enable OneSignal notifications
-  //       await OneSignal.Notifications.requestPermission(true);
-  //       await OneSignal.User.pushSubscription.optIn();
-  //     }
-  //   } else {
-  //     // Disable OneSignal notifications
-  //     await OneSignal.User.pushSubscription.optOut();
-  //   }
-  //
-  //   // Save the toggle status
-  //   _saveNotificationStatus(_isNotificationsEnabled);
-  // }
 
   /// Show dialog prompting the user to enable notifications in settings
   void _showPermissionDialog() {
@@ -151,10 +92,12 @@ class _SettingsState extends State<Settings> {
 
   Future<void> _checkNotificationPermission() async {
     bool hasPermission = await OneSignal.Notifications.permission;
+
     setState(() {
       _isNotificationsEnabled = hasPermission;
     });
-    print("Notification permission: $hasPermission");
+    // print("Notification permission: $hasPermission");
+
   }
 
 
@@ -203,21 +146,20 @@ class _SettingsState extends State<Settings> {
                       },
                     ),
 
-                    ListTile(
-                      title: Text("Notifications", style: TextStyle(fontWeight: FontWeight.bold)),
-                      trailing: Container(
-                        width: 50,
-                        padding: EdgeInsets.only(left: 20),
-                        child: Transform.scale(
-                          scale: 0.7,
-                          child: Switch(
-                            value: _isNotificationsEnabled,
-                            onChanged: (value) => _toggleNotifications(value),
-                          ),
-                        ),
-                      ),
-                    )
-                    ,
+                    // ListTile(
+                    //   title: Text("Notifications", style: TextStyle(fontWeight: FontWeight.bold)),
+                    //   trailing: Container(
+                    //     width: 50,
+                    //     padding: EdgeInsets.only(left: 20),
+                    //     child: Transform.scale(
+                    //       scale: 0.7,
+                    //       child: Switch(
+                    //         value: _isNotificationsEnabled,
+                    //         onChanged: (value) => _toggleNotifications(value),
+                    //       ),
+                    //     ),
+                    //   ),
+                    // )
                     // Change Password
                     ListTile(
                       trailing: const Icon(Icons.lock_rounded, color: Colors.grey),

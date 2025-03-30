@@ -71,8 +71,8 @@ import 'home_Screen.dart';
 
       if (googleEmail != null || email != null) {
         String? userEmail = googleEmail ?? email;
-        OneSignal.login(userEmail!);
-
+        await OneSignal.login(userEmail!);
+        OneSignal.User.pushSubscription.optIn();
         print (userEmail);
         // Navigate directly to HomeScreen
         Future.microtask(() {
