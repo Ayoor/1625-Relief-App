@@ -153,7 +153,17 @@ class _OverviewState extends State<Overview> {
                     "Summary",
                     style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                   ),
+                  const SizedBox(height: 10),
+                  Center(
+                      child: Text(
+                        "Completed shifts by month",
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 18,
+                            color: Colors.pinkAccent.shade700),
+                      )),
                   const SizedBox(height: 30),
+
                   SizedBox(
                       height: MediaQuery.of(context).size.height / 3,
                       child: AnimatedBarGraph(
@@ -161,21 +171,15 @@ class _OverviewState extends State<Overview> {
                         labels: xLables,
                         maxY: 35,
                       )),
-                  const SizedBox(height: 10),
-                  Center(
-                      child: Text(
-                    "Completed shifts per month",
-                    style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 20,
-                        color: Colors.pinkAccent),
-                  )),
+
                   SizedBox(
                     height: 30,
                   ),
-                  Text(
-                    "Your metrics from ${provider.getDateRange()}",
-                    style: TextStyle(fontWeight: FontWeight.bold),
+                  Center(
+                    child: Text(
+                      "Shift metrics from ${provider.getDateRange()}",
+                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18, color: Colors.pinkAccent.shade700),
+                    ),
                   ),
                   SizedBox(
                     height: 10,
