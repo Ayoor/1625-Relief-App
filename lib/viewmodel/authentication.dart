@@ -58,7 +58,7 @@ bool isEmailVerification = false;
       "Authentication Type" :"Email"
     });
 
-    sendOTP(email);
+    // sendOTP(email);
   }
 
   bool isExpiredOTP() {

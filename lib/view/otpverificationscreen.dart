@@ -237,7 +237,7 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
                 child:  Text(
                   'VERIFY & PROCEED',
                   style: TextStyle(
-                    color: Theme.of(context).colorScheme.onSurface,
+                    color: Colors.white,
                     fontSize: 16,
                   ),
                 ),

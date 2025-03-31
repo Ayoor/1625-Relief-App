@@ -50,7 +50,14 @@ class _SigninState extends State<Signin> {
     final googleEmail = await authService.getSession('googleEmail');
     final email = await authService.getSession('email');
 
-    if (googleEmail != null || email != null) {
+    if (googleEmail == null && email == null) {
+      // No session found, update isLoading to show the sign-in screen
+      setState(() {
+        isLoading = false;
+      });
+
+    } else {
+
       String? userEmail = googleEmail ?? email;
       await OneSignal.login(userEmail!);
       OneSignal.User.pushSubscription.optIn();
@@ -64,12 +71,8 @@ class _SigninState extends State<Signin> {
           ),
         );
       });
-    } else {
-      // No session found, update isLoading to show the sign-in screen
-      setState(() {
-        isLoading = false;
-      });
     }
+
   }
 
   @override

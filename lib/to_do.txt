@@ -1,6 +1,9 @@
 
 
 ### pending
+tests
+send signup confirmation email
+update app in background
 admin web dashboard
 
 

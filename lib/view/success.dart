@@ -42,7 +42,7 @@ class _AccountSuccessState extends State<AccountSuccess> {
                         MaterialPageRoute(builder: (context) => Signin()));
                   },
                   child:  Text('Continue',
-                      style: TextStyle(color: Theme.of(context).colorScheme.onSurface)),
+                      style: TextStyle(color: Colors.white)),
                 ),
               ),
             ],
