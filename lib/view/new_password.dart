@@ -101,10 +101,12 @@ class _NewPasswordState extends State<NewPassword> {
                               icon: Icons.download_outlined);
 
                           //navigate to signin;
-                          Navigator.pushReplacement(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => Signin()));
+                          Navigator.pushAndRemoveUntil(
+                            context,
+                            MaterialPageRoute(builder: (context) => Signin()),
+                                (route) => false, // Removes all previous routes
+                          );
+
                         }
                       },
                       child: isLoading
@@ -118,7 +120,7 @@ class _NewPasswordState extends State<NewPassword> {
                             )
                           : Text(
                               "Finish",
-                              style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
+                              style: TextStyle(color: Colors.white),
                             ),
                     )),
               )

@@ -120,13 +120,13 @@ class _ResetPasswordState extends State<ResetPassword> {
                                 )
                               :  Text(
                                   "Reset Password",
-                                  style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
+                                  style: TextStyle(color: Colors.white),
                                 ),
                         )
                       : ElevatedButton(
                           style: ElevatedButton.styleFrom(
                               backgroundColor: Colors.blue),
-                          onPressed: () {
+                          onPressed: isLoading? null : () {
                             setState(() {
                               isLoading = true;
                             });
@@ -136,6 +136,12 @@ class _ResetPasswordState extends State<ResetPassword> {
                                   MaterialPageRoute(
                                       builder: (context) => NewPassword(email: emailController.text.trim(),)));
                             }
+                            else {
+                              setState(() {
+                                isLoading = false;
+                                errorText = "Invalid OTP";
+                              });
+                            }
                             //verify email and nav to new password page.
                           },
                           child: isLoading
@@ -143,13 +149,13 @@ class _ResetPasswordState extends State<ResetPassword> {
                                   height: 20,
                                   width: 20,
                                   child: CircularProgressIndicator(
-                                    color: Theme.of(context).colorScheme.onSurface,
+                                    color: Colors.white,
                                     strokeWidth: 2,
                                   ),
                                 )
                               : Text(
                                   "Reset",
-                                  style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
+                                  style: TextStyle(color: Colors.white),
                                 ),
                         ),
                 ),
