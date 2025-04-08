@@ -83,7 +83,7 @@ class _AccountState extends State<Account> {
             title: Text("First Name", style: TextStyle(fontWeight: FontWeight.bold),),
             subtitle: Text(firstname),
             onTap: (){
-              Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=> EditAccount(detail: "First Name")));
+              Navigator.push(context, MaterialPageRoute(builder: (context)=> EditAccount(detail: "First Name", value: firstname, )));
             },
             trailing: Icon(Icons.chevron_right, color: Colors.grey,),
 
@@ -92,7 +92,7 @@ class _AccountState extends State<Account> {
             title: Text("Last Name", style: TextStyle(fontWeight: FontWeight.bold),),
             subtitle: Text(lastname),
             onTap: (){
-              Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=> EditAccount(detail: "Last Name")));
+              Navigator.push(context, MaterialPageRoute(builder: (context)=> EditAccount(detail: "Last Name", value: lastname,)));
             },
             trailing: Icon(Icons.chevron_right, color: Colors.grey,),
           ),
@@ -102,7 +102,7 @@ class _AccountState extends State<Account> {
             subtitle: Text(targetText),
             onTap: () {
               // Navigate to target setting page
-              Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=> EditAccount(detail: "Monthly Target", target: user!.target,)));
+              Navigator.push(context, MaterialPageRoute(builder: (context)=> EditAccount(detail: "Monthly Target", value: user!.target,)));
             },
             trailing: Icon(Icons.chevron_right, color: Colors.grey,),
 

@@ -15,15 +15,16 @@ class Overview extends StatefulWidget {
 }
 
 class _OverviewState extends State<Overview> {
-  int remainingShiftToTarget =15;
+  int remainingShiftToTarget = 15;
+
   @override
   void initState() {
     super.initState();
 
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       final provider = Provider.of<AppProvider>(context, listen: false);
-     await  shiftsToTarget(provider);
-     provider.getDateRange();
+      await shiftsToTarget(provider);
+      provider.getDateRange();
       provider.getIncomeSummary(context);
     });
   }
@@ -32,34 +33,36 @@ class _OverviewState extends State<Overview> {
       NumberFormat.currency(locale: "en_UK", decimalDigits: 2, symbol: "£");
   final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
 
-
   Future<void> shiftsToTarget(AppProvider provider) async {
     ReliefUser? user = await provider.fetchUser(context);
-    String userTargetString= "";
-    double target =0;
+    String userTargetString = "";
+    double target = 0;
     if (user != null) {
       userTargetString = user.target.toString();
       userTargetString = userTargetString.replaceAll("£", "");
       userTargetString = userTargetString.replaceAll(",", "");
-      target =  double.tryParse(userTargetString) ?? 0.0;
-      double currentIncome= (provider.CEHShiftIncome+ provider.SGHShiftIncome + provider.woodleazeShiftIncome);
+      target = double.tryParse(userTargetString) ?? 0.0;
+      double currentIncome = (provider.CEHShiftIncome +
+          provider.SGHShiftIncome +
+          provider.woodleazeShiftIncome);
       double difference = target - currentIncome;
       if (difference <= 0) {
         setState(() {
-          remainingShiftToTarget =0;
+          remainingShiftToTarget = 0;
         });
-      }
-      else {
+      } else {
         setState(() {
-          remainingShiftToTarget = (difference/currentIncome +0.5).toInt();
+          remainingShiftToTarget = (difference / currentIncome + 0.5).toInt();
           // added one for contingency
-          remainingShiftToTarget = ((target/100 -provider.monthCompletedShifts)+1).round().toInt();
+          remainingShiftToTarget =
+              ((target / 100 - provider.monthCompletedShifts) + 1)
+                  .round()
+                  .toInt();
         });
       }
-    }
-    else{
+    } else {
       setState(() {
-        remainingShiftToTarget =0;
+        remainingShiftToTarget = 0;
       });
     }
   }
@@ -69,7 +72,6 @@ class _OverviewState extends State<Overview> {
     final provider = Provider.of<AppProvider>(context, listen: true);
 
     final List<OverviewDetails> overviewTiles = [
-
       OverviewDetails(
         title: "Allocated",
         value: provider.monthAlocatedShifts,
@@ -126,9 +128,11 @@ class _OverviewState extends State<Overview> {
     ];
 
     return Scaffold(
-        backgroundColor: Theme.of(context).brightness == Brightness.dark
-            ? Theme.of(context).colorScheme.surface // Softer white shadow in dark mode
-            : Colour("#f2f5fa"),
+      backgroundColor: Theme.of(context).brightness == Brightness.dark
+          ? Theme.of(context)
+              .colorScheme
+              .surface // Softer white shadow in dark mode
+          : Colour("#f2f5fa"),
       body: Consumer<AppProvider>(
         builder: (context, provider, child) => RefreshIndicator(
           color: Colors.blue,
@@ -148,22 +152,15 @@ class _OverviewState extends State<Overview> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  SizedBox(height: 10,),
+                  SizedBox(
+                    height: 10,
+                  ),
                   const Text(
                     "Summary",
                     style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                   ),
                   const SizedBox(height: 10),
-                  Center(
-                      child: Text(
-                        "Completed shifts by month",
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 18,
-                            color: Colors.pinkAccent.shade700),
-                      )),
                   const SizedBox(height: 30),
-
                   SizedBox(
                       height: MediaQuery.of(context).size.height / 3,
                       child: AnimatedBarGraph(
@@ -171,42 +168,56 @@ class _OverviewState extends State<Overview> {
                         labels: xLables,
                         maxY: 35,
                       )),
-
                   SizedBox(
-                    height: 30,
+                    height: 10,
                   ),
                   Center(
-                    child: Text(
-                      "Shift metrics from ${provider.getDateRange()}",
-                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18, color: Colors.pinkAccent.shade700),
-                    ),
-                  ),
+                      child: Text(
+                    "Completed shifts by month",
+                    style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 18,
+                        color: Colors.pinkAccent.shade700),
+                  )),
+                  Divider(color: Colors.grey.shade500),
                   SizedBox(
                     height: 10,
                   ),
                   for (int index = 0; index < overviewTiles.length; index++)
                     Container(
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadiusDirectional.circular(5),
-                          color: Theme.of(context).brightness == Brightness.dark?
-                          Theme.of(context).colorScheme.surface:
-                          Colour("#f2f5fa"),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadiusDirectional.circular(5),
+                        color: Theme.of(context).brightness == Brightness.dark
+                            ? Theme.of(context).colorScheme.surface
+                            : Colour("#f2f5fa"),
+                      ),
+
+                      child: Container(
+                        color: Theme.of(context).brightness == Brightness.dark
+                            ? Theme.of(context)
+                                .colorScheme
+                                .surface // Dark mode background
+                            : Colors.transparent, // Light mode background
+                        child: ListTile(
+                          title: Text(overviewTiles[index].title),
+                          trailing: Text(index == overviewTiles.length - 1
+                              ? "${overviewTiles[index].value}"
+                              : "${overviewTiles[index].value}"),
                         ),
-                        margin: EdgeInsets.only(
-                            bottom:
-                                index == overviewTiles.length - 1 ? 80 : 10),
-                        child: Container(
-                          color: Theme.of(context).brightness == Brightness.dark
-                              ? Theme.of(context).colorScheme.surface  // Dark mode background
-                              : Colors.transparent,          // Light mode background
-                          child: ListTile(
-                            title: Text(overviewTiles[index].title),
-                            trailing: Text(index == overviewTiles.length - 1
-                                ? "${overviewTiles[index].value}"
-                                : "${overviewTiles[index].value}"),
-                          ),
-                        ),
-                    )
+                      ),
+                    ),
+                  SizedBox(height: 20),
+                  Center(
+                    child: Text(
+                      "Shift metrics from ${provider.getDateRange()}",
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 18,
+                          color: Colors.pinkAccent.shade700),
+                    ),
+
+                  ),
+                  SizedBox(height: 50),
                 ],
               ),
             ),

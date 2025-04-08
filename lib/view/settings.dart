@@ -10,6 +10,7 @@ import 'package:toastification/toastification.dart';
 import 'package:relief_app/view/widgets/delete_confirmation.dart';
 
 import 'package:onesignal_flutter/onesignal_flutter.dart';
+import '../viewmodel/authentication.dart';
 import '../viewmodel/theme.dart';
 
 class Settings extends StatefulWidget {
@@ -25,6 +26,9 @@ class _SettingsState extends State<Settings> {
   TextEditingController newPasswordController = TextEditingController();
   TextEditingController confirmPasswordController = TextEditingController();
   bool _isNotificationsEnabled = false;
+  final Authentication authentication = Authentication();
+  bool emailVerified = false;
+  final AppProvider provider = AppProvider();
 
   @override
   void dispose() {
@@ -41,6 +45,22 @@ class _SettingsState extends State<Settings> {
     OneSignal.initialize("8110724a-d13e-43f8-a58d-450454c49101");
     _checkNotificationPermission();
     _loadNotificationStatus();
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      emailVerified = await isEmailVerification();
+      setState(() {
+        emailVerified = emailVerified;
+      });
+    });
+
+  }
+
+  Future<bool> isEmailVerification()async {
+    bool isemailauth = false;
+    String email = await provider.userEmail();
+    await authentication.checkEmailExists(email);
+    isemailauth = authentication.isEmailVerification;
+    print ("isemail = $isemailauth");
+    return isemailauth;
   }
 
   /// Load notification toggle status from SharedPreferences
@@ -161,6 +181,7 @@ class _SettingsState extends State<Settings> {
                     //   ),
                     // )
                     // Change Password
+                    if(emailVerified)
                     ListTile(
                       trailing: const Icon(Icons.lock_rounded, color: Colors.grey),
                       title: const Text(
@@ -168,7 +189,7 @@ class _SettingsState extends State<Settings> {
                         style: TextStyle(fontWeight: FontWeight.bold),
                       ),
                       onTap: () {
-                        Navigator.pushReplacement(
+                        Navigator.push(
                             context,
                             MaterialPageRoute(
                                 builder: (context) => const ChangePassword()));

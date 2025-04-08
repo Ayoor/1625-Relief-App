@@ -11,9 +11,8 @@ import 'account.dart';
 
 class EditAccount extends StatefulWidget {
   String detail;
-  String? target;
-
-  EditAccount({super.key, required this.detail, this.target});
+  String? value;
+  EditAccount({super.key, required this.value, required this.detail, });
 
   @override
   State<EditAccount> createState() => _EditAccountState();
@@ -36,10 +35,10 @@ class _EditAccountState extends State<EditAccount> {
   @override
   Widget build(BuildContext context) {
     setState(() {
-      if (widget.target == null) {
+      if (widget.value == null) {
         targetText = "Your current target has not been set";
       } else {
-        targetText = "Your current target is ${widget.target}";
+        targetText = "Your current target is ${widget.value}";
       }
     });
 
@@ -67,11 +66,11 @@ class _EditAccountState extends State<EditAccount> {
   Widget detailToEdit(String detail) {
     switch (detail) {
       //email
-      case "Email":
-        return Padding(
-          padding: const EdgeInsets.all(20.0),
-          child: email(detail),
-        );
+      // case "Email":
+      //   return Padding(
+      //     padding: const EdgeInsets.all(20.0),
+      //     child: email(detail),
+      //   );
       //monthly target
       case "Monthly Target":
         return Padding(
@@ -168,7 +167,10 @@ class _EditAccountState extends State<EditAccount> {
                     return;
                   });
                 }
-                double value = double.parse(targetController.text);
+                double value =0;
+                if(targetController.text.isNotEmpty) {
+                  value= double.parse(targetController.text);
+                }
                 if (value < 50) {
                   setState(() {
                     errorText = "Minimum monthly target is 50";
@@ -182,12 +184,7 @@ class _EditAccountState extends State<EditAccount> {
                   });
                   String target = formatter.format(value);
                   await setMonthlyTarget(target, context);
-                  Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => Account(),
-                    ),
-                  );
+                  Navigator.pop(context);
                 }
               },
               child: isLoading
@@ -198,7 +195,7 @@ class _EditAccountState extends State<EditAccount> {
                   : Text(
                       "Set Monthly Target",
                       style: TextStyle(
-                          color: Theme.of(context).colorScheme.onSurface),
+                          color: Colors.white),
                     ),
             ),
           ),
@@ -208,6 +205,7 @@ class _EditAccountState extends State<EditAccount> {
   }
 
   Column name(String detail) {
+    nameController.text = widget.value!;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -220,6 +218,8 @@ class _EditAccountState extends State<EditAccount> {
           child: SizedBox(
             width: 400,
             child: TextFormField(
+              autofocus: true,
+              // initialValue: widget.value,
               key: nameKey,
               controller: nameController,
               decoration: InputDecoration(
@@ -257,12 +257,7 @@ class _EditAccountState extends State<EditAccount> {
                 }
                 await changeUserName(
                     nameController.text.trim(), detail, context);
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => Account(),
-                  ),
-                );
+                Navigator.pop(context);
               },
               child: isLoading
                   ? CircularProgressIndicator(
@@ -272,7 +267,7 @@ class _EditAccountState extends State<EditAccount> {
                   : Text(
                       "Update",
                       style: TextStyle(
-                          color: Theme.of(context).colorScheme.onSurface),
+                          color: Colors.white,)
                     ),
             ),
           ),
@@ -282,73 +277,76 @@ class _EditAccountState extends State<EditAccount> {
   }
 
   //email
-  Column email(String detail) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          "Change $detail",
-          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 25),
-        ),
-        const SizedBox(height: 10),
-        Text(
-          "Your current email is gbengajohn4god@gmail.com",
-          style: TextStyle(color: Colors.grey),
-        ),
-        const SizedBox(height: 25),
-        TextFormField(
-          key: emailKey,
-          controller: emailController,
-          decoration: InputDecoration(
-            labelText: "New Email",
-            border: const OutlineInputBorder(),
-            prefixIcon: const Icon(Icons.email_outlined, size: 20),
-            errorText: errorText, // Show real-time error
-          ),
-          keyboardType: TextInputType.emailAddress,
-          textInputAction: TextInputAction.done,
-        ),
-        SizedBox(
-          height: 40,
-        ),
-        Center(
-          child: SizedBox(
-            width: 200,
-            child: ElevatedButton(
-              style: ElevatedButton.styleFrom(backgroundColor: Colors.blue),
-              onPressed: () async {
-                setState(() {
-                  isLoading = true;
-                });
-                validateEmail(emailController.text);
-                if (errorText == null) {
-                  setState(() {
-                    isLoading = false;
-                  });
-                  Fluttertoast.showToast(msg: "Good");
-                } else {
-                  setState(() {
-                    isLoading = false;
-                  });
-                  return;
-                }
-              },
-              child: isLoading
-                  ? CircularProgressIndicator(
-                      color: Theme.of(context).colorScheme.onSurface,
-                      strokeWidth: 2,
-                    )
-                  : Text(
-                      "Update Email",
-                      style: TextStyle(
-                          color: Theme.of(context).colorScheme.onSurface),
-                    ),
-            ),
-          ),
-        )
-      ],
-    );
-  }
+  // Column email(String detail) {
+  //   return Column(
+  //     crossAxisAlignment: CrossAxisAlignment.start,
+  //     children: [
+  //       Text(
+  //         "Change $detail",
+  //         style: TextStyle(fontWeight: FontWeight.bold, fontSize: 25),
+  //       ),
+  //       const SizedBox(height: 10),
+  //       Text(
+  //         "Your current email is gbengajohn4god@gmail.com",
+  //         style: TextStyle(color: Colors.grey),
+  //       ),
+  //       const SizedBox(height: 25),
+  //       TextFormField(
+  //         key: emailKey,
+  //         autofocus: true,
+  //         initialValue: "AAA",
+  //         // initialValue: widget.value,
+  //         controller: emailController,
+  //         decoration: InputDecoration(
+  //           labelText: "New Email",
+  //           border: const OutlineInputBorder(),
+  //           prefixIcon: const Icon(Icons.email_outlined, size: 20),
+  //           errorText: errorText, // Show real-time error
+  //         ),
+  //         keyboardType: TextInputType.emailAddress,
+  //         textInputAction: TextInputAction.done,
+  //       ),
+  //       SizedBox(
+  //         height: 40,
+  //       ),
+  //       Center(
+  //         child: SizedBox(
+  //           width: 200,
+  //           child: ElevatedButton(
+  //             style: ElevatedButton.styleFrom(backgroundColor: Colors.blue),
+  //             onPressed: () async {
+  //               setState(() {
+  //                 isLoading = true;
+  //               });
+  //               validateEmail(emailController.text);
+  //               if (errorText == null) {
+  //                 setState(() {
+  //                   isLoading = false;
+  //                 });
+  //                 Fluttertoast.showToast(msg: "Good");
+  //               } else {
+  //                 setState(() {
+  //                   isLoading = false;
+  //                 });
+  //                 return;
+  //               }
+  //             },
+  //             child: isLoading
+  //                 ? CircularProgressIndicator(
+  //                     color: Theme.of(context).colorScheme.onSurface,
+  //                     strokeWidth: 2,
+  //                   )
+  //                 : Text(
+  //                     "Update Email",
+  //                     style: TextStyle(
+  //                         color: Theme.of(context).colorScheme.onSurface),
+  //                   ),
+  //           ),
+  //         ),
+  //       )
+  //     ],
+  //   );
+  // }
 
   Future<void> validateEmail(String value) async {
     final Authentication auth = Authentication();

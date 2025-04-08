@@ -34,6 +34,9 @@ bool isEmailVerification = false;
       if(users["Authentication Type"]== "Email") {
         isEmailVerification = true;
       }
+      else {
+        isEmailVerification = false;
+      }
 
       return users["Email"]== email;
     }

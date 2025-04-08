@@ -115,13 +115,13 @@ class _TimeSheetState extends State<TimeSheet> {
                               Theme.of(context).colorScheme.surface,
                           listItemStyle: TextStyle(
                               color: isDarkMode(context)
-                                  ? Colors.white.withOpacity(0.5)
-                                  : Colors.grey.withOpacity(0.5)),
+                                  ? Colors.white
+                                  : Colors.black),
                           prefixIcon: Icon(
                             Icons.house,
                             color: isDarkMode(context)
-                                ? Colors.white.withOpacity(0.5)
-                                : Colors.grey.withOpacity(0.5),
+                                ? Colors.white
+                                : Colors.black,
                             size: 18,
                           ),
                         ),

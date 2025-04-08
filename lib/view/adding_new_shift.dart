@@ -67,7 +67,6 @@ class _NewShiftState extends State<NewShift> {
   Widget build(BuildContext context) {
     return Consumer<AppProvider>(
         builder: (context, provider, child) => Scaffold(
-            drawer: Sidebar(),
             appBar: AppBar(
               iconTheme: IconThemeData(
                 color: Theme.of(context).colorScheme.onSurface,

@@ -2,6 +2,7 @@ import 'package:colour/colour.dart';
 import 'package:flutter/material.dart';
 import 'package:persistent_bottom_nav_bar_v2/persistent_bottom_nav_bar_v2.dart';
 import 'package:provider/provider.dart';
+import 'package:relief_app/model/userData.dart';
 import 'package:relief_app/view/all_shifts.dart';
 import 'package:relief_app/view/widgets/SideBar.dart';
 import 'package:relief_app/view/widgets/internetstatuswrapper.dart';
@@ -34,6 +35,9 @@ class _HomeScreenState extends State<HomeScreen> {
       prov.getIncomeSummary(context);
       prov.fetchUser(context);
       prov.scheduleMonthlyTimeSheetNotification();
+
+
+
     });
   }
 
@@ -67,7 +71,8 @@ class _HomeScreenState extends State<HomeScreen> {
           ],
         ),
       ),
-      drawer: Sidebar(), // Shared drawer across tabs
+      drawer: Sidebar(
+              ), // Shared drawer across tabs
       body: PersistentTabView(
         backgroundColor: Theme.of(context).brightness == Brightness.dark
             ? Colors.white10 // Softer white shadow in dark mode

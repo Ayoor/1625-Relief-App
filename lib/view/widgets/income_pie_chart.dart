@@ -23,23 +23,28 @@ class IncomePieChart extends StatefulWidget {
 
 class _IncomePieChartState extends State<IncomePieChart> {
   String centerText = "";
-
+  double userTarget = 1;
 
   Future<void> getCenterText() async {
 
     final provider = Provider.of<AppProvider>(context, listen: false);
   ReliefUser?  user = await provider.fetchUser(context);
+
     var formatter = NumberFormat.currency(
         locale: "en_UK", decimalDigits: 2, symbol: "£");
 if(mounted){ //avoid memory leak
-  if (user!.target == null) {
+  if (user!.target == null || user.target == 0) {
     setState(() {
-      centerText = "Total: ${formatter.format(widget.total)}";
+      centerText = "No target set";
     });
   }
   else {
+
     setState(() {
       centerText = "Total ${formatter.format(widget.total)} of ${user.target}";
+      user.target= user.target?.replaceAll("£", "");
+      user.target= user.target?.replaceAll(",", "");
+      userTarget = double.parse(user.target!) ;
     });
   }
 }
@@ -59,14 +64,15 @@ getCenterText();
       chartLegendSpacing: 32,
       chartRadius: MediaQuery.of(context).size.width / 2,
       colorList: [
-        Colors.orangeAccent,
+        Colors.deepOrangeAccent.shade100,
         Colors.grey.shade300,
         Colors.blue.shade300,
       ],
       initialAngleInDegree: 0,
       chartType: ChartType.ring,
       ringStrokeWidth: 10,
-      centerText: centerText,
+      centerWidget: centerWidget(),
+      // centerText: centerText,
       legendOptions: LegendOptions(
         showLegendsInRow: false,
         legendPosition: LegendPosition.left,
@@ -85,6 +91,41 @@ getCenterText();
       ),
       // gradientList: ---To add gradient colors---
       // emptyColorGradient: ---Empty Color gradient---
+    );
+  }
+
+  Widget centerWidget() {
+    double total = widget.total;
+    double value = total/userTarget;
+    Color indicatorColor = Colors.pinkAccent.shade700;
+    setState(() {
+      if(total < (userTarget*0.5)){
+        indicatorColor= Colors.pinkAccent.shade700;
+      }
+      else if(total < userTarget){
+        indicatorColor= Colors.orangeAccent;
+      }
+      else {
+        indicatorColor = Colors.green;
+      }
+    });
+
+    return
+    Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Text(centerText),
+        SizedBox(height: 10),
+        SizedBox(
+          width: 200,
+          child: LinearProgressIndicator(
+            color: indicatorColor,
+            value: value,
+            minHeight: 4,
+          ),
+        )
+
+      ],
     );
   }
 }

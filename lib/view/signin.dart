@@ -61,7 +61,6 @@ class _SigninState extends State<Signin> {
       String? userEmail = googleEmail ?? email;
       await OneSignal.login(userEmail!);
       OneSignal.User.pushSubscription.optIn();
-      print(userEmail);
       // Navigate directly to HomeScreen
       Future.microtask(() {
         Navigator.pushReplacement(
