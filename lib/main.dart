@@ -1,7 +1,6 @@
 import 'package:animated_splash_screen/animated_splash_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
 import 'package:onesignal_flutter/onesignal_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:relief_app/utils/connection_checker.dart';
@@ -10,7 +9,6 @@ import 'package:relief_app/view/widgets/internetstatuswrapper.dart';
 import 'package:relief_app/view/widgets/splashscreen.dart';
 import 'package:relief_app/viewmodel/provider.dart';
 import 'package:relief_app/viewmodel/theme.dart';
-import 'package:firebase_admin/firebase_admin.dart';
 
 
 void main() async {
@@ -61,7 +59,7 @@ class _MyAppState extends State<MyApp> {
           centered: true,
           backgroundColor: Theme.of(context).colorScheme.surface,
           animationDuration: const Duration(seconds: 2),
-          nextScreen: const InternetStatusWrapper(child: Signin()),
+          nextScreen: InternetStatusWrapper(child: Signin()),
         ),
       ),
     );

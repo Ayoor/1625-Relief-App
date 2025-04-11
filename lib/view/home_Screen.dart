@@ -43,45 +43,47 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      key: scaffoldKey,
-      appBar: AppBar(
-        iconTheme: IconThemeData(color: Colors.white),
-        backgroundColor: Theme.of(context).brightness == Brightness.dark
-            ? Colors.white10 // Softer white shadow in dark mode
-            : Colour("#00334F"),
-        centerTitle: true,
-        title: Column(
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Image.asset(
-                  "lib/assets/1625_logo.png",
-                  width: 150,
-                ),
-                SizedBox(
-                  width: 50,
-                )
-              ],
-            ),
-            SizedBox(
-              height: 2,
-            )
-          ],
+    return InternetStatusWrapper(
+      child: Scaffold(
+        key: scaffoldKey,
+        appBar: AppBar(
+          iconTheme: IconThemeData(color: Colors.white),
+          backgroundColor: Theme.of(context).brightness == Brightness.dark
+              ? Colors.white10 // Softer white shadow in dark mode
+              : Colour("#00334F"),
+          centerTitle: true,
+          title: Column(
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Image.asset(
+                    "lib/assets/1625_logo.png",
+                    width: 150,
+                  ),
+                  SizedBox(
+                    width: 50,
+                  )
+                ],
+              ),
+              SizedBox(
+                height: 2,
+              )
+            ],
+          ),
         ),
-      ),
-      drawer: Sidebar(
-              ), // Shared drawer across tabs
-      body: PersistentTabView(
-        backgroundColor: Theme.of(context).brightness == Brightness.dark
-            ? Colors.white10 // Softer white shadow in dark mode
-            : Colour("#00334F"),
-        controller: controller,
-        tabs: _buildTabConfigs(controller),
-        screenTransitionAnimation: ScreenTransitionAnimation.none(),
-        navBarBuilder: (navBarConfig) =>
-            CustomNavBar(navBarConfig: navBarConfig),
+        drawer: Sidebar(
+                ), // Shared drawer across tabs
+        body: PersistentTabView(
+          backgroundColor: Theme.of(context).brightness == Brightness.dark
+              ? Colors.white10 // Softer white shadow in dark mode
+              : Colour("#00334F"),
+          controller: controller,
+          tabs: _buildTabConfigs(controller),
+          screenTransitionAnimation: ScreenTransitionAnimation.none(),
+          navBarBuilder: (navBarConfig) =>
+              CustomNavBar(navBarConfig: navBarConfig),
+        ),
       ),
     );
   }

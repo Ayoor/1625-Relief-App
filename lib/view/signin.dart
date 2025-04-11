@@ -3,6 +3,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:onesignal_flutter/onesignal_flutter.dart';
 import 'package:relief_app/view/resetPassword.dart';
 import 'package:relief_app/view/signup.dart';
+import 'package:relief_app/view/widgets/internetstatuswrapper.dart';
 import 'package:relief_app/viewmodel/authentication.dart';
 import 'package:relief_app/viewmodel/provider.dart';
 import 'package:toastification/toastification.dart';
@@ -302,7 +303,7 @@ class _SigninState extends State<Signin> {
                         TextButton(
                           onPressed: () => Navigator.pushReplacement(
                             context,
-                            MaterialPageRoute(builder: (context) => Signup()),
+                            MaterialPageRoute(builder: (context) => InternetStatusWrapper(child: Signup())),
                           ),
                           child: const Text(
                             "Sign up",
