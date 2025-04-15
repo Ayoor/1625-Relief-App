@@ -117,7 +117,7 @@ getCenterText();
         Text(centerText),
         SizedBox(height: 10),
         SizedBox(
-          width: 200,
+          width: MediaQuery.of(context).size.width / 2.7,
           child: LinearProgressIndicator(
             color: indicatorColor,
             value: value,

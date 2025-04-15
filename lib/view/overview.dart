@@ -15,7 +15,7 @@ class Overview extends StatefulWidget {
 }
 
 class _OverviewState extends State<Overview> {
-  int remainingShiftToTarget = 15;
+  int remainingShiftToTarget = 0;
 
   @override
   void initState() {
@@ -46,16 +46,16 @@ class _OverviewState extends State<Overview> {
           provider.SGHShiftIncome +
           provider.woodleazeShiftIncome);
       double difference = target - currentIncome;
-      if (difference <= 0) {
+    if (difference <= 0) {
         setState(() {
           remainingShiftToTarget = 0;
         });
       } else {
         setState(() {
-          remainingShiftToTarget = (difference / currentIncome + 0.5).toInt();
+
           // added one for contingency
           remainingShiftToTarget =
-              ((target / 100 - provider.monthCompletedShifts) + 1)
+              (difference/98.4 + 1)
                   .round()
                   .toInt();
         });
@@ -138,12 +138,11 @@ class _OverviewState extends State<Overview> {
           color: Colors.blue,
           backgroundColor: Theme.of(context).colorScheme.surface,
           onRefresh: () async {
+            final provider = Provider.of<AppProvider>(context, listen: false);
+            await shiftsToTarget(provider);
             provider.getDateRange();
-            provider.overviewData(
-              context,
-              provider.monthStart!,
-              provider.monthEnd!,
-            );
+            provider.getIncomeSummary(context);
+
           },
           child: SingleChildScrollView(
             physics: AlwaysScrollableScrollPhysics(),
@@ -160,6 +159,14 @@ class _OverviewState extends State<Overview> {
                     style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                   ),
                   const SizedBox(height: 10),
+                  Center(
+                      child: Text(
+                        "Completed shifts by month",
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 18,
+                            color: Colors.pinkAccent.shade700),
+                      )),
                   const SizedBox(height: 30),
                   SizedBox(
                       height: MediaQuery.of(context).size.height / 3,
@@ -171,15 +178,21 @@ class _OverviewState extends State<Overview> {
                   SizedBox(
                     height: 10,
                   ),
-                  Center(
-                      child: Text(
-                    "Completed shifts by month",
-                    style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 18,
-                        color: Colors.pinkAccent.shade700),
-                  )),
+
                   Divider(color: Colors.grey.shade500),
+                  SizedBox(
+                    height: 10,
+                  ),
+                  Center(
+                    child: Text(
+                      "Shift metrics from ${provider.getDateRange()}",
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 18,
+                          color: Colors.pinkAccent.shade700),
+                    ),
+
+                  ),
                   SizedBox(
                     height: 10,
                   ),
@@ -206,18 +219,8 @@ class _OverviewState extends State<Overview> {
                         ),
                       ),
                     ),
-                  SizedBox(height: 20),
-                  Center(
-                    child: Text(
-                      "Shift metrics from ${provider.getDateRange()}",
-                      style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 18,
-                          color: Colors.pinkAccent.shade700),
-                    ),
+                  SizedBox(height: 70),
 
-                  ),
-                  SizedBox(height: 50),
                 ],
               ),
             ),

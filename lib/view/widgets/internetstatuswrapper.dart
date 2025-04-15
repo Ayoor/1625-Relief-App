@@ -29,18 +29,21 @@ class _InternetStatusWrapperState extends State<InternetStatusWrapper> {
                   showDialog(
                     context: context,
                     barrierDismissible: false,
-                    builder: (context) => AlertDialog(
-                      backgroundColor: Colors.brown.shade100,
-                      content: const Text(
-                        'Internet connection lost',
-                        style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
-                        textAlign: TextAlign.center,
+                    builder: (context) => WillPopScope(
+                      onWillPop: () async => false,
+                      child: AlertDialog(
+                        backgroundColor: Colors.brown.shade100,
+                        content: const Text(
+                          'Internet connection lost',
+                          style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
+                          textAlign: TextAlign.center,
+                        ),
                       ),
                     ),
                   ).then((_) {
-                    // After dialog is dismissed, set _isDialogVisible back to false
                     _isDialogVisible = false;
                   });
+
                 });
               }
             } else {
