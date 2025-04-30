@@ -4,8 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:relief_app/model/userData.dart';
-import 'package:relief_app/view/widgets/SideBar.dart';
-import 'package:relief_app/view/widgets/animatedBarGrapgh.dart';
+import 'package:relief_app/view/custom_widgets/SideBar.dart';
+import 'package:relief_app/view/custom_widgets/animatedBarGrapgh.dart';
 import 'package:relief_app/view/editAccountDetails.dart';
 import 'package:relief_app/viewmodel/provider.dart';
 

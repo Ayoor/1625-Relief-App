@@ -1,16 +1,15 @@
 
 
 ### pending
-tests
+Refractor code
+Change the email from gmail to onesignal
 send signup confirmation email with both signup methods
 update app in background
 admin web dashboard
 
 
 ##issues
-* Push notifications wont come if user logs in on a new device
-* push notifications will push if another user
-  is signed in after an old  user has already scheduled shifts on device
+
 
 ##later
 create new screen shots

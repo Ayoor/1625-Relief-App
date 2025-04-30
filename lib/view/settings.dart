@@ -7,7 +7,7 @@ import 'package:relief_app/view/changepassword.dart';
 import 'package:relief_app/viewmodel/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:toastification/toastification.dart';
-import 'package:relief_app/view/widgets/delete_confirmation.dart';
+import 'package:relief_app/view/custom_widgets/delete_confirmation.dart';
 
 import 'package:onesignal_flutter/onesignal_flutter.dart';
 import '../viewmodel/authentication.dart';

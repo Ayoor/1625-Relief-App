@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:relief_app/view/widgets/animatedBarGrapgh.dart';
-import 'package:relief_app/view/widgets/history_table.dart';
+import 'package:relief_app/view/custom_widgets/animatedBarGrapgh.dart';
+import 'package:relief_app/view/custom_widgets/history_table.dart';
 import '../viewmodel/provider.dart';
 
 class History extends StatefulWidget {

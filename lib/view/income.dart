@@ -4,9 +4,9 @@ import 'package:persistent_bottom_nav_bar_v2/persistent_bottom_nav_bar_v2.dart';
 import 'package:provider/provider.dart';
 import 'package:relief_app/view/history.dart';
 import 'package:relief_app/view/timesheet.dart';
-import 'package:relief_app/view/widgets/SideBar.dart';
-import 'package:relief_app/view/widgets/income_pie_chart.dart';
-import 'package:relief_app/view/widgets/striped_table.dart';
+import 'package:relief_app/view/custom_widgets/SideBar.dart';
+import 'package:relief_app/view/custom_widgets/income_pie_chart.dart';
+import 'package:relief_app/view/custom_widgets/striped_table.dart';
 import '../viewmodel/provider.dart';
 
 class Income extends StatefulWidget {

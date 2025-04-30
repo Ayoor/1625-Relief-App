@@ -4,12 +4,12 @@ import 'package:persistent_bottom_nav_bar_v2/persistent_bottom_nav_bar_v2.dart';
 import 'package:provider/provider.dart';
 import 'package:relief_app/model/userData.dart';
 import 'package:relief_app/view/all_shifts.dart';
-import 'package:relief_app/view/widgets/SideBar.dart';
-import 'package:relief_app/view/widgets/internetstatuswrapper.dart';
+import 'package:relief_app/view/custom_widgets/SideBar.dart';
+import 'package:relief_app/view/custom_widgets/internetstatuswrapper.dart';
 import '../viewmodel/provider.dart';
+import 'custom_widgets/customNav.dart';
 import 'income.dart';
 import 'overview.dart';
-import 'widgets/customNav.dart';
 import 'package:onesignal_flutter/onesignal_flutter.dart';
 
 class HomeScreen extends StatefulWidget {

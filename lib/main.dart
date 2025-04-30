@@ -5,8 +5,8 @@ import 'package:onesignal_flutter/onesignal_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:relief_app/utils/connection_checker.dart';
 import 'package:relief_app/view/signin.dart';
-import 'package:relief_app/view/widgets/internetstatuswrapper.dart';
-import 'package:relief_app/view/widgets/splashscreen.dart';
+import 'package:relief_app/view/custom_widgets/internetstatuswrapper.dart';
+import 'package:relief_app/view/custom_widgets/splashscreen.dart';
 import 'package:relief_app/viewmodel/provider.dart';
 import 'package:relief_app/viewmodel/theme.dart';
 

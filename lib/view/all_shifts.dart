@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:relief_app/test.dart';
 import 'package:relief_app/view/adding_new_shift.dart';
-import 'package:relief_app/view/widgets/SideBar.dart';
-import 'package:relief_app/view/widgets/shift_tile.dart';
+import 'package:relief_app/view/custom_widgets/SideBar.dart';
+import 'package:relief_app/view/custom_widgets/shift_tile.dart';
 import '../viewmodel/provider.dart';
 
 class AllShifts extends StatefulWidget {

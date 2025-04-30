@@ -8,7 +8,7 @@ import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:relief_app/model/shifts.dart';
-import 'package:relief_app/view/widgets/SideBar.dart';
+import 'package:relief_app/view/custom_widgets/SideBar.dart';
 import 'package:relief_app/viewmodel/provider.dart';
 import 'package:toastification/toastification.dart';
 
