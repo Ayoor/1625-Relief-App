@@ -120,7 +120,11 @@ class AppProvider extends ChangeNotifier {
 
         case "Completed":
           DateTime shiftEnd = DateTime.parse(endTime);
-          if (shiftEnd.isAfter(DateTime.now())) {
+          DateTime now = DateTime.now();
+          DateTime today = DateTime(now.year, now.month, now.day);
+          DateTime shiftDate = DateTime(shiftEnd.year, shiftEnd.month, shiftEnd.day);
+
+          if (shiftDate.isAfter(today)) {
             showMessage(
               context: context,
               message: "Oops! Too early to complete shift",
@@ -941,8 +945,8 @@ class AppProvider extends ChangeNotifier {
     if (_completedShifts.isNotEmpty) {
       _filteredShifts = _completedShifts
           .where((shift) =>
-              shift.startTime.isAfter(start) &&
-              shift.startTime.isBefore(end) &&
+              shift.startTime.isAfter(start.subtract(Duration(days: 1))) &&
+              shift.startTime.isBefore(end.add(Duration(days: 1))) &&
               shift.location == location)
           .toList();
     } else {
