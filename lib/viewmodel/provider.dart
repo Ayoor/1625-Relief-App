@@ -119,10 +119,10 @@ class AppProvider extends ChangeNotifier {
           break;
 
         case "Completed":
-          DateTime shiftEnd = DateTime.parse(endTime);
+          DateTime shiftStart = DateTime.parse(startDate);
           DateTime now = DateTime.now();
           DateTime today = DateTime(now.year, now.month, now.day);
-          DateTime shiftDate = DateTime(shiftEnd.year, shiftEnd.month, shiftEnd.day);
+          DateTime shiftDate = DateTime(shiftStart.year, shiftStart.month, shiftStart.day);
 
           if (shiftDate.isAfter(today)) {
             showMessage(
@@ -748,8 +748,14 @@ class AppProvider extends ChangeNotifier {
     try {
       String email = await userEmail();
       for (var shift in shifts) {
+        //get shift start notification duration
+        int preShiftNotificationDuration = 3;
+        if (shift.shiftType == "Early Shift") {
+          preShiftNotificationDuration = 10;
+        }
+
         // Format the startTime to a date string (e.g., "dd-MM-yyyy")
-        final String dateKey = DateFormat('dd-MM-yyyy').format(shift.startTime);
+        final String dateKey = DateFormat('dd-MM-yyyy').  format(shift.startTime);
         final DatabaseReference dbRef = FirebaseDatabase.instance
             .ref()
             .child("Users/$email/Shifts/$dateKey: ${shift.shiftType}");
@@ -759,7 +765,7 @@ class AppProvider extends ChangeNotifier {
         await scheduleNotification(
            userId: userId,
            templateId: templateId,
-           scheduledTime: shift.startTime.subtract(Duration(hours: 3)),
+           scheduledTime: shift.startTime.subtract(Duration(hours: preShiftNotificationDuration)),
           notificationType: "Pre"
          );
 
@@ -969,7 +975,7 @@ class AppProvider extends ChangeNotifier {
       notifyListeners();
       return;
     } else {
-      _filteredShifts = _filteredShifts.reversed.toList();
+      // _filteredShifts = _filteredShifts.reversed.toList(); unnecessary
 
       for (Shifts completedShift in _filteredShifts) {
         exportData.add([
