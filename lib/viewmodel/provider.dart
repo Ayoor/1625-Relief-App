@@ -826,14 +826,14 @@ class AppProvider extends ChangeNotifier {
       DateTime startTime, String location) {
     // DateTime startTime = DateTime.parse(start);
     if (startTime.hour < 12) {
-      return Tuple2("Early Shift", 12.21);
+      return Tuple2("Early Shift", 12.60);
     } else if (startTime.hour < 21) {
-      return Tuple2("Late Shift", 12.21);
+      return Tuple2("Late Shift", 12.60);
     } else {
       if (location == "Charles England House") {
-        return Tuple2("Sleep in Shift", 12.21);
+        return Tuple2("Sleep in Shift", 12.60);
       }
-      return Tuple2("Wake in Shift", 12.30);
+      return Tuple2("Wake in Shift", 12.90);
     }
   }
 
