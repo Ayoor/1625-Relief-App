@@ -577,7 +577,6 @@ class AppProvider extends ChangeNotifier {
 
     // Convert time to UTC format required by OneSignal
     String scheduledTimeUtc = scheduledTime.toUtc().toIso8601String();
-    // String scheduledTimeUtc = DateTime.now().add(Duration(minutes: 1)).toIso8601String();
 
     // OneSignal API Endpoint
     const String oneSignalUrl = "https://onesignal.com/api/v1/notifications";
