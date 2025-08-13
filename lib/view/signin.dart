@@ -56,9 +56,7 @@ class _SigninState extends State<Signin> {
       setState(() {
         isLoading = false;
       });
-
     } else {
-
       String? userEmail = googleEmail ?? email;
       await OneSignal.login(userEmail!);
       OneSignal.User.pushSubscription.optIn();
@@ -72,7 +70,6 @@ class _SigninState extends State<Signin> {
         );
       });
     }
-
   }
 
   @override
@@ -303,7 +300,9 @@ class _SigninState extends State<Signin> {
                         TextButton(
                           onPressed: () => Navigator.pushReplacement(
                             context,
-                            MaterialPageRoute(builder: (context) => InternetStatusWrapper(child: Signup())),
+                            MaterialPageRoute(
+                                builder: (context) =>
+                                    InternetStatusWrapper(child: Signup())),
                           ),
                           child: const Text(
                             "Sign up",

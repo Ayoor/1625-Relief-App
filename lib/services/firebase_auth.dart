@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -8,8 +10,16 @@ class AuthenticationService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
   Future<User?> signInWithGoogle() async {
+    final GoogleSignIn googleSignIn;
     try {
-      final GoogleSignIn googleSignIn = GoogleSignIn();
+      if (Platform.isIOS) {
+        googleSignIn = GoogleSignIn(
+          clientId:
+              '109576140067-bq242fn63bcc5u16qs4qsk1avm7b7h7n.apps.googleusercontent.com',
+        );
+      } else {
+        googleSignIn = GoogleSignIn();
+      }
       final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
 
       if (googleUser == null) {
@@ -17,8 +27,8 @@ class AuthenticationService {
         return null;
       }
 
-      final GoogleSignInAuthentication googleAuth = await googleUser
-          .authentication;
+      final GoogleSignInAuthentication googleAuth =
+          await googleUser.authentication;
 
       final OAuthCredential credential = GoogleAuthProvider.credential(
         accessToken: googleAuth.accessToken,
@@ -27,15 +37,15 @@ class AuthenticationService {
 
       // Authenticate with Firebase
       UserCredential userCredential =
-      await FirebaseAuth.instance.signInWithCredential(credential);
+          await FirebaseAuth.instance.signInWithCredential(credential);
 
       // save sign in session
-await saveSession("googleEmail", "${userCredential.user!.email}");
+      await saveSession("googleEmail", "${userCredential.user!.email}");
       return userCredential.user;
     } catch (e) {
       Fluttertoast.showToast(msg: "Error signing in with Google");
       print("$e");
-           return null;
+      return null;
     }
   }
 
@@ -45,7 +55,6 @@ await saveSession("googleEmail", "${userCredential.user!.email}");
     String lastName;
     // Replace invalid characters in the email for Firebase keys
     final safeKey = email.replaceAll('.', 'dot');
-
 
     if (user.displayName != null && user.displayName!.contains(' ')) {
       final nameParts = user.displayName!.split(' ');
@@ -68,10 +77,9 @@ await saveSession("googleEmail", "${userCredential.user!.email}");
       "Last Name": lastName,
       "Email": email,
       "Password": password,
-      "Account Status": user.emailVerified
-          ? "Verified"
-          : "Awaiting email verification",
-      "Authentication Type" :"Google"
+      "Account Status":
+          user.emailVerified ? "Verified" : "Awaiting email verification",
+      "Authentication Type": "Google"
     });
   }
 

@@ -10,16 +10,18 @@ import 'package:relief_app/view/custom_widgets/splashscreen.dart';
 import 'package:relief_app/viewmodel/provider.dart';
 import 'package:relief_app/viewmodel/theme.dart';
 
+import 'firebase_options.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
 
   // OneSignal.Debug.setLogLevel(OSLogLevel.verbose);
 
   // Initialize OneSignal with the correct App ID
   OneSignal.initialize("8110724a-d13e-43f8-a58d-450454c49101");
-
 
   runApp(
     MultiProvider(
@@ -48,8 +50,8 @@ class _MyAppState extends State<MyApp> {
       builder: (context, themeProvider, child) => MaterialApp(
         debugShowCheckedModeBanner: false,
         title: '1625 Relief',
-        theme: ThemeData.light(),  // Light Theme
-        darkTheme: ThemeData.dark(),  // Dark Theme
+        theme: ThemeData.light(), // Light Theme
+        darkTheme: ThemeData.dark(), // Dark Theme
         themeMode: themeProvider.themeMode, // Apply Theme Mode
 
         home: AnimatedSplashScreen(
